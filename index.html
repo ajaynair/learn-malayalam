@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Malayalam Letters</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 700px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        header h1 {
+            font-family: 'Noto Sans Malayalam', sans-serif;
+            color: #2c3e50;
+            margin: 0 0 5px 0;
+        }
+        header h2 {
+            color: #555;
+            margin: 0;
+            font-weight: normal;
+            font-size: 1.1em;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .quiz-area .letter {
+            font-family: 'Noto Sans Malayalam', sans-serif;
+            font-size: 4rem; /* Adjusted for potentially wider kootaksharam */
+            color: #3498db;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #eaf5ff;
+            border-radius: 8px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-wrap: break-word;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .options button {
+            padding: 12px 15px;
+            font-size: 1rem;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            text-align: center;
+        }
+
+        .options button:hover {
+            background-color: #e0e0e0;
+        }
+        .options button:active {
+            transform: scale(0.98);
+        }
+        .options button.correct {
+            background-color: #2ecc71 !important;
+            color: white !important;
+            border-color: #27ae60 !important;
+        }
+        .options button.incorrect {
+            background-color: #e74c3c !important;
+            color: white !important;
+            border-color: #c0392b !important;
+        }
+        .options button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+
+        .feedback {
+            min-height: 24px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .feedback.correct { color: #27ae60; }
+        .feedback.incorrect { color: #c0392b; }
+        .feedback.info { color: #3498db; }
+        .feedback.error { color: #e74c3c; }
+
+
+        .example-area {
+            /* This area will no longer be actively used or shown */
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            text-align: center;
+        }
+        .example-area img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #eee; /* Placeholder background */
+            display: block; /* Center image */
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #ccc; /* Add a border for placeholder */
+            object-fit: cover; /* If you were to load images */
+        }
+        .example-area .malayalam-text {
+            font-family: 'Noto Sans Malayalam', sans-serif;
+            font-size: 1.5em;
+            color: #333;
+            margin: 5px 0;
+        }
+         .example-area p {
+            margin: 5px 0;
+            color: #555;
+         }
+
+        #next-question-btn { /* Consolidated button style */
+            display: block;
+            width: calc(100% - 20px);
+            max-width: 300px;
+            margin: 15px auto 0 auto;
+            padding: 12px 20px;
+            font-size: 1rem;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            background-color: #2ecc71;
+        }
+        #next-question-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .progress-area {
+            text-align: center;
+        }
+        .progress-area h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            color: #777;
+            font-size: 0.9em;
+        }
+        
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .app-container { padding: 15px; }
+            .quiz-area .letter { font-size: 3.5rem; } /* Slightly smaller for mobile if needed */
+            .options { grid-template-columns: 1fr; } /* Stack options on small screens */
+        }
+
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+<script type="importmap">
+{
+  "imports": {
+    "vite": "https://esm.sh/vite@^6.3.5",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^4.5.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"> <!-- Vite typically mounts to an element with id="root" -->
+        <div class="app-container">
+            <header>
+                <h1>മലയാള അക്ഷരമാല പഠിക്കാം</h1>
+                <h2>Learn Malayalam Alphabets</h2>
+            </header>
+            <main>
+                <div class="quiz-area card">
+                    <div id="letter-display" class="letter" aria-live="polite" role="region" aria-label="Current Malayalam letter"></div>
+                    <div id="options-container" class="options" role="radiogroup" aria-label="Choose the correct transliteration"></div>
+                    <div id="feedback-area" class="feedback" aria-live="assertive" role="alert"></div>
+                    <!-- Example area is hidden by default and will no longer be used -->
+                    <div id="example-area" class="example-area" style="display: none;">
+                        <img id="example-image" src="#" alt="Example for the letter" style="display:none;"/>
+                        <p id="example-word-mal" class="malayalam-text" lang="ml-IN"></p>
+                        <p id="example-word-eng"></p>
+                    </div>
+                    <button id="next-question-btn" class="button" style="display: none;">Next Letter</button>
+                </div>
+                <div class="progress-area card">
+                    <h3>Progress</h3>
+                    <p>Score: <span id="score">0</span></p>
+                    <p>Correct Streak: <span id="correct-streak-display">0</span></p>
+                    <p>Reviewed Today: <span id="reviewed-count">0</span>/<span id="total-letters-count">0</span></p>
+                </div>
+            </main>
+            <footer>
+                <p>Malayalam Learning App &copy; 2024</p>
+            </footer>
+        </div>
+    </div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
