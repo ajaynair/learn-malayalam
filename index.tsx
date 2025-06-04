@@ -1,4 +1,6 @@
-interface MalayalamLetter {
+// Removed: import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
+
+interface MalayalamLetter { // Interface updated: no example fields
   id: string;
   character: string;
   displayCharacterOverride?: string;
@@ -122,24 +124,26 @@ const initialLettersData: Omit<MalayalamLetter, 'lastReviewedTimestamp' | 'nextR
   { id: 'k23', character: 'സ്ഥ', category: 'kootaksharam', transliteration: 'stha' },
 ];
 
-
 const App = {
   letters: [] as MalayalamLetter[],
   currentLetter: null as MalayalamLetter | null,
   options: [] as string[],
-  // Removed: ai: null as GoogleGenAI | null,
-  // Removed: isLoadingExample: false,
   score: 0,
   sessionCorrectStreak: 0,
   reviewedTodayCount: 0,
-  localStorageKey: 'malayalamAppProgress_v2_no_examples', // Updated key
+  localStorageKey: 'malayalamAppProgress_v3_speech_fix', // Updated key for new data structure
+
+  // Speech Synthesis related properties
+  voices: [] as SpeechSynthesisVoice[],
+  speechSynthesisReady: false,
+  speechSynthesisSupported: false,
+  speechSynthesisUtterance: null as SpeechSynthesisUtterance | null,
+
 
   DOM: {
     letterDisplay: document.getElementById('letter-display')!,
     optionsContainer: document.getElementById('options-container')!,
     feedbackArea: document.getElementById('feedback-area')!,
-    // Removed: exampleArea, exampleImage, exampleWordMal, exampleWordEng from active use
-    // Removed: generateExampleBtn
     nextQuestionBtn: document.getElementById('next-question-btn') as HTMLButtonElement,
     scoreDisplay: document.getElementById('score')!,
     correctStreakDisplay: document.getElementById('correct-streak-display')!,
@@ -150,34 +154,67 @@ const App = {
   init() {
     this.DOM.nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
     
-    this.warmUpSpeechSynthesis();
+    this.initializeSpeechSynthesis(); // Initialize speech synthesis
     this.loadLetters();
     this.updateProgressDisplay();
-
     this.nextQuestion();
   },
+  
+  initializeSpeechSynthesis() {
+    if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
+        this.speechSynthesisSupported = true;
+        this.speechSynthesisUtterance = new SpeechSynthesisUtterance(); // Create one instance
 
-  warmUpSpeechSynthesis() {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance('');
-        window.speechSynthesis.speak(utterance);
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.onvoiceschanged = () => {}; // Ensure onvoiceschanged is handled
+        const loadVoices = () => {
+            this.voices = window.speechSynthesis.getVoices();
+            if (this.voices.length > 0) {
+                this.speechSynthesisReady = true;
+                console.log('Speech synthesis voices loaded:', this.voices.map(v => ({name: v.name, lang: v.lang, default: v.default})));
+                // Removed dummy speak/cancel from here as it might interfere if onvoiceschanged fires late.
+                // The initial attempt to speak later should trigger the engine if needed.
+            } else {
+                console.warn('No speech synthesis voices available yet (onvoiceschanged or initial load).');
+            }
+        };
+
+        // Some browsers load voices on 'onvoiceschanged', others might have them ready.
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices(); // Attempt to load voices immediately
+
+        // Fallback: if onvoiceschanged doesn't fire or voices are slow
+        setTimeout(() => {
+            if (!this.speechSynthesisReady && this.voices.length === 0) {
+                console.warn('Retrying to load voices after timeout.');
+                loadVoices();
+                if (!this.speechSynthesisReady && this.voices.length === 0) {
+                    console.error("Speech synthesis voices still not available after timeout.");
+                    this.updateFeedback('Speech voices could not be loaded.', 'error');
+                }
+            }
+        }, 1500); // Check after 1.5 seconds
+
+    } else {
+        console.warn('Speech synthesis not supported by this browser.');
+        this.updateFeedback('Speech synthesis not supported.', 'error');
+        this.speechSynthesisSupported = false;
     }
   },
-  
+
   loadLetters() {
     const savedData = localStorage.getItem(this.localStorageKey);
     if (savedData) {
         const parsedSavedData: MalayalamLetter[] = JSON.parse(savedData);
+        // Filter out any letters from savedData that are no longer in initialLettersData (e.g., if data source changed)
+        const validSavedLetters = parsedSavedData.filter(sl => initialLettersData.some(il => il.id === sl.id));
+        
         this.letters = initialLettersData.map(initialLetter => {
-            const savedVersion = parsedSavedData.find(sl => sl.id === initialLetter.id);
+            const savedVersion = validSavedLetters.find(sl => sl.id === initialLetter.id);
             if (savedVersion) {
-                return {
-                    ...this.getDefaultSRDFields(), // No argument passed
-                    ...initialLetter,
-                    ...savedVersion,
-                    // Ensure initial character data isn't overwritten by potentially stale saved data
+                return { // Merge, ensuring initial core data (char, translit) is fresh, SRS data is from save
+                    ...this.getDefaultSRDFields(), // Base SRD
+                    ...initialLetter, // Fresh character, translit, category, overrides
+                    ...savedVersion, // Overwrite SRD fields with saved ones
+                     // Explicitly keep fresh character data to avoid issues if it changed in initialLettersData
                     character: initialLetter.character, 
                     displayCharacterOverride: initialLetter.displayCharacterOverride,
                     category: initialLetter.category,
@@ -185,12 +222,12 @@ const App = {
                     audioOverride: initialLetter.audioOverride,
                 };
             }
-            return { ...initialLetter, ...this.getDefaultSRDFields() }; // No argument passed
+            return { ...initialLetter, ...this.getDefaultSRDFields() };
         });
     } else {
         this.letters = initialLettersData.map(l => ({
             ...l,
-            ...this.getDefaultSRDFields() // No argument passed
+            ...this.getDefaultSRDFields()
         }));
     }
     this.DOM.totalLettersCountDisplay.textContent = this.letters.length.toString();
@@ -215,24 +252,29 @@ const App = {
 
   selectLetterForQuiz(): MalayalamLetter | null {
     const now = Date.now();
-    const dueLetters = this.letters.filter(l => l.reviewed && l.nextReviewTimestamp <= now);
-    if (dueLetters.length > 0) {
-        dueLetters.sort((a, b) => a.nextReviewTimestamp - b.nextReviewTimestamp);
-        return dueLetters[0];
+    // Prioritize due letters that have been reviewed before
+    const dueReviewedLetters = this.letters.filter(l => l.reviewed && l.nextReviewTimestamp <= now);
+    if (dueReviewedLetters.length > 0) {
+        dueReviewedLetters.sort((a, b) => a.nextReviewTimestamp - b.nextReviewTimestamp); // Oldest due first
+        return dueReviewedLetters[0];
     }
 
+    // Then, new letters that haven't been reviewed yet
     const newLetters = this.letters.filter(l => !l.reviewed);
     if (newLetters.length > 0) {
+        // Simple random selection for new letters
         return newLetters[Math.floor(Math.random() * newLetters.length)];
     }
 
-    // If all letters reviewed and none are due, pick the one reviewed longest ago
+    // If all letters reviewed and none are "due" according to SRS, pick the one reviewed longest ago
+    // This ensures the app doesn't get stuck if all intervals are long.
     if (this.letters.length > 0) {
-        const sortedByLastReviewed = [...this.letters].sort((a,b) => a.lastReviewedTimestamp - b.lastReviewedTimestamp);
-        return sortedByLastReviewed[0];
+        const sortedByLastReviewed = [...this.letters].filter(l => l.reviewed).sort((a,b) => a.lastReviewedTimestamp - b.lastReviewedTimestamp);
+        if (sortedByLastReviewed.length > 0) return sortedByLastReviewed[0];
+        // If for some reason no letters are marked reviewed (e.g. fresh start, all new), this won't be hit due to newLetters check
     }
     
-    return null;
+    return null; // Should only happen if this.letters is empty
   },
 
   generateOptions(correctLetter: MalayalamLetter): string[] {
@@ -240,11 +282,17 @@ const App = {
     options.add(correctLetter.transliteration);
 
     const distractors = this.letters.filter(l => l.id !== correctLetter.id && l.transliteration !== correctLetter.transliteration);
-    while (options.size < Math.min(4, this.letters.length) && distractors.length > 0) {
+    
+    // Ensure we have enough unique distractors if possible
+    const numOptions = Math.min(4, this.letters.length > 0 ? this.letters.length : 1); // At least 1 option (correct one)
+
+    while (options.size < numOptions && distractors.length > 0) {
         const randomIndex = Math.floor(Math.random() * distractors.length);
         options.add(distractors[randomIndex].transliteration);
         distractors.splice(randomIndex, 1); // Ensure unique distractors
     }
+    // If not enough distractors (e.g., very few letters loaded), pad with generic placeholders if needed, though less ideal.
+    // For now, it will just show fewer options.
     return Array.from(options).sort(() => Math.random() - 0.5);
   },
 
@@ -253,7 +301,6 @@ const App = {
 
     this.DOM.optionsContainer.querySelectorAll('button').forEach(btn => (btn as HTMLButtonElement).disabled = true);
     this.DOM.nextQuestionBtn.style.display = 'block';
-    // Removed: generateExampleBtn.disabled and exampleArea.style.display
 
     const isCorrect = selectedTransliteration === this.currentLetter.transliteration;
 
@@ -264,37 +311,39 @@ const App = {
         this.currentLetter.totalCorrect++;
         this.updateFeedback(`${this.currentLetter.displayCharacterOverride || this.currentLetter.character} is correct! (${this.currentLetter.transliteration})`, 'correct');
         
-        // SM-2 Algorithm variant for interval calculation
         if (this.currentLetter.correctStreak === 1) this.currentLetter.intervalDays = 1;
         else if (this.currentLetter.correctStreak === 2) this.currentLetter.intervalDays = 6;
         else this.currentLetter.intervalDays = Math.ceil(this.currentLetter.intervalDays * this.currentLetter.easeFactor);
         this.currentLetter.intervalDays = Math.min(this.currentLetter.intervalDays, 365); // Cap interval
+        this.currentLetter.easeFactor += 0.1; // Slightly increase ease for correct answers
 
     } else {
         this.sessionCorrectStreak = 0;
         this.currentLetter.correctStreak = 0;
         this.currentLetter.totalIncorrect++;
         this.updateFeedback(`Incorrect. This is ${this.currentLetter.displayCharacterOverride || this.currentLetter.character} (${this.currentLetter.transliteration}).`, 'incorrect');
-        this.speakLetter(this.currentLetter, true); // Emphatic speech for incorrect answer
+        this.speakLetter(this.currentLetter, true); 
         this.currentLetter.intervalDays = 1; // Reset interval on incorrect
+        this.currentLetter.easeFactor = Math.max(1.3, this.currentLetter.easeFactor - 0.2); // Decrease ease, floor at 1.3
     }
 
     this.currentLetter.lastReviewedTimestamp = Date.now();
     this.currentLetter.nextReviewTimestamp = Date.now() + (this.currentLetter.intervalDays * 24 * 60 * 60 * 1000);
+    if(!this.currentLetter.reviewed) { // Only count as "reviewed today" on first review of a session or actual SRS review
+        this.reviewedTodayCount++; 
+    }
     this.currentLetter.reviewed = true;
     
-    this.reviewedTodayCount++; // This should ideally be calculated or reset daily for "reviewed today"
     this.saveLetters();
     this.updateProgressDisplay();
     
-    // Visually indicate correct/incorrect choices
     this.DOM.optionsContainer.querySelectorAll('button').forEach(button => {
         const btn = button as HTMLButtonElement;
         if (btn.textContent === selectedTransliteration) {
             btn.classList.add(isCorrect ? 'correct' : 'incorrect');
         }
         if (btn.textContent === this.currentLetter?.transliteration && !isCorrect) {
-             btn.classList.add('correct'); // Highlight the correct answer if user was wrong
+             btn.classList.add('correct'); 
         }
     });
   },
@@ -302,17 +351,15 @@ const App = {
   nextQuestion() {
     this.currentLetter = this.selectLetterForQuiz();
     this.DOM.nextQuestionBtn.style.display = 'none';
-    // Removed: generateExampleBtn.disabled and exampleArea.style.display
 
     if (this.currentLetter) {
-        // Removed: clearing exampleWordMal, etc.
         this.options = this.generateOptions(this.currentLetter);
         this.renderQuiz();
         this.updateFeedback('Choose the correct sound/transliteration.', 'info');
     } else {
         this.DOM.letterDisplay.textContent = '🎉';
         this.updateFeedback('All letters learned for now! Come back later for review or reset progress.', 'success');
-        this.DOM.optionsContainer.innerHTML = ''; // Clear options
+        this.DOM.optionsContainer.innerHTML = ''; 
     }
   },
   
@@ -331,35 +378,74 @@ const App = {
     });
   },
 
-  // Removed: renderExample function
-
   speak(text: string, lang: string = 'ml-IN', rate: number = 0.9, pitch: number = 1.1) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // Cancel any ongoing speech
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        utterance.rate = rate;
-        utterance.pitch = pitch;
-        
-        // Attempt to find a Malayalam voice
-        const voices = window.speechSynthesis.getVoices();
-        const malayalamVoice = voices.find(voice => voice.lang === 'ml-IN') || voices.find(voice => voice.lang.startsWith('ml-'));
-        if (malayalamVoice) {
-            utterance.voice = malayalamVoice;
-        } else if (voices.length > 0) {
-            // Fallback if specific ml-IN voice not found but voices exist
-            // console.warn('ml-IN voice not found, using default voice.');
-        }
-        window.speechSynthesis.speak(utterance);
-    } else {
-        console.warn('Speech synthesis not supported.');
-        this.updateFeedback('Speech synthesis not supported in your browser.', 'error');
+    if (!this.speechSynthesisSupported || !this.speechSynthesisUtterance) {
+        console.warn('Speech synthesis not initialized or not supported.');
+        this.updateFeedback('Speech synthesis setup issue.', 'error');
+        return;
     }
+
+    if (!this.speechSynthesisReady && this.voices.length === 0) {
+        // Final attempt to get voices if they weren't ready before
+        this.voices = window.speechSynthesis.getVoices();
+        if (this.voices.length > 0) {
+            this.speechSynthesisReady = true;
+            console.log('Speech synthesis voices loaded on demand before speak call:', this.voices.map(v => ({name: v.name, lang: v.lang, default: v.default})));
+        } else {
+            console.error('Cannot speak: No speech synthesis voices available even after on-demand check.');
+            this.updateFeedback('Speech voices not available.', 'error');
+            return;
+        }
+    }
+    
+    // If speaking, cancel previous before starting new.
+    if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+    }
+
+    const utterance = this.speechSynthesisUtterance;
+    utterance.text = text;
+    utterance.lang = lang;
+    utterance.rate = rate;
+    utterance.pitch = pitch;
+    utterance.voice = null; // Reset voice before trying to set a new one
+
+    let selectedVoice = this.voices.find(voice => voice.lang === 'ml-IN');
+    if (!selectedVoice) {
+        selectedVoice = this.voices.find(voice => voice.lang.startsWith('ml-'));
+    }
+
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+    } else {
+        console.warn(`Malayalam voice ('ml-IN' or 'ml-') not found. Using browser default for lang '${lang}' or system default.`);
+        // Let the browser pick the best voice for the specified lang.
+        // If no specific voice for 'ml-IN' is found, this provides a fallback.
+    }
+    
+    utterance.onstart = () => {
+        // console.log(`Speech started for: "${text}" with voice: ${utterance.voice ? utterance.voice.name : 'default'}`);
+    };
+    utterance.onend = () => {
+        // console.log(`Speech ended for: "${text}"`);
+    };
+    utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event.error, event);
+        let errorMsg = `Speech error: ${event.error}.`;
+        if(event.error === 'language-unavailable' || event.error === 'voice-unavailable'){
+            errorMsg += ` Please check if Malayalam voice support is installed in your browser/OS.`;
+        } else if (event.error === 'synthesis-failed' || event.error === 'audio-busy') {
+             errorMsg += ` Try again.`;
+        }
+        this.updateFeedback(errorMsg, 'error');
+    };
+
+    window.speechSynthesis.speak(utterance);
   },
 
   speakLetter(letter: MalayalamLetter, emphatic: boolean = false) {
     const textToSpeak = letter.audioOverride || letter.character;
-    this.speak(textToSpeak, 'ml-IN', emphatic ? 0.8 : 0.9, emphatic ? 1.0 : 1.1);
+    this.speak(textToSpeak, 'ml-IN', emphatic ? 0.85 : 0.95, emphatic ? 1.0 : 1.1);
   },
   
   updateFeedback(message: string, type: 'info' | 'error' | 'success' | 'correct' | 'incorrect') {
@@ -370,22 +456,22 @@ const App = {
   updateProgressDisplay() {
     this.DOM.scoreDisplay.textContent = this.score.toString();
     this.DOM.correctStreakDisplay.textContent = this.sessionCorrectStreak.toString();
-    this.DOM.reviewedCountDisplay.textContent = this.reviewedTodayCount.toString();
-    // Total letters count is set during loadLetters and should remain static unless letters are added/removed
+    this.DOM.reviewedCountDisplay.textContent = this.letters.filter(l => l.reviewed).length.toString(); // Show total reviewed, not just "today"
   },
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Ensure fonts are loaded before initializing the app, especially for letter display
     if (typeof document !== 'undefined' && document.fonts) {
-        document.fonts.load('1em "Noto Sans Malayalam"').then(() => {
-            App.init();
-        }).catch(err => {
-            console.warn('Noto Sans Malayalam font could not be loaded or confirmed, initializing app anyway.', err);
-            App.init(); // Initialize anyway
-        });
+      Promise.all([
+        document.fonts.load('1em "Noto Sans Malayalam"'),
+        document.fonts.load('1em "Noto Sans"') 
+      ]).then(() => {
+          App.init();
+      }).catch(err => {
+          console.warn('Required fonts could not be loaded or confirmed, initializing app anyway.', err);
+          App.init(); 
+      });
     } else {
-        // Fallback for browsers that don't support document.fonts or run in environments like Node
         App.init();
     }
 });
