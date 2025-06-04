@@ -189,6 +189,45 @@
             color: #2c3e50;
         }
 
+        .ad-placeholder { /* Style for ad placeholders if needed */
+            width: 100%;
+            min-height: 50px; /* AdSense will control the actual height */
+            margin: 20px 0;
+            text-align: center;
+            background-color: #f9f9f9; /* Placeholder background */
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .about-me-card {
+            text-align: center;
+            margin-top: 25px; /* Space above the card */
+            background-color: #fdfaf6; /* A slightly warmer background */
+            border: 1px solid #f0e0d0; /* A soft border */
+        }
+
+        .about-me-card h3 {
+            color: #d9534f; /* A warm, friendly color for the heading */
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .about-me-card p {
+            line-height: 1.6;
+            color: #444; /* Slightly darker text for readability */
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .about-me-card strong {
+            color: #c0392b; /* Emphasize name and email */
+        }
+
+
         footer {
             text-align: center;
             margin-top: 30px;
@@ -216,12 +255,22 @@
             .app-container { padding: 15px; }
             .quiz-area .letter { font-size: 3.5rem; } /* Slightly smaller for mobile if needed */
             .options { grid-template-columns: 1fr; } /* Stack options on small screens */
+            .about-me-card h3 { font-size: 1.2em; }
+            .about-me-card p { font-size: 0.9em; }
         }
 
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- 
+      Google AdSense Script for Auto Ads.
+      Replace ca-pub-YOUR_ADSENSE_CLIENT_ID with your actual AdSense Publisher ID.
+    -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_CLIENT_ID"
+         crossorigin="anonymous"></script>
+
 <script type="importmap">
 {
   "imports": {
@@ -230,7 +279,6 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body>
     <div id="root"> <!-- Vite typically mounts to an element with id="root" -->
@@ -258,7 +306,34 @@
                     <p>Correct Streak: <span id="correct-streak-display">0</span></p>
                     <p>Reviewed Today: <span id="reviewed-count">0</span>/<span id="total-letters-count">0</span></p>
                 </div>
+
+                <!-- Placeholder for a Manual AdSense Ad Unit -->
+                <!-- 
+                <div class="ad-placeholder">
+                    <p>Advertisement</p>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-YOUR_ADSENSE_CLIENT_ID" 
+                         data-ad-slot="YOUR_AD_UNIT_SLOT_ID" 
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+                -->
+
             </main>
+
+            <div class="about-me-card card">
+                <h3>Psst... A Little Secret About This App! ✨</h3>
+                <p>Hey there, language adventurer! 👋</p>
+                <p>This little corner of the internet, dedicated to the beautiful swirls and sounds of Malayalam, was lovingly crafted by <strong>Ajay Nair</strong>. Yep, just one person, powered by a whole lot of passion (and probably too much coffee ☕️)!</p>
+                <p>The mission? To make learning Malayalam a tiny bit easier, a tad more fun, and hopefully, to spread some joy along the way. So, whether you're connecting with your roots or just curious about new alphabets, I'm thrilled to have you here!</p>
+                <p>Got a brilliant idea, found a mischievous bug, or just want to share your Malayalam learning journey? Ajay would be over the moon to hear from you! Drop a line at: <strong>ajaynair59 [at] gmail [dot] com</strong></p>
+                <p>Happy learning! ❤️</p>
+            </div>
+
             <footer>
                 <p>Malayalam Learning App &copy; 2024</p>
             </footer>
