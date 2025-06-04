@@ -1,3 +1,4 @@
+
 // Removed: import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { MalayalamLetter, initialLettersData } from './lettersData'; // Import from new file
 
@@ -309,7 +310,15 @@ const App = {
   },
 
   speakLetter(letter: MalayalamLetter, emphatic: boolean = false) {
-    const textToSpeak = letter.audioOverride || letter.character;
+    let textToSpeak: string;
+    // Priority: 1. audioOverride, 2. displayCharacterOverride (esp. for matras), 3. character
+    if (letter.audioOverride) {
+        textToSpeak = letter.audioOverride;
+    } else if (letter.category === 'matra' && letter.displayCharacterOverride) {
+        textToSpeak = letter.displayCharacterOverride; // e.g., speak "കി" for matra 'ി'
+    } else {
+        textToSpeak = letter.character;
+    }
     this.speak(textToSpeak, 'ml-IN', emphatic ? 0.85 : 0.95, emphatic ? 1.0 : 1.1);
   },
   
@@ -341,3 +350,4 @@ document.addEventListener('DOMContentLoaded', () => {
         App.init();
     }
 });
+
