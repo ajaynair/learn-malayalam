@@ -2,6 +2,8 @@
 // Removed: import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { MalayalamLetter, initialLettersData } from './lettersData'; // Import from new file
 
+// Removed adsbygoogle global declaration
+
 const App = {
   letters: [] as MalayalamLetter[],
   currentLetter: null as MalayalamLetter | null,
@@ -37,6 +39,7 @@ const App = {
     this.loadLetters();
     this.updateProgressDisplay();
     this.nextQuestion();
+    // Removed call to this.pushAdSenseAds();
   },
   
   initializeSpeechSynthesis() {
@@ -332,7 +335,9 @@ const App = {
     this.DOM.correctStreakDisplay.textContent = this.sessionCorrectStreak.toString();
     // Updated to show total number of unique letters marked as 'reviewed'
     this.DOM.reviewedCountDisplay.textContent = this.letters.filter(l => l.reviewed).length.toString(); 
-  },
+  }
+
+  // Removed pushAdSenseAds method
 };
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -4,7 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn Malayalam Letters</title>
+    <title>Learn Malayalam Letters | Interactive Alphabet Quiz & Audio</title>
+    <meta name="description" content="Learn to read and write Malayalam letters with our interactive quiz app. Features spaced repetition, audio pronunciation for vowels, consonants, matras, chillu, and kootaksharam. Perfect for beginners and those looking to refresh their Malayalam alphabet skills. Created by Ajay Nair.">
+    <meta name="keywords" content="Malayalam, learn Malayalam, Malayalam alphabet, Malayalam letters, Malayalam script, interactive quiz, language learning, Indian languages, Ajay Nair, Malayalam vowels, Malayalam consonants, kootaksharam, chillu, matras, spaced repetition, audio pronunciation">
+    <meta name="author" content="Ajay Nair">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.learn-malayalam.org/">
+
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.learn-malayalam.org/">
+    <meta property="og:title" content="Learn Malayalam Letters | Interactive Alphabet Quiz & Audio">
+    <meta property="og:description" content="Interactive quiz app to master Malayalam letters with audio and spaced repetition.">
+    <meta property="og:image" content="https://www.learn-malayalam.org/og-image.jpg"> <!-- ACTION: Replace with actual image URL -->
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.learn-malayalam.org/">
+    <meta name="twitter:title" content="Learn Malayalam Letters | Interactive Alphabet Quiz & Audio">
+    <meta name="twitter:description" content="The fun way to learn the Malayalam alphabet with quizzes, audio, and SRS.">
+    <meta name="twitter:image" content="https://www.learn-malayalam.org/twitter-image.jpg"> <!-- ACTION: Replace with actual image URL -->
+
+    <link rel="icon" href="/favicon.ico" type="image/x-icon"> <!-- ACTION: Ensure favicon exists in public folder -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png"> <!-- ACTION: Add apple touch icon to public folder -->
+
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -189,20 +213,6 @@
             color: #2c3e50;
         }
 
-        .ad-placeholder { /* Style for ad placeholders if needed */
-            width: 100%;
-            min-height: 50px; /* AdSense will control the actual height */
-            margin: 20px 0;
-            text-align: center;
-            background-color: #f9f9f9; /* Placeholder background */
-            border: 1px dashed #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            color: #777;
-        }
-
         .about-me-card {
             text-align: center;
             margin-top: 25px; /* Space above the card */
@@ -264,13 +274,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- 
-      Google AdSense Script for Auto Ads.
-      Replace ca-pub-YOUR_ADSENSE_CLIENT_ID with your actual AdSense Publisher ID.
-    -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_CLIENT_ID"
-         crossorigin="anonymous"></script>
-
 <script type="importmap">
 {
   "imports": {
@@ -284,7 +287,7 @@
     <div id="root"> <!-- Vite typically mounts to an element with id="root" -->
         <div class="app-container">
             <header>
-                <h1>മലയാള അക്ഷരമാല പഠിക്കാം</h1>
+                <h1><span lang="ml-IN">മലയാള അക്ഷരമാല പഠിക്കാം</span></h1>
                 <h2>Learn Malayalam Alphabets</h2>
             </header>
             <main>
@@ -307,22 +310,6 @@
                     <p>Reviewed Today: <span id="reviewed-count">0</span>/<span id="total-letters-count">0</span></p>
                 </div>
 
-                <!-- Placeholder for a Manual AdSense Ad Unit -->
-                <!-- 
-                <div class="ad-placeholder">
-                    <p>Advertisement</p>
-                    <ins class="adsbygoogle"
-                         style="display:block"
-                         data-ad-client="ca-pub-YOUR_ADSENSE_CLIENT_ID" 
-                         data-ad-slot="YOUR_AD_UNIT_SLOT_ID" 
-                         data-ad-format="auto"
-                         data-full-width-responsive="true"></ins>
-                    <script>
-                         (adsbygoogle = window.adsbygoogle || []).push({});
-                    </script>
-                </div>
-                -->
-
             </main>
 
             <div class="about-me-card card">
@@ -335,10 +322,56 @@
             </div>
 
             <footer>
-                <p>Malayalam Learning App &copy; 2024</p>
+                <p>Malayalam Learning App &copy; 2024 Ajay Nair</p>
             </footer>
         </div>
     </div>
     <script type="module" src="/index.tsx"></script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Learn Malayalam Letters",
+      "url": "https://www.learn-malayalam.org/",
+      "description": "Interactive quiz app to master Malayalam letters with audio and spaced repetition.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://www.learn-malayalam.org/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "inLanguage": "en"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Learn Malayalam Letters App",
+      "operatingSystem": "WebApp",
+      "applicationCategory": "EducationApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Learn to read and write Malayalam letters with our interactive quiz app. Features spaced repetition, audio pronunciation for vowels, consonants, matras, chillu, and kootaksharam.",
+      "url": "https://www.learn-malayalam.org/",
+      "mainEntityOfPage": "https://www.learn-malayalam.org/",
+      "image": "https://www.learn-malayalam.org/og-image.jpg", <!-- ACTION: Replace with actual image URL, ensure it's in public folder -->
+      "author": {
+        "@type": "Person",
+        "name": "Ajay Nair",
+        "url": "mailto:ajaynair59@gmail.com" // Optional: Or a profile URL
+      },
+      "publisher": {
+        "@type": "Person", // Or Organization if applicable
+        "name": "Ajay Nair"
+      },
+      "keywords": "Malayalam, learn Malayalam, Malayalam alphabet, Malayalam letters, Malayalam script, interactive quiz, language learning",
+      "inLanguage": "en",
+      "learningResourceType": "Spaced Repetition System",
+      "educationalUse": "Language Learning"
+    }
+    </script>
 </body>
 </html>
