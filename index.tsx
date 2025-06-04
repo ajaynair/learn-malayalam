@@ -1,6 +1,4 @@
-// Removed: import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-
-interface MalayalamLetter { // Interface updated: no example fields
+interface MalayalamLetter {
   id: string;
   character: string;
   displayCharacterOverride?: string;
@@ -29,10 +27,10 @@ const initialLettersData: Omit<MalayalamLetter, 'lastReviewedTimestamp' | 'nextR
   { id: 'v06', character: 'ഊ', category: 'vowel', transliteration: 'oo' },
   { id: 'v07', character: 'ഋ', category: 'vowel', transliteration: 'ru' , audioOverride: 'ഋ'},
   { id: 'v08', character: 'എ', category: 'vowel', transliteration: 'e' },
-  { id: 'v09', character: 'ഏ', category: 'vowel', transliteration: 'E' },
+  { id: 'v09', character: 'ഏ', category: 'vowel', transliteration: 'ee' },
   { id: 'v10', character: 'ഐ', category: 'vowel', transliteration: 'ai' },
   { id: 'v11', character: 'ഒ', category: 'vowel', transliteration: 'o' },
-  { id: 'v12', character: 'ഓ', category: 'vowel', transliteration: 'O' },
+  { id: 'v12', character: 'ഓ', category: 'vowel', transliteration: 'oo' },
   { id: 'v13', character: 'ഔ', category: 'vowel', transliteration: 'au' },
   { id: 'v14', character: 'അം', category: 'vowel', transliteration: 'am' }, // Anusvara
   { id: 'v15', character: 'അഃ', category: 'vowel', transliteration: 'ah' }, // Visarga
@@ -55,8 +53,8 @@ const initialLettersData: Omit<MalayalamLetter, 'lastReviewedTimestamp' | 'nextR
   { id: 'c15', character: 'ണ', category: 'consonant', transliteration: 'Na' },
   { id: 'c16', character: 'ത', category: 'consonant', transliteration: 'tha' },
   { id: 'c17', character: 'ഥ', category: 'consonant', transliteration: 'thha' },
-  { id: 'c18', character: 'ദ', category: 'consonant', transliteration: 'dha' },
-  { id: 'c19', character: 'ധ', category: 'consonant', transliteration: 'dhhna' },
+  { id: 'c18', character: 'ദ', category: 'consonant', transliteration: 'da' },
+  { id: 'c19', character: 'ധ', category: 'consonant', transliteration: 'dha' },
   { id: 'c20', character: 'ന', category: 'consonant', transliteration: 'na' },
   { id: 'c21', character: 'പ', category: 'consonant', transliteration: 'pa' },
   { id: 'c22', character: 'ഫ', category: 'consonant', transliteration: 'pha' },
@@ -68,32 +66,32 @@ const initialLettersData: Omit<MalayalamLetter, 'lastReviewedTimestamp' | 'nextR
   { id: 'c28', character: 'ല', category: 'consonant', transliteration: 'la' },
   { id: 'c29', character: 'വ', category: 'consonant', transliteration: 'va' },
   { id: 'c30', character: 'ശ', category: 'consonant', transliteration: 'sha' },
-  { id: 'c31', character: 'ഷ', category: 'consonant', transliteration: 'Sha' },
+  { id: 'c31', character: 'ഷ', category: 'consonant', transliteration: 'zha' },
   { id: 'c32', character: 'സ', category: 'consonant', transliteration: 'sa' },
   { id: 'c33', character: 'ഹ', category: 'consonant', transliteration: 'ha' },
-  { id: 'c34', character: 'ള', category: 'consonant', transliteration: 'La' },
+  { id: 'c34', character: 'ള', category: 'consonant', transliteration: 'la' },
   { id: 'c35', character: 'ഴ', category: 'consonant', transliteration: 'zha' },
-  { id: 'c36', character: 'റ', category: 'consonant', transliteration: 'Ra' },
+  { id: 'c36', character: 'റ', category: 'consonant', transliteration: 'ra' },
 
   // Chillu Aksharam (ചില്ലക്ഷരങ്ങൾ)
   { id: 'ch1', character: 'ൽ', category: 'chillu', transliteration: 'l' },
   { id: 'ch2', character: 'ൻ', category: 'chillu', transliteration: 'n' },
   { id: 'ch3', character: 'ർ', category: 'chillu', transliteration: 'r' },
   { id: 'ch4', character: 'ൾ', category: 'chillu', transliteration: 'L' },
-  { id: 'ch5', character: 'ൺ', category: 'chillu', transliteration: 'N' },
+  { id: 'ch5', character: 'ൺ', category: 'chillu', transliteration: 'n' },
 
   // Matras (Vowel Diacritics - സ്വരചിഹ്നങ്ങൾ)
   { id: 'm01', character: 'ാ', displayCharacterOverride: 'കാ', category: 'matra', transliteration: 'aa' },
-  { id: 'm02', character: 'ി', displayCharacterOverride: 'കി', category: 'matra', transliteration: 'i' },
+  { id: 'm02', character: 'ി', displayCharacterOverride: 'കി', category: 'matra', transliteration: 'e' },
   { id: 'm03', character: 'ീ', displayCharacterOverride: 'കീ', category: 'matra', transliteration: 'ee' },
   { id: 'm04', character: 'ു', displayCharacterOverride: 'കു', category: 'matra', transliteration: 'u' },
   { id: 'm05', character: 'ൂ', displayCharacterOverride: 'കൂ', category: 'matra', transliteration: 'oo' },
   { id: 'm06', character: 'ൃ', displayCharacterOverride: 'കൃ', category: 'matra', transliteration: 'ru' },
   { id: 'm07', character: 'െ', displayCharacterOverride: 'കെ', category: 'matra', transliteration: 'e' },
-  { id: 'm08', character: 'േ', displayCharacterOverride: 'കേ', category: 'matra', transliteration: 'E' },
+  { id: 'm08', character: 'േ', displayCharacterOverride: 'കേ', category: 'matra', transliteration: 'ee' },
   { id: 'm09', character: 'ൈ', displayCharacterOverride: 'കൈ', category: 'matra', transliteration: 'ai' },
   { id: 'm10', character: 'ൊ', displayCharacterOverride: 'കൊ', category: 'matra', transliteration: 'o' },
-  { id: 'm11', character: 'ോ', displayCharacterOverride: 'കോ', category: 'matra', transliteration: 'O' },
+  { id: 'm11', character: 'ോ', displayCharacterOverride: 'കോ', category: 'matra', transliteration: 'oo' },
   { id: 'm12', character: 'ൌ', displayCharacterOverride: 'കൗ', category: 'matra', transliteration: 'au' },
   { id: 'm13', character: 'ം', displayCharacterOverride: 'കം', category: 'matra', transliteration: 'am' },
   { id: 'm14', character: 'ഃ', displayCharacterOverride: 'കഃ', category: 'matra', transliteration: 'ah' },
@@ -109,7 +107,7 @@ const initialLettersData: Omit<MalayalamLetter, 'lastReviewedTimestamp' | 'nextR
   { id: 'k08', character: 'ത്ത', category: 'kootaksharam', transliteration: 'ththa' },
   { id: 'k09', character: 'ന്ത', category: 'kootaksharam', transliteration: 'ntha' },
   { id: 'k10', character: 'പ്പ', category: 'kootaksharam', transliteration: 'ppa' },
-  { id: 'k11', character: 'മ്പ', category: 'kootaksharam', transliteration: 'mpa' },
+  { id: 'k11', character: 'മ്പ', category: 'kootaksharam', transliteration: 'mba' },
   { id: 'k12', character: 'മ്മ', category: 'kootaksharam', transliteration: 'mma' },
   { id: 'k13', character: 'യ്യ', category: 'kootaksharam', transliteration: 'yya' },
   { id: 'k14', character: 'ല്ല', category: 'kootaksharam', transliteration: 'lla' },
@@ -150,15 +148,12 @@ const App = {
   },
 
   init() {
-    // Removed: generateExampleBtn event listener
     this.DOM.nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
     
     this.warmUpSpeechSynthesis();
     this.loadLetters();
     this.updateProgressDisplay();
 
-    // Removed: GoogleGenAI initialization block
-    
     this.nextQuestion();
   },
 
@@ -201,7 +196,6 @@ const App = {
     this.DOM.totalLettersCountDisplay.textContent = this.letters.length.toString();
   },
 
-  // Removed letterData parameter from here
   getDefaultSRDFields(): Pick<MalayalamLetter, 'lastReviewedTimestamp' | 'nextReviewTimestamp' | 'intervalDays' | 'easeFactor' | 'correctStreak' | 'totalCorrect' | 'totalIncorrect' | 'reviewed'> {
     return {
         lastReviewedTimestamp: 0,
@@ -289,8 +283,6 @@ const App = {
     this.currentLetter.nextReviewTimestamp = Date.now() + (this.currentLetter.intervalDays * 24 * 60 * 60 * 1000);
     this.currentLetter.reviewed = true;
     
-    // Removed: clearing exampleWordMal, etc.
-
     this.reviewedTodayCount++; // This should ideally be calculated or reset daily for "reviewed today"
     this.saveLetters();
     this.updateProgressDisplay();
@@ -381,8 +373,6 @@ const App = {
     this.DOM.reviewedCountDisplay.textContent = this.reviewedTodayCount.toString();
     // Total letters count is set during loadLetters and should remain static unless letters are added/removed
   },
-
-  // Removed: generateNewExample function
 };
 
 document.addEventListener('DOMContentLoaded', () => {
