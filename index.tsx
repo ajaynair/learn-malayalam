@@ -138,6 +138,7 @@ const App = {
   speechSynthesisReady: false,
   speechSynthesisSupported: false,
   speechSynthesisUtterance: null as SpeechSynthesisUtterance | null,
+  voiceLoadTimeoutId: null as number | null,
 
 
   DOM: {
@@ -166,32 +167,36 @@ const App = {
         this.speechSynthesisUtterance = new SpeechSynthesisUtterance(); // Create one instance
 
         const loadVoices = () => {
+            if (this.voiceLoadTimeoutId !== null) {
+                clearTimeout(this.voiceLoadTimeoutId);
+                this.voiceLoadTimeoutId = null;
+            }
             this.voices = window.speechSynthesis.getVoices();
             if (this.voices.length > 0) {
                 this.speechSynthesisReady = true;
-                console.log('Speech synthesis voices loaded:', this.voices.map(v => ({name: v.name, lang: v.lang, default: v.default})));
-                // Removed dummy speak/cancel from here as it might interfere if onvoiceschanged fires late.
-                // The initial attempt to speak later should trigger the engine if needed.
+                console.log('Speech synthesis voices loaded successfully:', this.voices.map(v => ({name: v.name, lang: v.lang, default: v.default})));
             } else {
                 console.warn('No speech synthesis voices available yet (onvoiceschanged or initial load).');
+                // Keep speechSynthesisReady as false
             }
         };
 
-        // Some browsers load voices on 'onvoiceschanged', others might have them ready.
         window.speechSynthesis.onvoiceschanged = loadVoices;
         loadVoices(); // Attempt to load voices immediately
 
-        // Fallback: if onvoiceschanged doesn't fire or voices are slow
-        setTimeout(() => {
+        this.voiceLoadTimeoutId = window.setTimeout(() => {
+            this.voiceLoadTimeoutId = null; // Clear the ID as timeout has fired
             if (!this.speechSynthesisReady && this.voices.length === 0) {
-                console.warn('Retrying to load voices after timeout.');
-                loadVoices();
-                if (!this.speechSynthesisReady && this.voices.length === 0) {
+                console.warn('Retrying to load voices after timeout (2s).');
+                loadVoices(); // Try one last time
+                if (!this.speechSynthesisReady && this.voices.length === 0) { // Check after last attempt
                     console.error("Speech synthesis voices still not available after timeout.");
                     this.updateFeedback('Speech voices could not be loaded.', 'error');
+                } else if (this.speechSynthesisReady) {
+                     console.log('Speech synthesis voices loaded successfully after timeout.');
                 }
             }
-        }, 1500); // Check after 1.5 seconds
+        }, 2000); // Increased timeout
 
     } else {
         console.warn('Speech synthesis not supported by this browser.');
@@ -271,7 +276,6 @@ const App = {
     if (this.letters.length > 0) {
         const sortedByLastReviewed = [...this.letters].filter(l => l.reviewed).sort((a,b) => a.lastReviewedTimestamp - b.lastReviewedTimestamp);
         if (sortedByLastReviewed.length > 0) return sortedByLastReviewed[0];
-        // If for some reason no letters are marked reviewed (e.g. fresh start, all new), this won't be hit due to newLetters check
     }
     
     return null; // Should only happen if this.letters is empty
@@ -283,16 +287,13 @@ const App = {
 
     const distractors = this.letters.filter(l => l.id !== correctLetter.id && l.transliteration !== correctLetter.transliteration);
     
-    // Ensure we have enough unique distractors if possible
-    const numOptions = Math.min(4, this.letters.length > 0 ? this.letters.length : 1); // At least 1 option (correct one)
+    const numOptions = Math.min(4, this.letters.length > 0 ? this.letters.length : 1);
 
     while (options.size < numOptions && distractors.length > 0) {
         const randomIndex = Math.floor(Math.random() * distractors.length);
         options.add(distractors[randomIndex].transliteration);
-        distractors.splice(randomIndex, 1); // Ensure unique distractors
+        distractors.splice(randomIndex, 1); 
     }
-    // If not enough distractors (e.g., very few letters loaded), pad with generic placeholders if needed, though less ideal.
-    // For now, it will just show fewer options.
     return Array.from(options).sort(() => Math.random() - 0.5);
   },
 
@@ -314,8 +315,8 @@ const App = {
         if (this.currentLetter.correctStreak === 1) this.currentLetter.intervalDays = 1;
         else if (this.currentLetter.correctStreak === 2) this.currentLetter.intervalDays = 6;
         else this.currentLetter.intervalDays = Math.ceil(this.currentLetter.intervalDays * this.currentLetter.easeFactor);
-        this.currentLetter.intervalDays = Math.min(this.currentLetter.intervalDays, 365); // Cap interval
-        this.currentLetter.easeFactor += 0.1; // Slightly increase ease for correct answers
+        this.currentLetter.intervalDays = Math.min(this.currentLetter.intervalDays, 365); 
+        this.currentLetter.easeFactor += 0.1; 
 
     } else {
         this.sessionCorrectStreak = 0;
@@ -323,13 +324,13 @@ const App = {
         this.currentLetter.totalIncorrect++;
         this.updateFeedback(`Incorrect. This is ${this.currentLetter.displayCharacterOverride || this.currentLetter.character} (${this.currentLetter.transliteration}).`, 'incorrect');
         this.speakLetter(this.currentLetter, true); 
-        this.currentLetter.intervalDays = 1; // Reset interval on incorrect
-        this.currentLetter.easeFactor = Math.max(1.3, this.currentLetter.easeFactor - 0.2); // Decrease ease, floor at 1.3
+        this.currentLetter.intervalDays = 1; 
+        this.currentLetter.easeFactor = Math.max(1.3, this.currentLetter.easeFactor - 0.2); 
     }
 
     this.currentLetter.lastReviewedTimestamp = Date.now();
     this.currentLetter.nextReviewTimestamp = Date.now() + (this.currentLetter.intervalDays * 24 * 60 * 60 * 1000);
-    if(!this.currentLetter.reviewed) { // Only count as "reviewed today" on first review of a session or actual SRS review
+    if(!this.currentLetter.reviewed) { 
         this.reviewedTodayCount++; 
     }
     this.currentLetter.reviewed = true;
@@ -385,20 +386,13 @@ const App = {
         return;
     }
 
-    if (!this.speechSynthesisReady && this.voices.length === 0) {
-        // Final attempt to get voices if they weren't ready before
-        this.voices = window.speechSynthesis.getVoices();
-        if (this.voices.length > 0) {
-            this.speechSynthesisReady = true;
-            console.log('Speech synthesis voices loaded on demand before speak call:', this.voices.map(v => ({name: v.name, lang: v.lang, default: v.default})));
-        } else {
-            console.error('Cannot speak: No speech synthesis voices available even after on-demand check.');
-            this.updateFeedback('Speech voices not available.', 'error');
-            return;
-        }
+    // Strictly rely on speechSynthesisReady being true.
+    if (!this.speechSynthesisReady) {
+        console.error('Cannot speak: Speech synthesis voices are not ready or available.');
+        this.updateFeedback('Speech voices not ready. Try refreshing.', 'error');
+        return;
     }
     
-    // If speaking, cancel previous before starting new.
     if (window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel();
     }
@@ -408,7 +402,7 @@ const App = {
     utterance.lang = lang;
     utterance.rate = rate;
     utterance.pitch = pitch;
-    utterance.voice = null; // Reset voice before trying to set a new one
+    utterance.voice = null; 
 
     let selectedVoice = this.voices.find(voice => voice.lang === 'ml-IN');
     if (!selectedVoice) {
@@ -418,17 +412,11 @@ const App = {
     if (selectedVoice) {
         utterance.voice = selectedVoice;
     } else {
-        console.warn(`Malayalam voice ('ml-IN' or 'ml-') not found. Using browser default for lang '${lang}' or system default.`);
-        // Let the browser pick the best voice for the specified lang.
-        // If no specific voice for 'ml-IN' is found, this provides a fallback.
+        console.warn(`Malayalam voice ('ml-IN' or 'ml-') not found. Using browser default for lang '${lang}'.`);
     }
     
-    utterance.onstart = () => {
-        // console.log(`Speech started for: "${text}" with voice: ${utterance.voice ? utterance.voice.name : 'default'}`);
-    };
-    utterance.onend = () => {
-        // console.log(`Speech ended for: "${text}"`);
-    };
+    utterance.onstart = () => {};
+    utterance.onend = () => {};
     utterance.onerror = (event) => {
         console.error('Speech synthesis error:', event.error, event);
         let errorMsg = `Speech error: ${event.error}.`;
@@ -456,7 +444,8 @@ const App = {
   updateProgressDisplay() {
     this.DOM.scoreDisplay.textContent = this.score.toString();
     this.DOM.correctStreakDisplay.textContent = this.sessionCorrectStreak.toString();
-    this.DOM.reviewedCountDisplay.textContent = this.letters.filter(l => l.reviewed).length.toString(); // Show total reviewed, not just "today"
+    // Updated to show total number of unique letters marked as 'reviewed'
+    this.DOM.reviewedCountDisplay.textContent = this.letters.filter(l => l.reviewed).length.toString(); 
   },
 };
 
@@ -475,4 +464,3 @@ document.addEventListener('DOMContentLoaded', () => {
         App.init();
     }
 });
-
