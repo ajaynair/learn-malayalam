@@ -15,7 +15,7 @@
     <meta property="og:url" content="https://www.learn-malayalam.org/">
     <meta property="og:title" content="Learn Malayalam Letters & Words | Interactive Quiz & Audio">
     <meta property="og:description" content="Interactive quiz app to master Malayalam letters and simple words with audio and spaced repetition.">
-    <meta property="og:image" content="https://www.learn-malayalam.org/og-image.jpg"> 
+    <meta property="og:image" content="https://www.learn-malayalam.org/og-image.jpg">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
@@ -26,6 +26,16 @@
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BBVPFJN51V"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BBVPFJN51V');
+    </script>
 
     <script type="importmap">
     {
@@ -89,14 +99,14 @@
             flex-direction: column;
             gap: 20px;
         }
-        
+
         .card {
             background-color: #ffffff;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
-        
+
         .mode-switcher {
             text-align: center;
             /* margin-bottom: 20px; removed as main has gap */
@@ -138,13 +148,13 @@
             flex: 3; /* Takes more space */
             min-width: 0; /* Prevents overflow if content is too wide */
         }
-        
+
         .quiz-layout-wrapper .progress-display.card {
             flex: 1; /* Takes less space, acts as sidebar */
             /* max-width: 250px; /* Optional: constrain sidebar width */
             /* .card class provides padding, background, border-radius */
         }
-        
+
         .quiz-area .item-display {
             font-family: 'Noto Sans Malayalam', sans-serif;
             font-size: 3.5rem;
@@ -236,7 +246,7 @@
         .control-buttons button:hover {
             background-color: #2980b9;
         }
-        
+
         .progress-display {
             display: flex;
             flex-direction: column; /* Stat items (Score, Streak) stack vertically */
@@ -245,36 +255,36 @@
         }
 
         .progress-display div { /* Each stat item (e.g., Score block) */
-            display: flex; 
+            display: flex;
             justify-content: flex-start; /* Align number and label to the start */
             align-items: baseline;
             gap: 8px; /* Space between number and label */
-            padding: 6px 0; 
+            padding: 6px 0;
         }
-        
+
         .progress-display strong { /* The number */
             font-size: 1.4em;
             color: #007bff;
             min-width: 30px; /* Give some space for numbers */
             text-align: right; /* Align numbers to the right */
         }
-        
+
         .progress-display span { /* The label */
             font-size: 0.9em;
             color: #6c757d;
             white-space: nowrap; /* Prevent label wrapping */
         }
-        
+
         .about-me-card {
-            background-color: #fdfaf6; 
+            background-color: #fdfaf6;
             color: #4a4a4a;
-            border-left: 5px solid #ffaf40; 
+            border-left: 5px solid #ffaf40;
             /* margin-top: 30px; removed as main has gap */
             padding: 20px 25px;
         }
 
         .about-me-card h3 {
-            color: #d9534f; 
+            color: #d9534f;
             font-family: 'Georgia', serif;
             font-size: 1.6em;
             margin-top: 0;
@@ -288,7 +298,7 @@
         }
 
         .about-me-card a {
-            color: #ffaf40; 
+            color: #ffaf40;
             text-decoration: none;
             font-weight: bold;
         }
@@ -308,7 +318,7 @@
             color: #777;
             font-size: 0.9em;
         }
-        
+
         /* Responsive adjustments */
         @media (max-width: 768px) { /* Adjusted breakpoint for major layout change */
             .app-container {
@@ -323,7 +333,7 @@
                 width: 100%;
                 flex: auto; /* Reset flex sizing */
             }
-            
+
             .quiz-layout-wrapper .progress-display.card div { /* Stat items on mobile */
                 justify-content: center; /* Center the number+label pair */
             }
@@ -341,7 +351,7 @@
                 padding: 15px;
             }
             .quiz-area .item-display {
-                font-size: 2.5rem; 
+                font-size: 2.5rem;
                 min-height: 80px;
             }
             .options {
@@ -354,12 +364,12 @@
 
             /* .progress-display was here, now handled by .quiz-layout-wrapper changes */
             /* and general .progress-display styles */
-            
+
             .progress-display strong { /* Specific font size for very small screens */
-                font-size: 1.3em; 
+                font-size: 1.3em;
             }
             .progress-display span { /* Specific font size for very small screens */
-                font-size: 0.85em; 
+                font-size: 0.85em;
             }
 
             header h1 {
@@ -445,7 +455,7 @@
                     </div>
                 </section>
             </div>
-            
+
             <div class="about-me-card card">
                 <h3><span class="emoji" role="img" aria-label="Waving hand">👋</span> Hey There, Language Adventurer!</h3>
                 <p>
@@ -453,11 +463,11 @@
                     Yep, just one person fueled by a passion for Malayalam and a whole lot of <span class="emoji" role="img" aria-label="Coffee">☕</span> (and maybe a few late nights <span class="emoji" role="img" aria-label="Owl">🦉</span>).
                 </p>
                 <p>
-                    The mission? To make learning the beautiful Malayalam script and basic words a bit more fun, a tad less daunting, and hopefully, super effective with the magic of spaced repetition! 
+                    The mission? To make learning the beautiful Malayalam script and basic words a bit more fun, a tad less daunting, and hopefully, super effective with the magic of spaced repetition!
                     Think of it as your friendly digital guide to mastering those elegant swirls and curls, and some foundational vocabulary. <span class="emoji" role="img" aria-label="Sparkles">✨</span>
                 </p>
                 <p>
-                    Got feedback, found a mischievous bug <span class="emoji" role="img" aria-label="Bug">🐛</span>, or just want to say "ഹായ്!" (that's "Hi!" in Malayalam)? 
+                    Got feedback, found a mischievous bug <span class="emoji" role="img" aria-label="Bug">🐛</span>, or just want to say "ഹായ്!" (that's "Hi!" in Malayalam)?
                     Feel free to drop a line at: <a href="mailto:ajaynair59@gmail.com">ajaynair59 [at] gmail [dot] com</a>.
                 </p>
                 <p>Happy learning, or as we say, "നന്നായി പഠിക്കൂ!" (Nannaayi padhikku!) <span class="emoji" role="img" aria-label="Smiling face with sunglasses">😎</span></p>
@@ -498,10 +508,10 @@
       "applicationCategory": "EducationalApplication",
       "offers": {
         "@type": "Offer",
-        "price": "0" 
+        "price": "0"
       },
       "description": "An interactive web application designed to help users learn the Malayalam alphabet (vowels, consonants, ligatures, etc.) and simple Malayalam words through quizzes, audio pronunciation, and spaced repetition system.",
-      "inLanguage": "en", 
+      "inLanguage": "en",
       "learningResourceType": ["quiz", "language learning tool", "vocabulary builder"],
       "author": {
         "@type": "Person",
