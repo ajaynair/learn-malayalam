@@ -15,7 +15,6 @@ const App = {
   quizItems: [] as QuizItem[],
   currentItem: null as QuizItem | null,
   options: [] as string[],
-  // Removed global score and sessionCorrectStreak
   sessionStats: {
     letters: { score: 0, streak: 0 } as SessionModeStats,
     words: { score: 0, streak: 0 } as SessionModeStats,
@@ -44,19 +43,30 @@ const App = {
     totalItemsLabel: document.getElementById('total-items-label')!,
     lettersModeBtn: document.getElementById('letters-mode-btn') as HTMLButtonElement,
     wordsModeBtn: document.getElementById('words-mode-btn') as HTMLButtonElement,
+    headerCoffeeBtn: document.getElementById('header-coffee-btn') as HTMLButtonElement,
   },
 
   init() {
     this.DOM.nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
     this.DOM.lettersModeBtn.addEventListener('click', () => this.switchQuizMode('letters'));
     this.DOM.wordsModeBtn.addEventListener('click', () => this.switchQuizMode('words'));
+    if(this.DOM.headerCoffeeBtn) {
+        this.DOM.headerCoffeeBtn.addEventListener('click', () => this.scrollToSupportSection());
+    }
     
     this.initializeSpeechSynthesis();
     this.loadQuizMode(); 
     this.updateModeButtonStyles();
     this.loadQuizData(); 
-    this.updateProgressDisplay(); // Initial display will use default 0s for the loaded mode
+    this.updateProgressDisplay(); 
     this.nextQuestion();
+  },
+
+  scrollToSupportSection() {
+    const supportSection = document.querySelector('.support-me-card');
+    if (supportSection) {
+        supportSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   },
   
   initializeSpeechSynthesis() {
@@ -118,19 +128,12 @@ const App = {
   switchQuizMode(newMode: QuizMode) {
     if (this.quizMode === newMode) return;
     
-    // Save current mode's session stats (if needed for future persistence, but not explicitly done here)
-    // The current structure naturally preserves them in memory.
-
     this.quizMode = newMode;
     this.saveQuizMode();
     this.updateModeButtonStyles();
     
-    // DO NOT reset session-specific stats here. They are now mode-specific.
-    // this.sessionStats[this.quizMode].score = 0; // This would reset the new mode's score
-    // this.sessionStats[this.quizMode].streak = 0; // This would reset the new mode's streak
-    
     this.loadQuizData(); 
-    this.updateProgressDisplay(); // This will now display the correct score/streak for the newMode
+    this.updateProgressDisplay(); 
     this.nextQuestion();
     this.updateFeedback(`Switched to ${newMode} quiz. Choose the correct option.`, 'info');
   },
@@ -411,6 +414,7 @@ const App = {
     this.DOM.correctStreakDisplay.textContent = currentModeStats.streak.toString();
     this.DOM.reviewedCountDisplay.textContent = this.quizItems.filter(item => item.reviewed).length.toString(); 
   }
+  
 };
 
 document.addEventListener('DOMContentLoaded', () => {

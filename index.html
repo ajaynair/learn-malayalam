@@ -80,6 +80,8 @@
             margin-bottom: 25px;
             border-bottom: 1px solid #e0e0e0;
             padding-bottom: 15px;
+            position: relative; /* For positioning the coffee button */
+            padding-right: 45px; /* Space for the coffee button icon */
         }
 
         header h1 {
@@ -93,6 +95,30 @@
             font-weight: normal;
             font-size: 1.1em;
         }
+        
+        .header-coffee-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 6px 8px; /* Adjusted padding for icon */
+            font-size: 1.2rem; /* Increased font size for emoji */
+            line-height: 1; /* Helps center emoji */
+            background-color: #FFBF00; 
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .header-coffee-btn:hover {
+            background-color: #e6ac00;
+            transform: translateY(-1px);
+        }
+        .header-coffee-btn:active {
+            transform: translateY(0px);
+        }
+
 
         main {
             display: flex;
@@ -109,7 +135,6 @@
 
         .mode-switcher {
             text-align: center;
-            /* margin-bottom: 20px; removed as main has gap */
             padding: 15px;
         }
         .mode-switcher h3 {
@@ -140,19 +165,16 @@
 
         .quiz-layout-wrapper {
             display: flex;
-            gap: 20px; /* Space between quiz area and progress display */
-            /* margin-bottom: 20px; /* Replaced by main's gap */
+            gap: 20px; 
         }
 
         .quiz-layout-wrapper .quiz-area {
-            flex: 3; /* Takes more space */
-            min-width: 0; /* Prevents overflow if content is too wide */
+            flex: 3; 
+            min-width: 0; 
         }
 
         .quiz-layout-wrapper .progress-display.card {
-            flex: 1; /* Takes less space, acts as sidebar */
-            /* max-width: 250px; /* Optional: constrain sidebar width */
-            /* .card class provides padding, background, border-radius */
+            flex: 1; 
         }
 
         .quiz-area .item-display {
@@ -240,7 +262,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.2s;
-            display: none; /* Hidden by default */
+            display: none; 
         }
 
         .control-buttons button:hover {
@@ -249,37 +271,35 @@
 
         .progress-display {
             display: flex;
-            flex-direction: column; /* Stat items (Score, Streak) stack vertically */
-            gap: 8px; /* Space between individual stat blocks */
-            /* background-color, border-radius, padding from .card */
+            flex-direction: column; 
+            gap: 8px; 
         }
 
-        .progress-display div { /* Each stat item (e.g., Score block) */
+        .progress-display div { 
             display: flex;
-            justify-content: flex-start; /* Align number and label to the start */
+            justify-content: flex-start; 
             align-items: baseline;
-            gap: 8px; /* Space between number and label */
+            gap: 8px; 
             padding: 6px 0;
         }
 
-        .progress-display strong { /* The number */
+        .progress-display strong { 
             font-size: 1.4em;
             color: #007bff;
-            min-width: 30px; /* Give some space for numbers */
-            text-align: right; /* Align numbers to the right */
+            min-width: 30px; 
+            text-align: right; 
         }
 
-        .progress-display span { /* The label */
+        .progress-display span { 
             font-size: 0.9em;
             color: #6c757d;
-            white-space: nowrap; /* Prevent label wrapping */
+            white-space: nowrap; 
         }
 
         .about-me-card {
             background-color: #fdfaf6;
             color: #4a4a4a;
             border-left: 5px solid #ffaf40;
-            /* margin-top: 30px; removed as main has gap */
             padding: 20px 25px;
         }
 
@@ -307,8 +327,63 @@
             text-decoration: underline;
         }
 
-        .about-me-card .emoji {
+        .about-me-card .emoji, .support-me-card .emoji { 
             font-size: 1.2em;
+        }
+        
+        .support-me-card {
+            background-color: #fff9e6; 
+            text-align: center;
+            border-left: 5px solid #ffc107; 
+            padding: 20px 25px;
+        }
+
+        .support-me-card h3 {
+            color: #8B4513; 
+            font-family: 'Georgia', serif;
+            font-size: 1.6em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .support-me-card p {
+            font-size: 1.05em;
+            line-height: 1.7;
+            color: #5D4037; 
+            margin-bottom: 20px;
+        }
+        
+        .buy-coffee-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #FFBF00; 
+            color: #333; 
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 1.1em;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px; 
+        }
+
+        .buy-coffee-btn .emoji {
+            margin-right: 8px; 
+        }
+
+        .buy-coffee-btn:hover {
+            background-color: #e6ac00; 
+            transform: scale(1.03);
+        }
+        .buy-coffee-btn:active {
+            transform: scale(0.99); 
+        }
+
+        .support-me-card .thanks-note {
+            font-size: 0.95em;
+            color: #795548; 
+            margin-top: 15px; 
+            margin-bottom: 0; 
         }
 
 
@@ -320,26 +395,32 @@
         }
 
         /* Responsive adjustments */
-        @media (max-width: 768px) { /* Adjusted breakpoint for major layout change */
+        @media (max-width: 768px) { 
             .app-container {
-                 max-width: 700px; /* Revert to previous max-width if stacking */
+                 max-width: 700px; 
             }
             .quiz-layout-wrapper {
                 flex-direction: column;
-                gap: 15px; /* Adjust gap for vertical stacking */
+                gap: 15px; 
             }
 
             .quiz-layout-wrapper .progress-display.card {
                 width: 100%;
-                flex: auto; /* Reset flex sizing */
+                flex: auto; 
             }
 
-            .quiz-layout-wrapper .progress-display.card div { /* Stat items on mobile */
-                justify-content: center; /* Center the number+label pair */
+            .quiz-layout-wrapper .progress-display.card div { 
+                justify-content: center; 
             }
              .progress-display strong {
-                min-width: auto; /* Reset min-width for numbers on mobile if centered*/
-                text-align: left; /* Reset text-align if centered */
+                min-width: auto; 
+                text-align: left; 
+            }
+            .header-coffee-btn {
+                font-size: 1rem; /* Slightly smaller icon */
+                padding: 5px 7px; /* Adjust padding */
+                top: 5px;
+                right: 5px;
             }
         }
 
@@ -362,35 +443,43 @@
                 font-size: 0.9rem;
             }
 
-            /* .progress-display was here, now handled by .quiz-layout-wrapper changes */
-            /* and general .progress-display styles */
-
-            .progress-display strong { /* Specific font size for very small screens */
+            .progress-display strong { 
                 font-size: 1.3em;
             }
-            .progress-display span { /* Specific font size for very small screens */
+            .progress-display span { 
                 font-size: 0.85em;
             }
 
+            header {
+                padding-bottom: 10px; 
+            }
             header h1 {
-                font-size: 1.8em;
+                font-size: 1.5em; 
+                margin-bottom: 3px;
             }
             header h2 {
-                font-size: 1em;
+                font-size: 0.9em;
             }
-            .about-me-card {
-                /* margin-top: 20px; removed */
+            .header-coffee-btn { 
+                font-size: 0.9rem; /* Even smaller icon */
+                padding: 4px 6px; /* Adjust padding */
+            }
+            .about-me-card, .support-me-card {
                 padding: 15px 20px;
             }
-            .about-me-card h3 {
+            .about-me-card h3, .support-me-card h3 {
                 font-size: 1.4em;
             }
-            .about-me-card p {
+            .about-me-card p, .support-me-card p {
                 font-size: 1em;
             }
             .mode-switcher button {
                 padding: 8px 12px;
                 font-size: 0.9rem;
+            }
+             .buy-coffee-btn {
+                padding: 10px 20px;
+                font-size: 1em;
             }
         }
 
@@ -413,6 +502,7 @@
 <body>
     <div class="app-container">
         <header>
+            <button id="header-coffee-btn" class="header-coffee-btn" title="Support the Developer">☕</button>
             <h1><span lang="ml-IN">മലയാള അക്ഷരമാല പഠിക്കാം</span></h1>
             <h2>Learn the Malayalam Alphabet & Words</h2>
         </header>
@@ -472,6 +562,20 @@
                 </p>
                 <p>Happy learning, or as we say, "നന്നായി പഠിക്കൂ!" (Nannaayi padhikku!) <span class="emoji" role="img" aria-label="Smiling face with sunglasses">😎</span></p>
             </div>
+
+            <section class="support-me-card card">
+                <h3>Enjoying Your Malayalam Adventure? <span class="emoji" role="img" aria-label="Rocket">🚀</span></h3>
+                <p>
+                    This app is brewed with passion (and lots of virtual <span class="emoji" role="img" aria-label="Coffee cup">☕</span>) to help you master Malayalam.
+                    If you find it helpful and want to support its continued development and new features, a small coffee donation would be amazing!
+                </p>
+                <a href="https://buymeacoffee.com/ajaynair" target="_blank" rel="noopener noreferrer" class="buy-coffee-btn">
+                    <span class="emoji" role="img" aria-label="Coffee cup">☕</span> Buy Me a Coffee
+                </a>
+                <p class="thanks-note">
+                    Your support keeps this project brewing strong! നന്ദി! (Thank you!) <span class="emoji" role="img" aria-label="Praying hands">🙏</span>
+                </p>
+            </section>
         </main>
         <footer>
             <p>&copy; <span id="current-year"></span> Learn Malayalam by Ajay Nair. All rights reserved.</p>
