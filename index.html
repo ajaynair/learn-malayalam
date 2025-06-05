@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn Malayalam Letters | Interactive Alphabet Quiz & Audio</title>
-    <meta name="description" content="Learn to read and write Malayalam letters with our interactive quiz app. Features spaced repetition, audio pronunciation for vowels, consonants, matras, chillu, and kootaksharam. Perfect for beginners and those looking to refresh their Malayalam alphabet skills. Created by Ajay Nair.">
-    <meta name="keywords" content="Malayalam, learn Malayalam, Malayalam alphabet, Malayalam letters, Malayalam script, interactive quiz, language learning, Indian languages, Ajay Nair, Malayalam vowels, Malayalam consonants, kootaksharam, chillu, matras, spaced repetition, audio pronunciation">
+    <title>Learn Malayalam Letters & Words | Interactive Quiz & Audio</title>
+    <meta name="description" content="Learn to read Malayalam letters and simple words with our interactive quiz app. Features spaced repetition and audio pronunciation. Perfect for beginners. Created by Ajay Nair.">
+    <meta name="keywords" content="Malayalam, learn Malayalam, Malayalam alphabet, Malayalam letters, Malayalam words, Malayalam script, interactive quiz, language learning, Indian languages, Ajay Nair, spaced repetition, audio pronunciation">
     <meta name="author" content="Ajay Nair">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.learn-malayalam.org/">
@@ -13,19 +13,19 @@
     <!-- Open Graph / Facebook Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.learn-malayalam.org/">
-    <meta property="og:title" content="Learn Malayalam Letters | Interactive Alphabet Quiz & Audio">
-    <meta property="og:description" content="Interactive quiz app to master Malayalam letters with audio and spaced repetition.">
-    <meta property="og:image" content="https://www.learn-malayalam.org/og-image.jpg"> <!-- ACTION: Ensure og-image.jpg exists in public -->
+    <meta property="og:title" content="Learn Malayalam Letters & Words | Interactive Quiz & Audio">
+    <meta property="og:description" content="Interactive quiz app to master Malayalam letters and simple words with audio and spaced repetition.">
+    <meta property="og:image" content="https://www.learn-malayalam.org/og-image.jpg"> 
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://www.learn-malayalam.org/">
-    <meta name="twitter:title" content="Learn Malayalam Letters | Interactive Alphabet Quiz & Audio">
-    <meta name="twitter:description" content="The fun way to learn the Malayalam alphabet with quizzes, audio, and SRS.">
-    <meta name="twitter:image" content="https://www.learn-malayalam.org/twitter-image.jpg"> <!-- ACTION: Ensure twitter-image.jpg exists in public -->
+    <meta name="twitter:title" content="Learn Malayalam Letters & Words | Interactive Quiz & Audio">
+    <meta name="twitter:description" content="The fun way to learn the Malayalam alphabet and words with quizzes, audio, and SRS.">
+    <meta name="twitter:image" content="https://www.learn-malayalam.org/twitter-image.jpg">
 
-    <link rel="icon" href="/favicon.ico" type="image/x-icon"> <!-- ACTION: Ensure favicon.ico exists in public folder -->
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png"> <!-- ACTION: Ensure apple-touch-icon.png exists in public folder -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
     <script type="importmap">
     {
@@ -37,6 +37,10 @@
     </script>
 
     <style>
+        html {
+            color-scheme: light; /* Explicitly set the color scheme to light */
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f4f8;
@@ -52,7 +56,7 @@
 
         .app-container {
             width: 100%;
-            max-width: 700px;
+            max-width: 900px; /* Increased max-width for sidebar layout */
             background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
@@ -91,10 +95,58 @@
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
+        
+        .mode-switcher {
+            text-align: center;
+            /* margin-bottom: 20px; removed as main has gap */
+            padding: 15px;
+        }
+        .mode-switcher h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.2em;
+        }
+        .mode-switcher button {
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            margin: 0 5px;
+            border: 1px solid #3498db;
+            background-color: #f0f8ff;
+            color: #3498db;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .mode-switcher button:hover {
+            background-color: #d6eaf8;
+        }
+        .mode-switcher button.active-mode {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
 
-        .quiz-area .letter {
+        .quiz-layout-wrapper {
+            display: flex;
+            gap: 20px; /* Space between quiz area and progress display */
+            /* margin-bottom: 20px; /* Replaced by main's gap */
+        }
+
+        .quiz-layout-wrapper .quiz-area {
+            flex: 3; /* Takes more space */
+            min-width: 0; /* Prevents overflow if content is too wide */
+        }
+        
+        .quiz-layout-wrapper .progress-display.card {
+            flex: 1; /* Takes less space, acts as sidebar */
+            /* max-width: 250px; /* Optional: constrain sidebar width */
+            /* .card class provides padding, background, border-radius */
+        }
+        
+        .quiz-area .item-display {
             font-family: 'Noto Sans Malayalam', sans-serif;
-            font-size: 4rem; /* Adjusted for potentially wider kootaksharam */
+            font-size: 3.5rem;
             color: #3498db;
             text-align: center;
             margin-bottom: 20px;
@@ -106,6 +158,7 @@
             align-items: center;
             justify-content: center;
             overflow-wrap: break-word;
+            line-height: 1.3;
         }
 
         .options {
@@ -162,39 +215,6 @@
         .feedback.error { color: #e74c3c; }
 
 
-        .example-area {
-            /* This area will no longer be actively used or shown */
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 6px;
-            border: 1px solid #eee;
-            text-align: center;
-        }
-        .example-area img {
-            max-width: 100px;
-            max-height: 100px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            background-color: #eee; /* Placeholder background */
-            display: block; /* Center image */
-            margin-left: auto;
-            margin-right: auto;
-            border: 1px solid #ccc;
-        }
-        .example-area p {
-            font-size: 0.9em;
-            color: #666;
-            margin: 0;
-        }
-        .example-area .generating-text {
-            font-style: italic;
-        }
-        .example-area .error-text {
-            color: #d32f2f;
-        }
-
-
         .control-buttons {
             text-align: center;
         }
@@ -218,41 +238,42 @@
         
         .progress-display {
             display: flex;
-            justify-content: space-around;
-            align-items: center;
-            text-align: center;
-            padding: 15px;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            flex-direction: column; /* Stat items (Score, Streak) stack vertically */
+            gap: 8px; /* Space between individual stat blocks */
+            /* background-color, border-radius, padding from .card */
         }
 
-        .progress-display div {
-            flex: 1;
-            padding: 0 10px;
+        .progress-display div { /* Each stat item (e.g., Score block) */
+            display: flex; 
+            justify-content: flex-start; /* Align number and label to the start */
+            align-items: baseline;
+            gap: 8px; /* Space between number and label */
+            padding: 6px 0; 
         }
         
-        .progress-display strong {
-            display: block;
-            font-size: 1.5em;
+        .progress-display strong { /* The number */
+            font-size: 1.4em;
             color: #007bff;
+            min-width: 30px; /* Give some space for numbers */
+            text-align: right; /* Align numbers to the right */
         }
         
-        .progress-display span {
+        .progress-display span { /* The label */
             font-size: 0.9em;
             color: #6c757d;
+            white-space: nowrap; /* Prevent label wrapping */
         }
         
         .about-me-card {
-            background-color: #fdfaf6; /* A warm, inviting background */
+            background-color: #fdfaf6; 
             color: #4a4a4a;
-            border-left: 5px solid #ffaf40; /* A cheerful accent color */
-            margin-top: 30px;
+            border-left: 5px solid #ffaf40; 
+            /* margin-top: 30px; removed as main has gap */
             padding: 20px 25px;
         }
 
         .about-me-card h3 {
-            color: #d9534f; /* A friendly heading color */
+            color: #d9534f; 
             font-family: 'Georgia', serif;
             font-size: 1.6em;
             margin-top: 0;
@@ -266,7 +287,7 @@
         }
 
         .about-me-card a {
-            color: #ffaf40; /* Matching the accent color */
+            color: #ffaf40; 
             text-decoration: none;
             font-weight: bold;
         }
@@ -286,7 +307,31 @@
             color: #777;
             font-size: 0.9em;
         }
-         /* Responsive adjustments */
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) { /* Adjusted breakpoint for major layout change */
+            .app-container {
+                 max-width: 700px; /* Revert to previous max-width if stacking */
+            }
+            .quiz-layout-wrapper {
+                flex-direction: column;
+                gap: 15px; /* Adjust gap for vertical stacking */
+            }
+
+            .quiz-layout-wrapper .progress-display.card {
+                width: 100%;
+                flex: auto; /* Reset flex sizing */
+            }
+            
+            .quiz-layout-wrapper .progress-display.card div { /* Stat items on mobile */
+                justify-content: center; /* Center the number+label pair */
+            }
+             .progress-display strong {
+                min-width: auto; /* Reset min-width for numbers on mobile if centered*/
+                text-align: left; /* Reset text-align if centered */
+            }
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 10px;
@@ -294,8 +339,8 @@
             .app-container {
                 padding: 15px;
             }
-            .quiz-area .letter {
-                font-size: 3rem;
+            .quiz-area .item-display {
+                font-size: 2.5rem; 
                 min-height: 80px;
             }
             .options {
@@ -305,13 +350,17 @@
                 padding: 10px;
                 font-size: 0.9rem;
             }
-            .progress-display {
-                flex-direction: column;
-                gap: 10px;
+
+            /* .progress-display was here, now handled by .quiz-layout-wrapper changes */
+            /* and general .progress-display styles */
+            
+            .progress-display strong { /* Specific font size for very small screens */
+                font-size: 1.3em; 
             }
-            .progress-display strong {
-                font-size: 1.3em;
+            .progress-display span { /* Specific font size for very small screens */
+                font-size: 0.85em; 
             }
+
             header h1 {
                 font-size: 1.8em;
             }
@@ -319,7 +368,7 @@
                 font-size: 1em;
             }
             .about-me-card {
-                margin-top: 20px;
+                /* margin-top: 20px; removed */
                 padding: 15px 20px;
             }
             .about-me-card h3 {
@@ -328,6 +377,10 @@
             .about-me-card p {
                 font-size: 1em;
             }
+            .mode-switcher button {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
         }
 
         @font-face {
@@ -335,7 +388,7 @@
             src: url('https://fonts.gstatic.com/s/notosansmalayalam/v21/symphQtSyFFM_0Pm3LsZNkYVO22AXlFe72PZHPa4JMw.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
-            font-display: swap; /* Ensures text remains visible during load */
+            font-display: swap;
         }
         @font-face {
             font-family: 'Noto Sans';
@@ -344,54 +397,54 @@
             font-style: normal;
             font-display: swap;
         }
-
-
     </style>
+<link rel="stylesheet" href="/index.css">
 </head>
 <body>
     <div class="app-container">
         <header>
             <h1><span lang="ml-IN">മലയാള അക്ഷരമാല പഠിക്കാം</span></h1>
-            <h2>Learn the Malayalam Alphabet</h2>
+            <h2>Learn the Malayalam Alphabet & Words</h2>
         </header>
 
         <main>
-            <section class="progress-display card">
-                <div>
-                    <strong id="score">0</strong>
-                    <span>Total Score</span>
-                </div>
-                <div>
-                    <strong id="correct-streak-display">0</strong>
-                    <span>Current Streak</span>
-                </div>
-                <div>
-                    <strong id="reviewed-count">0</strong>
-                    <span>Letters Reviewed</span>
-                </div>
-                <div>
-                    <strong id="total-letters-count">0</strong>
-                    <span>Total Letters</span>
-                </div>
+            <section class="mode-switcher card">
+                <h3>Quiz Mode</h3>
+                <button id="letters-mode-btn" aria-pressed="true">Letters</button>
+                <button id="words-mode-btn" aria-pressed="false">Words</button>
             </section>
 
-            <section class="quiz-area card">
-                <div id="letter-display" class="letter" role="img" aria-live="polite"></div>
-                <div id="feedback-area" class="feedback info" aria-live="assertive">Choose the correct sound.</div>
-                <div id="options-container" class="options" role="radiogroup">
-                    <!-- Options will be dynamically inserted here -->
-                </div>
-                <div class="control-buttons">
-                    <button id="next-question-btn">Next Question</button>
-                </div>
-            </section>
+            <div class="quiz-layout-wrapper">
+                <section class="quiz-area card">
+                    <div id="item-display" class="item-display" role="img" aria-live="polite"></div>
+                    <div id="feedback-area" class="feedback info" aria-live="assertive">Choose the correct sound/meaning.</div>
+                    <div id="options-container" class="options" role="radiogroup">
+                        <!-- Options will be dynamically inserted here -->
+                    </div>
+                    <div class="control-buttons">
+                        <button id="next-question-btn">Next Question</button>
+                    </div>
+                </section>
 
-            <section class="example-area card" style="display: none;">
-                <h3>Letter Example (AI Generated)</h3>
-                <img id="example-image" src="" alt="AI generated image related to the letter" style="display: none;">
-                <p id="example-word" style="display: none;"></p>
-                <p id="example-status"></p>
-            </section>
+                <section class="progress-display card">
+                    <div>
+                        <strong id="score">0</strong>
+                        <span>Total Score</span>
+                    </div>
+                    <div>
+                        <strong id="correct-streak-display">0</strong>
+                        <span>Current Streak</span>
+                    </div>
+                    <div>
+                        <strong id="reviewed-count">0</strong>
+                        <span id="reviewed-count-label">Items Reviewed</span>
+                    </div>
+                    <div>
+                        <strong id="total-items-count">0</strong>
+                        <span id="total-items-label">Total Items</span>
+                    </div>
+                </section>
+            </div>
             
             <div class="about-me-card card">
                 <h3><span class="emoji" role="img" aria-label="Waving hand">👋</span> Hey There, Language Adventurer!</h3>
@@ -400,8 +453,8 @@
                     Yep, just one person fueled by a passion for Malayalam and a whole lot of <span class="emoji" role="img" aria-label="Coffee">☕</span> (and maybe a few late nights <span class="emoji" role="img" aria-label="Owl">🦉</span>).
                 </p>
                 <p>
-                    The mission? To make learning the beautiful Malayalam script a bit more fun, a tad less daunting, and hopefully, super effective with the magic of spaced repetition! 
-                    Think of it as your friendly digital guide to mastering those elegant swirls and curls. <span class="emoji" role="img" aria-label="Sparkles">✨</span>
+                    The mission? To make learning the beautiful Malayalam script and basic words a bit more fun, a tad less daunting, and hopefully, super effective with the magic of spaced repetition! 
+                    Think of it as your friendly digital guide to mastering those elegant swirls and curls, and some foundational vocabulary. <span class="emoji" role="img" aria-label="Sparkles">✨</span>
                 </p>
                 <p>
                     Got feedback, found a mischievous bug <span class="emoji" role="img" aria-label="Bug">🐛</span>, or just want to say "ഹായ്!" (that's "Hi!" in Malayalam)? 
@@ -409,11 +462,9 @@
                 </p>
                 <p>Happy learning, or as we say, "നന്നായി പഠിക്കൂ!" (Nannaayi padhikku!) <span class="emoji" role="img" aria-label="Smiling face with sunglasses">😎</span></p>
             </div>
-
-
         </main>
         <footer>
-            <p>&copy; <span id="current-year"></span> Learn Malayalam Letters by Ajay Nair. All rights reserved.</p>
+            <p>&copy; <span id="current-year"></span> Learn Malayalam by Ajay Nair. All rights reserved.</p>
             <script>document.getElementById('current-year').textContent = new Date().getFullYear();</script>
         </footer>
     </div>
@@ -423,9 +474,9 @@
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "Learn Malayalam Letters",
+      "name": "Learn Malayalam Letters and Words",
       "url": "https://www.learn-malayalam.org/",
-      "description": "Interactive quiz app to master Malayalam letters with audio and spaced repetition. Learn vowels, consonants, matras, chillu, and kootaksharam.",
+      "description": "Interactive quiz app to master Malayalam letters and simple words with audio and spaced repetition. Learn vowels, consonants, matras, chillu, kootaksharam and basic vocabulary.",
       "creator": {
         "@type": "Person",
         "name": "Ajay Nair"
@@ -435,23 +486,23 @@
         "target": "https://www.learn-malayalam.org/"
       },
       "inLanguage": "en-US",
-      "keywords": "Malayalam, learn Malayalam, Malayalam alphabet, Malayalam letters, Malayalam script, interactive quiz, language learning"
+      "keywords": "Malayalam, learn Malayalam, Malayalam alphabet, Malayalam letters, Malayalam words, Malayalam script, interactive quiz, language learning"
     }
     </script>
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": "Learn Malayalam Letters - Interactive Quiz",
+      "name": "Learn Malayalam Letters and Words - Interactive Quiz",
       "operatingSystem": "WEB",
       "applicationCategory": "EducationalApplication",
       "offers": {
         "@type": "Offer",
         "price": "0" 
       },
-      "description": "An interactive web application designed to help users learn the Malayalam alphabet (vowels, consonants, ligatures, etc.) through quizzes, audio pronunciation, and spaced repetition system.",
+      "description": "An interactive web application designed to help users learn the Malayalam alphabet (vowels, consonants, ligatures, etc.) and simple Malayalam words through quizzes, audio pronunciation, and spaced repetition system.",
       "inLanguage": "en", 
-      "learningResourceType": ["quiz", "language learning tool"],
+      "learningResourceType": ["quiz", "language learning tool", "vocabulary builder"],
       "author": {
         "@type": "Person",
         "name": "Ajay Nair",

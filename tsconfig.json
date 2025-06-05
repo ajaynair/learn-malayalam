@@ -24,7 +24,6 @@
     
     "types": ["vite/client"] // Add Vite client types
   },
-  "include": ["index.tsx", "lettersData.ts"],
+  "include": ["index.tsx", "lettersData.ts", "wordsData.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
-

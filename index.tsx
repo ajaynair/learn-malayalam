@@ -1,51 +1,60 @@
+import { MalayalamLetter, initialLettersData } from './lettersData';
+import { MalayalamWord, initialWordsData } from './wordsData'; // Import new word data
 
-// Removed: import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import { MalayalamLetter, initialLettersData } from './lettersData'; // Import from new file
-
-// Removed adsbygoogle global declaration
+type QuizItem = MalayalamLetter | MalayalamWord;
+type QuizMode = 'letters' | 'words';
 
 const App = {
-  letters: [] as MalayalamLetter[],
-  currentLetter: null as MalayalamLetter | null,
+  quizMode: 'letters' as QuizMode,
+  quizItems: [] as QuizItem[],
+  currentItem: null as QuizItem | null,
   options: [] as string[],
   score: 0,
   sessionCorrectStreak: 0,
-  reviewedTodayCount: 0,
-  localStorageKey: 'malayalamAppProgress_v3_speech_fix', // Updated key for new data structure
+  // reviewedTodayCount is less meaningful now with two modes, focusing on total reviewed.
+  localStorageKeyLetters: 'malayalamAppProgress_letters_v1',
+  localStorageKeyWords: 'malayalamAppProgress_words_v1',
+  localStorageKeyMode: 'malayalamAppQuizMode_v1',
 
-  // Speech Synthesis related properties
+
   voices: [] as SpeechSynthesisVoice[],
   speechSynthesisReady: false,
   speechSynthesisSupported: false,
   speechSynthesisUtterance: null as SpeechSynthesisUtterance | null,
   voiceLoadTimeoutId: null as number | null,
 
-
   DOM: {
-    letterDisplay: document.getElementById('letter-display')!,
+    itemDisplay: document.getElementById('item-display')!, // Renamed from letterDisplay
     optionsContainer: document.getElementById('options-container')!,
     feedbackArea: document.getElementById('feedback-area')!,
     nextQuestionBtn: document.getElementById('next-question-btn') as HTMLButtonElement,
     scoreDisplay: document.getElementById('score')!,
     correctStreakDisplay: document.getElementById('correct-streak-display')!,
     reviewedCountDisplay: document.getElementById('reviewed-count')!,
-    totalLettersCountDisplay: document.getElementById('total-letters-count')!,
+    totalItemsCountDisplay: document.getElementById('total-items-count')!, // Renamed
+    reviewedCountLabel: document.getElementById('reviewed-count-label')!,
+    totalItemsLabel: document.getElementById('total-items-label')!,
+    lettersModeBtn: document.getElementById('letters-mode-btn') as HTMLButtonElement,
+    wordsModeBtn: document.getElementById('words-mode-btn') as HTMLButtonElement,
   },
 
   init() {
     this.DOM.nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
+    this.DOM.lettersModeBtn.addEventListener('click', () => this.switchQuizMode('letters'));
+    this.DOM.wordsModeBtn.addEventListener('click', () => this.switchQuizMode('words'));
     
-    this.initializeSpeechSynthesis(); // Initialize speech synthesis
-    this.loadLetters();
+    this.initializeSpeechSynthesis();
+    this.loadQuizMode(); // Load preferred mode first
+    this.updateModeButtonStyles();
+    this.loadQuizData(); // Then load data for that mode
     this.updateProgressDisplay();
     this.nextQuestion();
-    // Removed call to this.pushAdSenseAds();
   },
   
   initializeSpeechSynthesis() {
     if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
         this.speechSynthesisSupported = true;
-        this.speechSynthesisUtterance = new SpeechSynthesisUtterance(); // Create one instance
+        this.speechSynthesisUtterance = new SpeechSynthesisUtterance();
 
         const loadVoices = () => {
             if (this.voiceLoadTimeoutId !== null) {
@@ -57,27 +66,26 @@ const App = {
                 this.speechSynthesisReady = true;
                 console.log('Speech synthesis voices loaded successfully:', this.voices.map(v => ({name: v.name, lang: v.lang, default: v.default})));
             } else {
-                console.warn('No speech synthesis voices available yet (onvoiceschanged or initial load).');
-                // Keep speechSynthesisReady as false
+                console.warn('No speech synthesis voices available yet.');
             }
         };
 
         window.speechSynthesis.onvoiceschanged = loadVoices;
-        loadVoices(); // Attempt to load voices immediately
+        loadVoices();
 
         this.voiceLoadTimeoutId = window.setTimeout(() => {
-            this.voiceLoadTimeoutId = null; // Clear the ID as timeout has fired
+            this.voiceLoadTimeoutId = null; 
             if (!this.speechSynthesisReady && this.voices.length === 0) {
                 console.warn('Retrying to load voices after timeout (2s).');
-                loadVoices(); // Try one last time
-                if (!this.speechSynthesisReady && this.voices.length === 0) { // Check after last attempt
+                loadVoices(); 
+                if (!this.speechSynthesisReady && this.voices.length === 0) {
                     console.error("Speech synthesis voices still not available after timeout.");
                     this.updateFeedback('Speech voices could not be loaded.', 'error');
                 } else if (this.speechSynthesisReady) {
                      console.log('Speech synthesis voices loaded successfully after timeout.');
                 }
             }
-        }, 2000); // Increased timeout
+        }, 2000);
 
     } else {
         console.warn('Speech synthesis not supported by this browser.');
@@ -86,40 +94,98 @@ const App = {
     }
   },
 
-  loadLetters() {
-    const savedData = localStorage.getItem(this.localStorageKey);
-    if (savedData) {
-        const parsedSavedData: MalayalamLetter[] = JSON.parse(savedData);
-        // Filter out any letters from savedData that are no longer in initialLettersData (e.g., if data source changed)
-        const validSavedLetters = parsedSavedData.filter(sl => initialLettersData.some(il => il.id === sl.id));
-        
-        this.letters = initialLettersData.map(initialLetter => {
-            const savedVersion = validSavedLetters.find(sl => sl.id === initialLetter.id);
-            if (savedVersion) {
-                return { // Merge, ensuring initial core data (char, translit) is fresh, SRS data is from save
-                    ...this.getDefaultSRDFields(), // Base SRD
-                    ...initialLetter, // Fresh character, translit, category, overrides
-                    ...savedVersion, // Overwrite SRD fields with saved ones
-                     // Explicitly keep fresh character data to avoid issues if it changed in initialLettersData
-                    character: initialLetter.character, 
-                    displayCharacterOverride: initialLetter.displayCharacterOverride,
-                    category: initialLetter.category,
-                    transliteration: initialLetter.transliteration,
-                    audioOverride: initialLetter.audioOverride,
-                };
-            }
-            return { ...initialLetter, ...this.getDefaultSRDFields() };
-        });
+  loadQuizMode() {
+    const savedMode = localStorage.getItem(this.localStorageKeyMode) as QuizMode | null;
+    if (savedMode && (savedMode === 'letters' || savedMode === 'words')) {
+        this.quizMode = savedMode;
     } else {
-        this.letters = initialLettersData.map(l => ({
-            ...l,
-            ...this.getDefaultSRDFields()
-        }));
+        this.quizMode = 'letters'; // Default
     }
-    this.DOM.totalLettersCountDisplay.textContent = this.letters.length.toString();
   },
 
-  getDefaultSRDFields(): Pick<MalayalamLetter, 'lastReviewedTimestamp' | 'nextReviewTimestamp' | 'intervalDays' | 'easeFactor' | 'correctStreak' | 'totalCorrect' | 'totalIncorrect' | 'reviewed'> {
+  saveQuizMode() {
+    localStorage.setItem(this.localStorageKeyMode, this.quizMode);
+  },
+
+  switchQuizMode(newMode: QuizMode) {
+    if (this.quizMode === newMode) return;
+    this.quizMode = newMode;
+    this.saveQuizMode();
+    this.updateModeButtonStyles();
+    
+    // Reset session-specific stats
+    this.score = 0;
+    this.sessionCorrectStreak = 0;
+    
+    this.loadQuizData(); // Reload data for the new mode
+    this.updateProgressDisplay();
+    this.nextQuestion();
+    this.updateFeedback(`Switched to ${newMode} quiz. Choose the correct option.`, 'info');
+  },
+
+  updateModeButtonStyles() {
+    if (this.quizMode === 'letters') {
+        this.DOM.lettersModeBtn.classList.add('active-mode');
+        this.DOM.lettersModeBtn.setAttribute('aria-pressed', 'true');
+        this.DOM.wordsModeBtn.classList.remove('active-mode');
+        this.DOM.wordsModeBtn.setAttribute('aria-pressed', 'false');
+    } else {
+        this.DOM.wordsModeBtn.classList.add('active-mode');
+        this.DOM.wordsModeBtn.setAttribute('aria-pressed', 'true');
+        this.DOM.lettersModeBtn.classList.remove('active-mode');
+        this.DOM.lettersModeBtn.setAttribute('aria-pressed', 'false');
+    }
+  },
+
+  loadQuizData() {
+    const currentLocalStorageKey = this.quizMode === 'letters' ? this.localStorageKeyLetters : this.localStorageKeyWords;
+    const initialData = this.quizMode === 'letters' ? initialLettersData : initialWordsData;
+    
+    const savedData = localStorage.getItem(currentLocalStorageKey);
+    if (savedData) {
+        const parsedSavedData: QuizItem[] = JSON.parse(savedData);
+        const validSavedItems = parsedSavedData.filter(si => 
+            initialData.some(ii => ii.id === si.id)
+        );
+        
+        this.quizItems = initialData.map(initialItem => {
+            const savedVersion = validSavedItems.find(si => si.id === initialItem.id);
+            if (savedVersion) {
+                // For letters, retain specific properties from initial data. For words, it's simpler.
+                if (this.quizMode === 'letters' && 'character' in initialItem && 'category' in initialItem) {
+                     const letterInitial = initialItem as Omit<MalayalamLetter, keyof ReturnType<typeof App.getDefaultSRDFields>>;
+                     return {
+                        ...this.getDefaultSRDFields(),
+                        ...letterInitial,
+                        ...savedVersion,
+                        character: letterInitial.character,
+                        displayCharacterOverride: letterInitial.displayCharacterOverride,
+                        category: letterInitial.category,
+                        transliteration: letterInitial.transliteration,
+                        audioOverride: letterInitial.audioOverride,
+                    } as MalayalamLetter;
+                }
+                // For words or simpler merging
+                return { 
+                    ...this.getDefaultSRDFields(),
+                    ...initialItem, 
+                    ...savedVersion 
+                } as QuizItem;
+            }
+            return { ...initialItem, ...this.getDefaultSRDFields() } as QuizItem;
+        });
+    } else {
+        this.quizItems = initialData.map(item => ({
+            ...item,
+            ...this.getDefaultSRDFields()
+        })) as QuizItem[];
+    }
+    this.DOM.totalItemsCountDisplay.textContent = this.quizItems.length.toString();
+    this.DOM.reviewedCountLabel.textContent = this.quizMode === 'letters' ? 'Letters Reviewed' : 'Words Reviewed';
+    this.DOM.totalItemsLabel.textContent = this.quizMode === 'letters' ? 'Total Letters' : 'Total Words';
+  },
+
+  getDefaultSRDFields(): Pick<QuizItem, 'lastReviewedTimestamp' | 'nextReviewTimestamp' | 'intervalDays' | 'easeFactor' | 'correctStreak' | 'totalCorrect' | 'totalIncorrect' | 'reviewed'> {
     return {
         lastReviewedTimestamp: 0,
         nextReviewTimestamp: 0,
@@ -132,43 +198,39 @@ const App = {
     };
   },
 
-  saveLetters() {
-    localStorage.setItem(this.localStorageKey, JSON.stringify(this.letters));
+  saveQuizData() {
+    const currentLocalStorageKey = this.quizMode === 'letters' ? this.localStorageKeyLetters : this.localStorageKeyWords;
+    localStorage.setItem(currentLocalStorageKey, JSON.stringify(this.quizItems));
   },
 
-  selectLetterForQuiz(): MalayalamLetter | null {
+  selectItemForQuiz(): QuizItem | null {
     const now = Date.now();
-    // Prioritize due letters that have been reviewed before
-    const dueReviewedLetters = this.letters.filter(l => l.reviewed && l.nextReviewTimestamp <= now);
-    if (dueReviewedLetters.length > 0) {
-        dueReviewedLetters.sort((a, b) => a.nextReviewTimestamp - b.nextReviewTimestamp); // Oldest due first
-        return dueReviewedLetters[0];
+    const dueReviewedItems = this.quizItems.filter(item => item.reviewed && item.nextReviewTimestamp <= now);
+    if (dueReviewedItems.length > 0) {
+        dueReviewedItems.sort((a, b) => a.nextReviewTimestamp - b.nextReviewTimestamp);
+        return dueReviewedItems[0];
     }
 
-    // Then, new letters that haven't been reviewed yet
-    const newLetters = this.letters.filter(l => !l.reviewed);
-    if (newLetters.length > 0) {
-        // Simple random selection for new letters
-        return newLetters[Math.floor(Math.random() * newLetters.length)];
+    const newItems = this.quizItems.filter(item => !item.reviewed);
+    if (newItems.length > 0) {
+        return newItems[Math.floor(Math.random() * newItems.length)];
     }
 
-    // If all letters reviewed and none are "due" according to SRS, pick the one reviewed longest ago
-    // This ensures the app doesn't get stuck if all intervals are long.
-    if (this.letters.length > 0) {
-        const sortedByLastReviewed = [...this.letters].filter(l => l.reviewed).sort((a,b) => a.lastReviewedTimestamp - b.lastReviewedTimestamp);
+    if (this.quizItems.length > 0) {
+        const sortedByLastReviewed = [...this.quizItems].filter(item => item.reviewed).sort((a,b) => a.lastReviewedTimestamp - b.lastReviewedTimestamp);
         if (sortedByLastReviewed.length > 0) return sortedByLastReviewed[0];
     }
     
-    return null; // Should only happen if this.letters is empty
+    return null;
   },
 
-  generateOptions(correctLetter: MalayalamLetter): string[] {
+  generateOptions(correctItem: QuizItem): string[] {
     const options = new Set<string>();
-    options.add(correctLetter.transliteration);
+    options.add(correctItem.transliteration);
 
-    const distractors = this.letters.filter(l => l.id !== correctLetter.id && l.transliteration !== correctLetter.transliteration);
+    const distractors = this.quizItems.filter(item => item.id !== correctItem.id && item.transliteration !== correctItem.transliteration);
     
-    const numOptions = Math.min(4, this.letters.length > 0 ? this.letters.length : 1);
+    const numOptions = Math.min(4, this.quizItems.length > 0 ? this.quizItems.length : 1);
 
     while (options.size < numOptions && distractors.length > 0) {
         const randomIndex = Math.floor(Math.random() * distractors.length);
@@ -179,44 +241,42 @@ const App = {
   },
 
   handleOptionClick(selectedTransliteration: string) {
-    if (!this.currentLetter) return;
+    if (!this.currentItem) return;
 
     this.DOM.optionsContainer.querySelectorAll('button').forEach(btn => (btn as HTMLButtonElement).disabled = true);
     this.DOM.nextQuestionBtn.style.display = 'block';
 
-    const isCorrect = selectedTransliteration === this.currentLetter.transliteration;
+    const isCorrect = selectedTransliteration === this.currentItem.transliteration;
+    const displayForm = 'character' in this.currentItem ? (this.currentItem as MalayalamLetter).displayCharacterOverride || (this.currentItem as MalayalamLetter).character : (this.currentItem as MalayalamWord).word;
 
     if (isCorrect) {
         this.score++;
         this.sessionCorrectStreak++;
-        this.currentLetter.correctStreak++;
-        this.currentLetter.totalCorrect++;
-        this.updateFeedback(`${this.currentLetter.displayCharacterOverride || this.currentLetter.character} is correct! (${this.currentLetter.transliteration})`, 'correct');
+        this.currentItem.correctStreak++;
+        this.currentItem.totalCorrect++;
+        this.updateFeedback(`${displayForm} is correct! (${this.currentItem.transliteration})`, 'correct');
         
-        if (this.currentLetter.correctStreak === 1) this.currentLetter.intervalDays = 1;
-        else if (this.currentLetter.correctStreak === 2) this.currentLetter.intervalDays = 6;
-        else this.currentLetter.intervalDays = Math.ceil(this.currentLetter.intervalDays * this.currentLetter.easeFactor);
-        this.currentLetter.intervalDays = Math.min(this.currentLetter.intervalDays, 365); 
-        this.currentLetter.easeFactor += 0.1; 
+        if (this.currentItem.correctStreak === 1) this.currentItem.intervalDays = 1;
+        else if (this.currentItem.correctStreak === 2) this.currentItem.intervalDays = 6;
+        else this.currentItem.intervalDays = Math.ceil(this.currentItem.intervalDays * this.currentItem.easeFactor);
+        this.currentItem.intervalDays = Math.min(this.currentItem.intervalDays, 365); 
+        this.currentItem.easeFactor += 0.1; 
 
     } else {
         this.sessionCorrectStreak = 0;
-        this.currentLetter.correctStreak = 0;
-        this.currentLetter.totalIncorrect++;
-        this.updateFeedback(`Incorrect. This is ${this.currentLetter.displayCharacterOverride || this.currentLetter.character} (${this.currentLetter.transliteration}).`, 'incorrect');
-        this.speakLetter(this.currentLetter, true); 
-        this.currentLetter.intervalDays = 1; 
-        this.currentLetter.easeFactor = Math.max(1.3, this.currentLetter.easeFactor - 0.2); 
+        this.currentItem.correctStreak = 0;
+        this.currentItem.totalIncorrect++;
+        this.updateFeedback(`Incorrect. This is ${displayForm} (${this.currentItem.transliteration}).`, 'incorrect');
+        this.speakItem(this.currentItem, true); 
+        this.currentItem.intervalDays = 1; 
+        this.currentItem.easeFactor = Math.max(1.3, this.currentItem.easeFactor - 0.2); 
     }
 
-    this.currentLetter.lastReviewedTimestamp = Date.now();
-    this.currentLetter.nextReviewTimestamp = Date.now() + (this.currentLetter.intervalDays * 24 * 60 * 60 * 1000);
-    if(!this.currentLetter.reviewed) { 
-        this.reviewedTodayCount++; 
-    }
-    this.currentLetter.reviewed = true;
+    this.currentItem.lastReviewedTimestamp = Date.now();
+    this.currentItem.nextReviewTimestamp = Date.now() + (this.currentItem.intervalDays * 24 * 60 * 60 * 1000);
+    this.currentItem.reviewed = true;
     
-    this.saveLetters();
+    this.saveQuizData();
     this.updateProgressDisplay();
     
     this.DOM.optionsContainer.querySelectorAll('button').forEach(button => {
@@ -224,31 +284,32 @@ const App = {
         if (btn.textContent === selectedTransliteration) {
             btn.classList.add(isCorrect ? 'correct' : 'incorrect');
         }
-        if (btn.textContent === this.currentLetter?.transliteration && !isCorrect) {
+        if (btn.textContent === this.currentItem?.transliteration && !isCorrect) {
              btn.classList.add('correct'); 
         }
     });
   },
 
   nextQuestion() {
-    this.currentLetter = this.selectLetterForQuiz();
+    this.currentItem = this.selectItemForQuiz();
     this.DOM.nextQuestionBtn.style.display = 'none';
 
-    if (this.currentLetter) {
-        this.options = this.generateOptions(this.currentLetter);
+    if (this.currentItem) {
+        this.options = this.generateOptions(this.currentItem);
         this.renderQuiz();
-        this.updateFeedback('Choose the correct sound/transliteration.', 'info');
+        this.updateFeedback('Choose the correct option.', 'info');
     } else {
-        this.DOM.letterDisplay.textContent = '🎉';
-        this.updateFeedback('All letters learned for now! Come back later for review or reset progress.', 'success');
+        this.DOM.itemDisplay.textContent = '🎉';
+        this.updateFeedback('All items learned for now! Come back later for review or switch modes.', 'success');
         this.DOM.optionsContainer.innerHTML = ''; 
     }
   },
   
   renderQuiz() {
-    if (!this.currentLetter) return;
-    this.DOM.letterDisplay.textContent = this.currentLetter.displayCharacterOverride || this.currentLetter.character;
-    this.DOM.letterDisplay.setAttribute('aria-label', `Malayalam letter: ${this.currentLetter.displayCharacterOverride || this.currentLetter.character}`);
+    if (!this.currentItem) return;
+    const displayForm = 'character' in this.currentItem ? (this.currentItem as MalayalamLetter).displayCharacterOverride || (this.currentItem as MalayalamLetter).character : (this.currentItem as MalayalamWord).word;
+    this.DOM.itemDisplay.textContent = displayForm;
+    this.DOM.itemDisplay.setAttribute('aria-label', `Quiz item: ${displayForm}`);
 
     this.DOM.optionsContainer.innerHTML = '';
     this.options.forEach(opt => {
@@ -266,8 +327,6 @@ const App = {
         this.updateFeedback('Speech synthesis setup issue.', 'error');
         return;
     }
-
-    // Strictly rely on speechSynthesisReady being true.
     if (!this.speechSynthesisReady) {
         console.error('Cannot speak: Speech synthesis voices are not ready or available.');
         this.updateFeedback('Speech voices not ready. Try refreshing.', 'error');
@@ -312,15 +371,19 @@ const App = {
     window.speechSynthesis.speak(utterance);
   },
 
-  speakLetter(letter: MalayalamLetter, emphatic: boolean = false) {
+  speakItem(item: QuizItem, emphatic: boolean = false) {
     let textToSpeak: string;
-    // Priority: 1. audioOverride, 2. displayCharacterOverride (esp. for matras), 3. character
-    if (letter.audioOverride) {
-        textToSpeak = letter.audioOverride;
-    } else if (letter.category === 'matra' && letter.displayCharacterOverride) {
-        textToSpeak = letter.displayCharacterOverride; // e.g., speak "കി" for matra 'ി'
-    } else {
-        textToSpeak = letter.character;
+    if ('character' in item) { // It's a MalayalamLetter
+        const letter = item as MalayalamLetter;
+        if (letter.audioOverride) {
+            textToSpeak = letter.audioOverride;
+        } else if (letter.category === 'matra' && letter.displayCharacterOverride) {
+            textToSpeak = letter.displayCharacterOverride;
+        } else {
+            textToSpeak = letter.character;
+        }
+    } else { // It's a MalayalamWord
+        textToSpeak = (item as MalayalamWord).word;
     }
     this.speak(textToSpeak, 'ml-IN', emphatic ? 0.85 : 0.95, emphatic ? 1.0 : 1.1);
   },
@@ -333,11 +396,8 @@ const App = {
   updateProgressDisplay() {
     this.DOM.scoreDisplay.textContent = this.score.toString();
     this.DOM.correctStreakDisplay.textContent = this.sessionCorrectStreak.toString();
-    // Updated to show total number of unique letters marked as 'reviewed'
-    this.DOM.reviewedCountDisplay.textContent = this.letters.filter(l => l.reviewed).length.toString(); 
+    this.DOM.reviewedCountDisplay.textContent = this.quizItems.filter(item => item.reviewed).length.toString(); 
   }
-
-  // Removed pushAdSenseAds method
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -355,4 +415,3 @@ document.addEventListener('DOMContentLoaded', () => {
         App.init();
     }
 });
-

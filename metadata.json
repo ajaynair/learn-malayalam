@@ -1,5 +1,6 @@
 {
   "description": "An interactive webapp to learn Malayalam letters using spaced repetition, audio feedback, and AI-generated examples.",
   "requestFramePermissions": [],
-  "name": "learn-malayalam"
+  "name": "learn-malayalam",
+  "prompt": ""
 }
