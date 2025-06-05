@@ -1,17 +1,25 @@
+
 import { MalayalamLetter, initialLettersData } from './lettersData';
 import { MalayalamWord, initialWordsData } from './wordsData'; // Import new word data
 
 type QuizItem = MalayalamLetter | MalayalamWord;
 type QuizMode = 'letters' | 'words';
 
+interface SessionModeStats {
+  score: number;
+  streak: number;
+}
+
 const App = {
   quizMode: 'letters' as QuizMode,
   quizItems: [] as QuizItem[],
   currentItem: null as QuizItem | null,
   options: [] as string[],
-  score: 0,
-  sessionCorrectStreak: 0,
-  // reviewedTodayCount is less meaningful now with two modes, focusing on total reviewed.
+  // Removed global score and sessionCorrectStreak
+  sessionStats: {
+    letters: { score: 0, streak: 0 } as SessionModeStats,
+    words: { score: 0, streak: 0 } as SessionModeStats,
+  },
   localStorageKeyLetters: 'malayalamAppProgress_letters_v1',
   localStorageKeyWords: 'malayalamAppProgress_words_v1',
   localStorageKeyMode: 'malayalamAppQuizMode_v1',
@@ -24,14 +32,14 @@ const App = {
   voiceLoadTimeoutId: null as number | null,
 
   DOM: {
-    itemDisplay: document.getElementById('item-display')!, // Renamed from letterDisplay
+    itemDisplay: document.getElementById('item-display')!,
     optionsContainer: document.getElementById('options-container')!,
     feedbackArea: document.getElementById('feedback-area')!,
     nextQuestionBtn: document.getElementById('next-question-btn') as HTMLButtonElement,
     scoreDisplay: document.getElementById('score')!,
     correctStreakDisplay: document.getElementById('correct-streak-display')!,
     reviewedCountDisplay: document.getElementById('reviewed-count')!,
-    totalItemsCountDisplay: document.getElementById('total-items-count')!, // Renamed
+    totalItemsCountDisplay: document.getElementById('total-items-count')!,
     reviewedCountLabel: document.getElementById('reviewed-count-label')!,
     totalItemsLabel: document.getElementById('total-items-label')!,
     lettersModeBtn: document.getElementById('letters-mode-btn') as HTMLButtonElement,
@@ -44,10 +52,10 @@ const App = {
     this.DOM.wordsModeBtn.addEventListener('click', () => this.switchQuizMode('words'));
     
     this.initializeSpeechSynthesis();
-    this.loadQuizMode(); // Load preferred mode first
+    this.loadQuizMode(); 
     this.updateModeButtonStyles();
-    this.loadQuizData(); // Then load data for that mode
-    this.updateProgressDisplay();
+    this.loadQuizData(); 
+    this.updateProgressDisplay(); // Initial display will use default 0s for the loaded mode
     this.nextQuestion();
   },
   
@@ -109,16 +117,20 @@ const App = {
 
   switchQuizMode(newMode: QuizMode) {
     if (this.quizMode === newMode) return;
+    
+    // Save current mode's session stats (if needed for future persistence, but not explicitly done here)
+    // The current structure naturally preserves them in memory.
+
     this.quizMode = newMode;
     this.saveQuizMode();
     this.updateModeButtonStyles();
     
-    // Reset session-specific stats
-    this.score = 0;
-    this.sessionCorrectStreak = 0;
+    // DO NOT reset session-specific stats here. They are now mode-specific.
+    // this.sessionStats[this.quizMode].score = 0; // This would reset the new mode's score
+    // this.sessionStats[this.quizMode].streak = 0; // This would reset the new mode's streak
     
-    this.loadQuizData(); // Reload data for the new mode
-    this.updateProgressDisplay();
+    this.loadQuizData(); 
+    this.updateProgressDisplay(); // This will now display the correct score/streak for the newMode
     this.nextQuestion();
     this.updateFeedback(`Switched to ${newMode} quiz. Choose the correct option.`, 'info');
   },
@@ -151,7 +163,6 @@ const App = {
         this.quizItems = initialData.map(initialItem => {
             const savedVersion = validSavedItems.find(si => si.id === initialItem.id);
             if (savedVersion) {
-                // For letters, retain specific properties from initial data. For words, it's simpler.
                 if (this.quizMode === 'letters' && 'character' in initialItem && 'category' in initialItem) {
                      const letterInitial = initialItem as Omit<MalayalamLetter, keyof ReturnType<typeof App.getDefaultSRDFields>>;
                      return {
@@ -165,7 +176,6 @@ const App = {
                         audioOverride: letterInitial.audioOverride,
                     } as MalayalamLetter;
                 }
-                // For words or simpler merging
                 return { 
                     ...this.getDefaultSRDFields(),
                     ...initialItem, 
@@ -248,10 +258,12 @@ const App = {
 
     const isCorrect = selectedTransliteration === this.currentItem.transliteration;
     const displayForm = 'character' in this.currentItem ? (this.currentItem as MalayalamLetter).displayCharacterOverride || (this.currentItem as MalayalamLetter).character : (this.currentItem as MalayalamWord).word;
+    
+    const currentModeStats = this.sessionStats[this.quizMode];
 
     if (isCorrect) {
-        this.score++;
-        this.sessionCorrectStreak++;
+        currentModeStats.score++;
+        currentModeStats.streak++;
         this.currentItem.correctStreak++;
         this.currentItem.totalCorrect++;
         this.updateFeedback(`${displayForm} is correct! (${this.currentItem.transliteration})`, 'correct');
@@ -263,7 +275,7 @@ const App = {
         this.currentItem.easeFactor += 0.1; 
 
     } else {
-        this.sessionCorrectStreak = 0;
+        currentModeStats.streak = 0;
         this.currentItem.correctStreak = 0;
         this.currentItem.totalIncorrect++;
         this.updateFeedback(`Incorrect. This is ${displayForm} (${this.currentItem.transliteration}).`, 'incorrect');
@@ -394,8 +406,9 @@ const App = {
   },
 
   updateProgressDisplay() {
-    this.DOM.scoreDisplay.textContent = this.score.toString();
-    this.DOM.correctStreakDisplay.textContent = this.sessionCorrectStreak.toString();
+    const currentModeStats = this.sessionStats[this.quizMode];
+    this.DOM.scoreDisplay.textContent = currentModeStats.score.toString();
+    this.DOM.correctStreakDisplay.textContent = currentModeStats.streak.toString();
     this.DOM.reviewedCountDisplay.textContent = this.quizItems.filter(item => item.reviewed).length.toString(); 
   }
 };

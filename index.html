@@ -39,11 +39,12 @@
     <style>
         html {
             color-scheme: light; /* Explicitly set the color scheme to light */
+            background-color: #f0f4f8; /* Ensure HTML element itself has a light background */
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
+            background-color: #f0f4f8; /* Fallback if html bg isn't enough, but html should cover it */
             color: #333;
             margin: 0;
             padding: 20px;
@@ -398,7 +399,6 @@
             font-display: swap;
         }
     </style>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body>
     <div class="app-container">
