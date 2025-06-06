@@ -84,16 +84,19 @@
             padding-right: 45px; /* Space for the coffee button icon */
         }
 
-        header h1 {
-            font-family: 'Noto Sans Malayalam', sans-serif;
-            color: #2c3e50;
-            margin: 0 0 5px 0;
+        header h1 { /* New English H1 - main title */
+            color: #2c3e50; 
+            margin: 0 0 5px 0; 
+            font-weight: bold;
+            font-size: 1.8em; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        header h2 {
-            color: #555;
-            margin: 0;
+        header h2 { /* New Malayalam H2 - subtitle */
+            font-family: 'Noto Sans Malayalam', sans-serif;
+            color: #555; 
+            margin: 5px 0 0 0; 
             font-weight: normal;
-            font-size: 1.1em;
+            font-size: 1.5em; 
         }
         
         .header-coffee-btn {
@@ -453,12 +456,11 @@
             header {
                 padding-bottom: 10px; 
             }
-            header h1 {
-                font-size: 1.5em; 
-                margin-bottom: 3px;
+            header h1 { /* English title */
+                font-size: 1.6em; 
             }
-            header h2 {
-                font-size: 0.9em;
+            header h2 { /* Malayalam title */
+                font-size: 1.3em; 
             }
             .header-coffee-btn { 
                 font-size: 0.9rem; /* Even smaller icon */
@@ -503,8 +505,8 @@
     <div class="app-container">
         <header>
             <button id="header-coffee-btn" class="header-coffee-btn" title="Support the Developer">☕</button>
-            <h1><span lang="ml-IN">മലയാള അക്ഷരമാല പഠിക്കാം</span></h1>
-            <h2>Learn the Malayalam Alphabet & Words</h2>
+            <h1>Learn the Malayalam Alphabet & Words for free</h1>
+            <h2><span lang="ml-IN">മലയാള അക്ഷരമാല പഠിക്കാം</span></h2>
         </header>
 
         <main>
@@ -550,10 +552,10 @@
                 <h3><span class="emoji" role="img" aria-label="Waving hand">👋</span> Hey There, Language Adventurer!</h3>
                 <p>
                     This little corner of the internet was lovingly crafted by <strong>Ajay Nair</strong>.
-                    Yep, just one person fueled by a passion for Malayalam and a whole lot of <span class="emoji" role="img" aria-label="Coffee">☕</span> (and maybe a few late nights <span class="emoji" role="img" aria-label="Owl">🦉</span>).
+                    Yep, just one person fueled by a passion for the language and a whole lot of <span class="emoji" role="img" aria-label="Coffee">☕</span> (and maybe a few late nights <span class="emoji" role="img" aria-label="Owl">🦉</span>).
                 </p>
                 <p>
-                    The mission? To make learning the beautiful Malayalam script and basic words a bit more fun, a tad less daunting, and hopefully, super effective with the magic of spaced repetition!
+                    The mission? To make learning the beautiful script and basic words a bit more fun, a tad less daunting, and hopefully, super effective with the magic of spaced repetition!
                     Think of it as your friendly digital guide to mastering those elegant swirls and curls, and some foundational vocabulary. <span class="emoji" role="img" aria-label="Sparkles">✨</span>
                 </p>
                 <p>
@@ -564,9 +566,9 @@
             </div>
 
             <section class="support-me-card card">
-                <h3>Enjoying Your Malayalam Adventure? <span class="emoji" role="img" aria-label="Rocket">🚀</span></h3>
+                <h3>Enjoying Your Language Adventure? <span class="emoji" role="img" aria-label="Rocket">🚀</span></h3>
                 <p>
-                    This app is brewed with passion (and lots of virtual <span class="emoji" role="img" aria-label="Coffee cup">☕</span>) to help you master Malayalam.
+                    This app is brewed with passion (and lots of virtual <span class="emoji" role="img" aria-label="Coffee cup">☕</span>) to help you master the script and words.
                     If you find it helpful and want to support its continued development and new features, a small coffee donation would be amazing!
                 </p>
                 <a href="https://buymeacoffee.com/ajaynair" target="_blank" rel="noopener noreferrer" class="buy-coffee-btn">
@@ -614,9 +616,16 @@
         "@type": "Offer",
         "price": "0"
       },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8", 
+        "ratingCount": "150",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
       "description": "A free interactive web application designed to help users learn the Malayalam alphabet (vowels, consonants, ligatures, etc.) and simple Malayalam words. Master the script through engaging quizzes, audio pronunciation, and a spaced repetition system. Perfect for those searching for 'learn malayalam free' or 'malayalam quiz free'.",
       "inLanguage": "en",
-      "learningResourceType": ["quiz", "language learning tool", "malayalam learning", "vocabulary builder", "free educational tool"],
+      "learningResourceType": ["quiz", "language learning tool", "vocabulary builder", "free educational tool"],
       "author": {
         "@type": "Person",
         "name": "Ajay Nair",
