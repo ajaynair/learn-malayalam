@@ -89,8 +89,9 @@ const App = {
         };
 
         window.speechSynthesis.onvoiceschanged = loadVoices;
-        loadVoices();
+        loadVoices(); // Initial attempt to load
 
+        // Fallback timeout if voiceschanged event doesn't fire or is delayed
         this.voiceLoadTimeoutId = window.setTimeout(() => {
             this.voiceLoadTimeoutId = null; 
             if (!this.speechSynthesisReady && this.voices.length === 0) {
@@ -155,44 +156,47 @@ const App = {
   loadQuizData() {
     const currentLocalStorageKey = this.quizMode === 'letters' ? this.localStorageKeyLetters : this.localStorageKeyWords;
     const initialData = this.quizMode === 'letters' ? initialLettersData : initialWordsData;
+    let useInitialData = true;
     
     const savedData = localStorage.getItem(currentLocalStorageKey);
     if (savedData) {
-        const parsedSavedData: QuizItem[] = JSON.parse(savedData);
-        const validSavedItems = parsedSavedData.filter(si => 
-            initialData.some(ii => ii.id === si.id)
-        );
-        
-        this.quizItems = initialData.map(initialItem => {
-            const savedVersion = validSavedItems.find(si => si.id === initialItem.id);
-            if (savedVersion) {
-                if (this.quizMode === 'letters' && 'character' in initialItem && 'category' in initialItem) {
-                     const letterInitial = initialItem as Omit<MalayalamLetter, keyof ReturnType<typeof App.getDefaultSRDFields>>;
-                     return {
-                        ...this.getDefaultSRDFields(),
-                        ...letterInitial,
-                        ...savedVersion,
-                        character: letterInitial.character,
-                        displayCharacterOverride: letterInitial.displayCharacterOverride,
-                        category: letterInitial.category,
-                        transliteration: letterInitial.transliteration,
-                        audioOverride: letterInitial.audioOverride,
-                    } as MalayalamLetter;
-                }
-                return { 
-                    ...this.getDefaultSRDFields(),
-                    ...initialItem, 
-                    ...savedVersion 
-                } as QuizItem;
+        try {
+            const parsedSavedData: QuizItem[] = JSON.parse(savedData);
+            // Basic validation: check if it's an array
+            if (Array.isArray(parsedSavedData)) {
+                const validSavedItems = parsedSavedData.filter(si => 
+                    initialData.some(ii => ii.id === si.id) && typeof si.reviewed === 'boolean' // Add a basic check for structure
+                );
+                
+                this.quizItems = initialData.map(initialItem => {
+                    const savedVersion = validSavedItems.find(si => si.id === initialItem.id);
+                    if (savedVersion) {
+                         // Ensure all properties from initialItem are preserved if not in savedVersion, and SRS fields are correct type
+                        return {
+                            ...this.getDefaultSRDFields(), // Base SRS fields
+                            ...initialItem,             // Base item data (character, transliteration, etc.)
+                            ...savedVersion             // Overwrite with saved progress
+                        } as QuizItem;
+                    }
+                    return { ...initialItem, ...this.getDefaultSRDFields() } as QuizItem;
+                });
+                useInitialData = false;
+            } else {
+                console.warn(`Invalid saved data format for ${currentLocalStorageKey}. Expected an array.`);
             }
-            return { ...initialItem, ...this.getDefaultSRDFields() } as QuizItem;
-        });
-    } else {
+        } catch (error) {
+            console.error(`Error parsing saved data for ${currentLocalStorageKey} from localStorage:`, error);
+            // Corrupted data, will fall back to initialData
+        }
+    }
+    
+    if (useInitialData) {
         this.quizItems = initialData.map(item => ({
             ...item,
             ...this.getDefaultSRDFields()
         })) as QuizItem[];
     }
+
     this.DOM.totalItemsCountDisplay.textContent = this.quizItems.length.toString();
     this.DOM.reviewedCountLabel.textContent = this.quizMode === 'letters' ? 'Letters Reviewed' : 'Words Reviewed';
     this.DOM.totalItemsLabel.textContent = this.quizMode === 'letters' ? 'Total Letters' : 'Total Words';
@@ -230,6 +234,7 @@ const App = {
     }
 
     if (this.quizItems.length > 0) {
+        // If all items are reviewed and none are due, pick the one reviewed longest ago to keep practicing
         const sortedByLastReviewed = [...this.quizItems].filter(item => item.reviewed).sort((a,b) => a.lastReviewedTimestamp - b.lastReviewedTimestamp);
         if (sortedByLastReviewed.length > 0) return sortedByLastReviewed[0];
     }
@@ -343,7 +348,7 @@ const App = {
         return;
     }
     if (!this.speechSynthesisReady) {
-        console.error('Cannot speak: Speech synthesis voices are not ready or available.');
+        console.warn('Cannot speak: Speech synthesis voices are not ready or available.'); // Changed from error to warn
         this.updateFeedback('Speech voices not ready. Try refreshing.', 'error');
         return;
     }
@@ -359,10 +364,17 @@ const App = {
     utterance.pitch = pitch;
     utterance.voice = null; 
 
-    let selectedVoice = this.voices.find(voice => voice.lang === 'ml-IN');
+    let selectedVoice = this.voices.find(voice => voice.lang === 'ml-IN' && voice.localService); // Prefer local voices
+    if (!selectedVoice) {
+        selectedVoice = this.voices.find(voice => voice.lang === 'ml-IN');
+    }
+    if (!selectedVoice) {
+        selectedVoice = this.voices.find(voice => voice.lang.startsWith('ml-') && voice.localService);
+    }
     if (!selectedVoice) {
         selectedVoice = this.voices.find(voice => voice.lang.startsWith('ml-'));
     }
+
 
     if (selectedVoice) {
         utterance.voice = selectedVoice;
@@ -377,8 +389,8 @@ const App = {
         let errorMsg = `Speech error: ${event.error}.`;
         if(event.error === 'language-unavailable' || event.error === 'voice-unavailable'){
             errorMsg += ` Please check if Malayalam voice support is installed in your browser/OS.`;
-        } else if (event.error === 'synthesis-failed' || event.error === 'audio-busy') {
-             errorMsg += ` Try again.`;
+        } else if (event.error === 'synthesis-failed' || event.error === 'audio-busy' || event.error === 'synthesis-unavailable') {
+             errorMsg += ` Try again or refresh.`;
         }
         this.updateFeedback(errorMsg, 'error');
     };
@@ -393,7 +405,9 @@ const App = {
         if (letter.audioOverride) {
             textToSpeak = letter.audioOverride;
         } else if (letter.category === 'matra' && letter.displayCharacterOverride) {
-            textToSpeak = letter.displayCharacterOverride;
+            // For matras, we want to speak the example character with the matra
+            // This might need refinement if displayCharacterOverride isn't always speakable
+            textToSpeak = letter.displayCharacterOverride; 
         } else {
             textToSpeak = letter.character;
         }
@@ -429,6 +443,9 @@ document.addEventListener('DOMContentLoaded', () => {
           App.init(); 
       });
     } else {
+        // Fallback for environments where document.fonts might not be available or behave unexpectedly
+        console.warn('document.fonts API not available. Initializing app directly.');
         App.init();
     }
 });
+
