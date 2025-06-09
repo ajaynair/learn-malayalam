@@ -73,6 +73,7 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             padding: 25px;
             box-sizing: border-box;
+            position: relative; /* For share modal positioning context */
         }
 
         header {
@@ -81,47 +82,66 @@
             border-bottom: 1px solid #e0e0e0;
             padding-bottom: 15px;
             position: relative; /* For positioning the coffee button */
-            padding-right: 45px; /* Space for the coffee button icon */
+            padding-right: 125px; /* Space for the coffee and share buttons */
         }
 
         header h1 { /* New English H1 - main title */
-            color: #2c3e50; 
-            margin: 0 0 5px 0; 
+            color: #2c3e50;
+            margin: 0 0 5px 0;
             font-weight: bold;
-            font-size: 1.8em; 
+            font-size: 1.8em;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         header h2 { /* New Malayalam H2 - subtitle */
             font-family: 'Noto Sans Malayalam', sans-serif;
-            color: #555; 
-            margin: 5px 0 0 0; 
+            color: #555;
+            margin: 5px 0 0 0;
             font-weight: normal;
-            font-size: 1.5em; 
+            font-size: 1.5em;
         }
-        
-        .header-coffee-btn {
+
+        .header-action-btn {
             position: absolute;
             top: 10px;
-            right: 10px;
-            padding: 6px 8px; /* Adjusted padding for icon */
-            font-size: 1.2rem; /* Increased font size for emoji */
-            line-height: 1; /* Helps center emoji */
-            background-color: #FFBF00; 
+            padding: 6px 8px;
+            font-size: 1.2rem; /* Default for icon buttons like coffee */
+            line-height: 1;   /* Default for icon buttons */
             color: #333;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .header-coffee-btn:hover {
-            background-color: #e6ac00;
+        .header-action-btn:hover {
             transform: translateY(-1px);
         }
-        .header-coffee-btn:active {
+        .header-action-btn:active {
             transform: translateY(0px);
         }
 
+        .header-coffee-btn {
+            right: 10px;
+            background-color: #FFBF00;
+        }
+        .header-coffee-btn:hover {
+            background-color: #e6ac00;
+        }
+
+        .header-share-btn {
+            right: 50px; /* Positioned to the left of coffee button */
+            background-color: #a0ced9;
+            font-size: 0.9rem; /* Adjusted for text */
+            padding: 7px 12px; /* Adjusted padding for text */
+            font-weight: 600;
+            line-height: normal; /* Use default line-height for text */
+        }
+        .header-share-btn:hover {
+            background-color: #8ab6c1;
+        }
 
         main {
             display: flex;
@@ -168,16 +188,16 @@
 
         .quiz-layout-wrapper {
             display: flex;
-            gap: 20px; 
+            gap: 20px;
         }
 
         .quiz-layout-wrapper .quiz-area {
-            flex: 3; 
-            min-width: 0; 
+            flex: 3;
+            min-width: 0;
         }
 
         .quiz-layout-wrapper .progress-display.card {
-            flex: 1; 
+            flex: 1;
         }
 
         .quiz-area .item-display {
@@ -249,6 +269,7 @@
         .feedback.incorrect { color: #c0392b; }
         .feedback.info { color: #3498db; }
         .feedback.error { color: #e74c3c; }
+        .feedback.success { color: #27ae60; }
 
 
         .control-buttons {
@@ -265,7 +286,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.2s;
-            display: none; 
+            display: none;
         }
 
         .control-buttons button:hover {
@@ -274,30 +295,109 @@
 
         .progress-display {
             display: flex;
-            flex-direction: column; 
-            gap: 8px; 
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .progress-display div { 
+        .progress-display div {
             display: flex;
-            justify-content: flex-start; 
+            justify-content: flex-start;
             align-items: baseline;
-            gap: 8px; 
+            gap: 8px;
             padding: 6px 0;
         }
 
-        .progress-display strong { 
+        .progress-display strong {
             font-size: 1.4em;
             color: #007bff;
-            min-width: 30px; 
-            text-align: right; 
+            min-width: 30px;
+            text-align: right;
         }
 
-        .progress-display span { 
+        .progress-display span {
             font-size: 0.9em;
             color: #6c757d;
-            white-space: nowrap; 
+            white-space: nowrap;
         }
+
+        /* Next Steps Card Styles */
+        .next-steps-card {
+            background-color: #e8f5e9; /* Light green background */
+            border-left: 5px solid #4CAF50; /* Green accent */
+            padding: 20px 25px;
+        }
+        .next-steps-card h3 {
+            color: #388E3C; /* Darker green for heading */
+            font-size: 1.4em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .next-steps-card h3 .emoji {
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+        .next-steps-card p, .next-steps-card ul {
+            font-size: 1em;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        .next-steps-card h4 {
+            color: #4CAF50; /* Green for subheadings */
+            font-size: 1.15em;
+            margin-top: 20px; /* More space before a new h4 */
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+         .next-steps-card h4 .emoji {
+            font-size: 1.1em; /* Emoji size for H4 */
+            margin-right: 8px;
+        }
+        .next-steps-card p strong {
+            color: #388E3C; /* Darker green for emphasis, matching h3 */
+        }
+        .next-steps-card .bookmark-tip {
+            font-weight: bold;
+            background-color: #fff9c4; /* Subtle highlight for bookmark tip */
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: #555; /* Ensure text is readable on yellow */
+            display: inline-block; /* Allows padding to apply correctly */
+        }
+
+        .next-steps-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .next-steps-card ul li {
+            padding-left: 1.5em;
+            position: relative;
+            margin-bottom: 8px;
+        }
+        .next-steps-card ul li::before {
+            content: '🔹';
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-size: 0.9em;
+        }
+        .next-steps-card ul li .emoji {
+            margin-left: 5px;
+        }
+        .next-steps-card .encouragement {
+            font-weight: bold;
+            color: #388E3C;
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 0;
+        }
+        .next-steps-card .encouragement .emoji {
+            font-size: 1.1em;
+        }
+
 
         .about-me-card {
             background-color: #fdfaf6;
@@ -330,19 +430,19 @@
             text-decoration: underline;
         }
 
-        .about-me-card .emoji, .support-me-card .emoji { 
+        .about-me-card .emoji, .support-me-card .emoji {
             font-size: 1.2em;
         }
-        
+
         .support-me-card {
-            background-color: #fff9e6; 
+            background-color: #fff9e6;
             text-align: center;
-            border-left: 5px solid #ffc107; 
+            border-left: 5px solid #ffc107;
             padding: 20px 25px;
         }
 
         .support-me-card h3 {
-            color: #8B4513; 
+            color: #8B4513;
             font-family: 'Georgia', serif;
             font-size: 1.6em;
             margin-top: 0;
@@ -352,41 +452,149 @@
         .support-me-card p {
             font-size: 1.05em;
             line-height: 1.7;
-            color: #5D4037; 
+            color: #5D4037;
             margin-bottom: 20px;
         }
-        
+
         .buy-coffee-btn {
             display: inline-block;
             padding: 12px 25px;
-            background-color: #FFBF00; 
-            color: #333; 
+            background-color: #FFBF00;
+            color: #333;
             text-decoration: none;
             font-weight: bold;
             border-radius: 8px;
             font-size: 1.1em;
             transition: background-color 0.2s, transform 0.1s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 15px; 
+            margin-bottom: 15px;
         }
 
         .buy-coffee-btn .emoji {
-            margin-right: 8px; 
+            margin-right: 8px;
         }
 
         .buy-coffee-btn:hover {
-            background-color: #e6ac00; 
+            background-color: #e6ac00;
             transform: scale(1.03);
         }
         .buy-coffee-btn:active {
-            transform: scale(0.99); 
+            transform: scale(0.99);
         }
 
         .support-me-card .thanks-note {
             font-size: 0.95em;
-            color: #795548; 
-            margin-top: 15px; 
-            margin-bottom: 0; 
+            color: #795548;
+            margin-top: 15px;
+            margin-bottom: 0;
+        }
+
+        /* Share Modal Styles */
+        .share-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5); /* Semi-transparent overlay */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .share-modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            text-align: center;
+        }
+
+        .share-modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #888;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        .share-modal-close-btn:hover,
+        .share-modal-close-btn:focus {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .share-modal h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.5em;
+        }
+        .share-modal p {
+            font-size: 1em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .share-url-container {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 8px;
+        }
+        .share-url-container input[type="text"] {
+            flex-grow: 1;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 0.95em;
+            background-color: #f9f9f9;
+        }
+        .share-url-container button {
+            padding: 8px 15px;
+            font-size: 0.95em;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .share-url-container button:hover {
+            background-color: #2980b9;
+        }
+
+        .social-share-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .social-share-button {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #f0f0f0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 20px; /* Pill shape */
+            font-size: 0.9em;
+            transition: background-color 0.2s, color 0.2s;
+            border: 1px solid #ddd;
+        }
+        .social-share-button:hover {
+            background-color: #e0e0e0;
+            color: #000;
         }
 
 
@@ -398,32 +606,57 @@
         }
 
         /* Responsive adjustments */
-        @media (max-width: 768px) { 
+        @media (max-width: 768px) {
             .app-container {
-                 max-width: 700px; 
+                 max-width: 700px;
             }
             .quiz-layout-wrapper {
                 flex-direction: column;
-                gap: 15px; 
+                gap: 15px;
             }
 
             .quiz-layout-wrapper .progress-display.card {
                 width: 100%;
-                flex: auto; 
+                flex: auto;
             }
 
-            .quiz-layout-wrapper .progress-display.card div { 
-                justify-content: center; 
+            .quiz-layout-wrapper .progress-display.card div {
+                justify-content: center;
             }
              .progress-display strong {
-                min-width: auto; 
-                text-align: left; 
+                min-width: auto;
+                text-align: left;
             }
-            .header-coffee-btn {
-                font-size: 1rem; /* Slightly smaller icon */
-                padding: 5px 7px; /* Adjust padding */
+            .header-action-btn {
                 top: 5px;
+            }
+             .header-coffee-btn {
+                font-size: 1rem;
+                padding: 5px 7px;
                 right: 5px;
+            }
+            .header-share-btn {
+                font-size: 0.9rem;
+                padding: 7px 10px;
+                right: 40px;
+            }
+            header {
+                padding-right: 115px;
+            }
+             .share-modal-content {
+                padding: 20px;
+            }
+            .share-modal h3 {
+                font-size: 1.3em;
+            }
+            .next-steps-card, .about-me-card, .support-me-card {
+                padding: 15px 20px;
+            }
+            .next-steps-card h3, .about-me-card h3, .support-me-card h3 {
+                font-size: 1.3em;
+            }
+             .next-steps-card p, .next-steps-card ul, .about-me-card p, .support-me-card p {
+                font-size: 0.95em;
             }
         }
 
@@ -446,34 +679,41 @@
                 font-size: 0.9rem;
             }
 
-            .progress-display strong { 
+            .progress-display strong {
                 font-size: 1.3em;
             }
-            .progress-display span { 
+            .progress-display span {
                 font-size: 0.85em;
             }
 
             header {
-                padding-bottom: 10px; 
+                padding-bottom: 10px;
+                padding-right: 110px;
             }
-            header h1 { /* English title */
-                font-size: 1.6em; 
+            header h1 {
+                font-size: 1.6em;
             }
-            header h2 { /* Malayalam title */
-                font-size: 1.3em; 
+            header h2 {
+                font-size: 1.3em;
             }
-            .header-coffee-btn { 
-                font-size: 0.9rem; /* Even smaller icon */
-                padding: 4px 6px; /* Adjust padding */
+             .header-coffee-btn {
+                font-size: 0.9rem;
+                padding: 4px 6px;
+                right: 5px;
             }
-            .about-me-card, .support-me-card {
+            .header-share-btn {
+                font-size: 0.85rem;
+                padding: 6px 9px;
+                right: 35px;
+            }
+            .next-steps-card, .about-me-card, .support-me-card {
                 padding: 15px 20px;
             }
-            .about-me-card h3, .support-me-card h3 {
-                font-size: 1.4em;
+            .next-steps-card h3, .about-me-card h3, .support-me-card h3 {
+                font-size: 1.2em;
             }
-            .about-me-card p, .support-me-card p {
-                font-size: 1em;
+            .next-steps-card p, .next-steps-card ul, .about-me-card p, .support-me-card p {
+                font-size: 0.9em;
             }
             .mode-switcher button {
                 padding: 8px 12px;
@@ -482,6 +722,23 @@
              .buy-coffee-btn {
                 padding: 10px 20px;
                 font-size: 1em;
+            }
+            .share-modal-content {
+                padding: 15px;
+                width: 95%;
+            }
+            .share-modal h3 {
+                font-size: 1.2em;
+            }
+             .share-modal p {
+                font-size: 0.9em;
+            }
+            .share-url-container input[type="text"], .share-url-container button {
+                font-size: 0.9em;
+            }
+            .social-share-button {
+                font-size: 0.85em;
+                padding: 7px 12px;
             }
         }
 
@@ -504,7 +761,8 @@
 <body>
     <div class="app-container">
         <header>
-            <button id="header-coffee-btn" class="header-coffee-btn" title="Support the Developer" aria-label="Support the Developer by buying a coffee">☕</button>
+            <button id="header-share-btn" class="header-action-btn header-share-btn" title="Share this app with friends" aria-label="Share this app with friends" aria-haspopup="dialog" aria-expanded="false">Share</button>
+            <button id="header-coffee-btn" class="header-action-btn header-coffee-btn" title="Support the Developer" aria-label="Support the Developer by buying a coffee">☕</button>
             <h1>Learn the Malayalam Alphabet & Words for free</h1>
             <h2><span lang="ml-IN">മലയാള അക്ഷരമാല പഠിക്കാം</span></h2>
         </header>
@@ -548,6 +806,38 @@
                 </section>
             </div>
 
+            <section class="next-steps-card card">
+                <h3><span class="emoji" role="img" aria-label="Seedling">🌱</span> Keep Growing Your Malayalam!</h3>
+                <p>Awesome work on the quizzes! You're building a fantastic foundation in Malayalam.</p>
+
+                <h4><span class="emoji" role="img" aria-label="Brain lightbulb">🧠💡</span> Why This Works & How to Maximize Your Learning:</h4>
+                <p>
+                    Want to <em>truly</em> master Malayalam, not just cram and forget? This app is your secret weapon!
+                    We use <strong>Spaced Repetition (SRS)</strong>, a powerful technique backed by science. It intelligently
+                    schedules what you learn, bringing items back for review <em>just before</em> you might forget them.
+                    This means less wasted effort and more knowledge that sticks – permanently!
+                </p>
+                <p>
+                    Plus, learning here is <strong>active and engaging, like a game!</strong> Research consistently shows
+                    that interactive quizzing beats passive learning hands-down. You'll grasp concepts faster, remember more,
+                    and actually <em>enjoy</em> the process.
+                </p>
+                <p>
+                    <strong>Transform your learning:</strong> Make this app your daily 5-minute Malayalam habit.
+                    <span class="bookmark-tip" role="tooltip" title="Press Ctrl+D or Cmd+D to bookmark!">Bookmark this page now</span>
+                    and visit every day. Consistent, smart practice is the express lane to fluency. You've got this! <span class="emoji" role="img" aria-label="Rocket">🚀</span>
+                </p>
+
+                <h4>Here's how to keep the momentum going:</h4>
+                <ul>
+                    <li><strong>Daily Dose:</strong> Just 5-10 minutes daily reinforces learning. Revisit reviewed items and tackle new ones.</li>
+                    <li><strong>Listen Up:</strong> Tune into Malayalam music or simple dialogues. Get your ear accustomed to the sounds. <span class="emoji" role="img" aria-label="Headphones">🎧</span></li>
+                    <li><strong>Explore More:</strong> As you grow, look for children's stories, or apps that teach grammar and conversation.</li>
+                    <li><strong>Switch & Solidify:</strong> Regularly switch between 'Letters' and 'Words' modes to strengthen all areas.</li>
+                </ul>
+                <p class="encouragement">Every bit of practice counts. <span lang="ml-IN">മുന്നോട്ട് പോകുക!</span> (Munnottu pokuka! - Go forward!) <span class="emoji" role="img" aria-label="Victory hand">✌️</span></p>
+            </section>
+
             <div class="about-me-card card">
                 <h3><span class="emoji" role="img" aria-label="Waving hand">👋</span> Hey There, Language Adventurer!</h3>
                 <p>
@@ -562,7 +852,7 @@
                     Got feedback, found a mischievous bug <span class="emoji" role="img" aria-label="Bug">🐛</span>, or just want to say "ഹായ്!" (that's "Hi!" in Malayalam)?
                     Feel free to drop a line at: <a href="mailto:ajaynair59@gmail.com">ajaynair59 [at] gmail [dot] com</a>.
                 </p>
-                <p>Happy learning, or as we say, "നന്നായി പഠിക്കൂ!" (Nannaayi padhikku!) <span class="emoji" role="img" aria-label="Smiling face with sunglasses">😎</span></p>
+                <p>Happy learning, or as we say, "<span lang="ml-IN">നന്നായി പഠിക്കൂ!</span>" (Nannaayi padhikku!) <span class="emoji" role="img" aria-label="Smiling face with sunglasses">😎</span></p>
             </div>
 
             <section class="support-me-card card">
@@ -575,7 +865,7 @@
                     <span class="emoji" role="img" aria-label="Coffee cup">☕</span> Buy Me a Coffee
                 </a>
                 <p class="thanks-note">
-                    Your support keeps this project brewing strong! നന്ദി! (Thank you!) <span class="emoji" role="img" aria-label="Praying hands">🙏</span>
+                    Your support keeps this project brewing strong! <span lang="ml-IN">നന്ദി!</span> (Thank you!) <span class="emoji" role="img" aria-label="Praying hands">🙏</span>
                 </p>
             </section>
         </main>
@@ -584,6 +874,27 @@
             <script>document.getElementById('current-year').textContent = new Date().getFullYear();</script>
         </footer>
     </div>
+
+    <div id="share-modal" class="share-modal" style="display: none;" role="dialog" aria-labelledby="share-modal-title" aria-modal="true" aria-hidden="true">
+        <div class="share-modal-content">
+            <button id="share-modal-close-btn" class="share-modal-close-btn" aria-label="Close share dialog">&times;</button>
+            <h3 id="share-modal-title">Share this App!</h3>
+            <p>Help others discover this Malayalam learning app by sharing the link:</p>
+            <div class="share-url-container">
+                <input type="text" id="share-url-input" readonly aria-label="Sharable link">
+                <button id="copy-url-btn">Copy URL</button>
+            </div>
+            <p>Or share directly on:</p>
+            <div class="social-share-buttons">
+                <a id="share-twitter" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button" aria-label="Share on Twitter">Twitter</a>
+                <a id="share-facebook" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button" aria-label="Share on Facebook">Facebook</a>
+                <a id="share-whatsapp" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button" aria-label="Share on WhatsApp">WhatsApp</a>
+                <a id="share-linkedin" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button" aria-label="Share on LinkedIn">LinkedIn</a>
+                <a id="share-email" href="#" class="social-share-button" aria-label="Share via Email">Email</a>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="/index.tsx"></script>
 
     <script type="application/ld+json">
@@ -618,7 +929,7 @@
       },
       "aggregateRating": {
         "@type": "AggregateRating",
-        "ratingValue": "4.8", 
+        "ratingValue": "4.8",
         "ratingCount": "150",
         "bestRating": "5",
         "worstRating": "1"
