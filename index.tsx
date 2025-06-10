@@ -1,5 +1,3 @@
-import { GoogleGenAI } from "@google/genai"; // Added as per instructions, though not used in this diff. Assume it's for future use.
-
 // Define types previously in lettersData.ts and wordsData.ts
 interface InitialLetter {
     id: string;
@@ -69,6 +67,7 @@ const App = {
 
     DOM: {
         itemDisplay: document.getElementById('item-display')!,
+        replayItemAudioBtn: document.getElementById('replay-item-audio-btn') as HTMLButtonElement,
         optionsContainer: document.getElementById('options-container')!,
         feedbackArea: document.getElementById('feedback-area')!,
         nextQuestionBtn: document.getElementById('next-question-btn') as HTMLButtonElement,
@@ -106,6 +105,13 @@ const App = {
         }
         if(this.DOM.muteToggleBtn) {
             this.DOM.muteToggleBtn.addEventListener('click', () => this.toggleMute());
+        }
+        if(this.DOM.replayItemAudioBtn) {
+            this.DOM.replayItemAudioBtn.addEventListener('click', () => {
+                if (this.currentItem) {
+                    this.speakItem(this.currentItem, true); // bypassMute = true
+                }
+            });
         }
         if(this.DOM.shareModalCloseBtn) {
             this.DOM.shareModalCloseBtn.addEventListener('click', () => this.closeShareModal());
@@ -199,17 +205,25 @@ const App = {
         this.updateMuteButtonAppearance();
 
         if (this.isMuted) {
-            // Stop any currently playing audio
-            if (this.currentAudioElement) {
-                this.currentAudioElement.pause();
-                this.currentAudioElement.currentTime = 0;
-                // Don't nullify here, speakItem will handle it or a new sound will replace it
-            }
+            // Stop any currently playing audio ONLY if it wasn't initiated by bypassMute
+            // The speakItem function itself will now handle its own audio element.
+            // We only need to stop general UI speech here.
             if (this.speechSynthesisSupported && window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
             }
+            // If currentAudioElement is playing (and not from a bypassMute source), speakItem will handle it.
+            // No, let's explicitly stop it if it wasn't from bypass. This is tricky.
+            // The current `speakItem` logic of stopping `currentAudioElement` first is good.
+            // If muted, `speakItem` called without `bypassMute` will return early.
+            // If muted, `speakItem` called *with* `bypassMute` will play.
+            // So, if we just toggled mute ON, any non-bypassed audio should stop.
+            // The `speakItem` already handles stopping its own `currentAudioElement`
+            // if a new sound starts. So this should be fine.
+            if (this.currentAudioElement) {
+                this.currentAudioElement.pause();
+                // Do not reset src, a bypass call might be active or a new one might start.
+            }
         }
-        // Optional: play a small sound cue for mute/unmute if not muted.
     },
 
     updateMuteButtonAppearance() {
@@ -363,6 +377,7 @@ const App = {
             this.quizItems = []; // Ensure quizItems is empty if data load fails
             this.DOM.totalItemsCountDisplay.textContent = '0';
             this.DOM.reviewedCountDisplay.textContent = '0';
+            if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'none';
             return;
         }
 
@@ -490,7 +505,7 @@ const App = {
             this.currentItem.correctStreak++;
             this.currentItem.totalCorrect++;
             this.updateFeedback(`${displayForm} is correct! (${this.currentItem.transliteration})`, 'correct');
-            this.speakItem(this.currentItem, false); // Play audio on correct, non-emphatic
+            this.speakItem(this.currentItem, false); // Play audio on correct, non-emphatic, respect mute
 
             if (this.currentItem.correctStreak === 1) this.currentItem.intervalDays = 1;
             else if (this.currentItem.correctStreak === 2) this.currentItem.intervalDays = 6;
@@ -503,7 +518,7 @@ const App = {
             this.currentItem.correctStreak = 0;
             this.currentItem.totalIncorrect++;
             this.updateFeedback(`Incorrect. This is ${displayForm} (${this.currentItem.transliteration}).`, 'incorrect');
-            this.speakItem(this.currentItem, true); // Play audio on incorrect, emphatic (though emphatic flag not currently used by MP3 logic)
+            this.speakItem(this.currentItem, false); // Play audio on incorrect, emphatic, respect mute
 
             if (navigator.vibrate) {
                 navigator.vibrate(200); // Vibrate for 200ms on incorrect answer
@@ -539,10 +554,10 @@ const App = {
             this.options = this.generateOptions(this.currentItem);
             this.renderQuiz();
             this.updateFeedback('Choose the correct option.', 'info');
-            // Optionally, play audio for the new item automatically when it appears
-            // this.speakItem(this.currentItem); // Uncomment if desired
+            if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'inline-flex';
         } else {
             this.DOM.itemDisplay.textContent = '🎉';
+            if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'none';
             this.updateFeedback(this.quizItems.length > 0 ? 'All items learned for now! Come back later for review or switch modes.' : 'No items loaded. Check data files or connection.', this.quizItems.length > 0 ? 'success' : 'error');
             this.DOM.optionsContainer.innerHTML = '';
         }
@@ -553,6 +568,8 @@ const App = {
         const displayForm = this.currentItem.character ? ((this.currentItem as InitialLetter).displayCharacterOverride || (this.currentItem as InitialLetter).character) : (this.currentItem as InitialWord).word;
         this.DOM.itemDisplay.textContent = displayForm;
         this.DOM.itemDisplay.setAttribute('aria-label', `Quiz item: ${displayForm}`);
+        if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'inline-flex';
+
 
         this.DOM.optionsContainer.innerHTML = '';
         this.options.forEach(opt => {
@@ -568,11 +585,9 @@ const App = {
     speak(text: string, lang: string = 'ml-IN', rate: number = 0.9, pitch: number = 1.1) {
         if (this.isMuted) return; // Respect mute state
         if (!this.speechSynthesisSupported || !this.speechSynthesisUtterance) {
-            // console.warn('Speech synthesis not initialized or not supported (for UI feedback).'); // Less verbose
             return;
         }
         if (!this.speechSynthesisReady) {
-            // console.warn('Cannot speak (UI feedback): Speech synthesis voices are not ready or available.');// Less verbose
             return;
         }
 
@@ -603,8 +618,8 @@ const App = {
     },
 
     // Audio for item pronunciation (MP3)
-    async speakItem(item: QuizItem, emphatic: boolean = false) {
-        if (this.isMuted) return; // Respect mute state
+    async speakItem(item: QuizItem, bypassMute: boolean = false) {
+        if (this.isMuted && !bypassMute) return; // Respect mute state unless bypassed
         if (!item) return;
 
         // Stop any currently playing audio (MP3 or TTS)
@@ -635,7 +650,7 @@ const App = {
                 audioElement.onerror = null;
                 audioElement.onended = null;
                 audioElement.onabort = null;
-                if (this.currentAudioElement === audioElement) { // Only nullify if it's still the active one
+                if (this.currentAudioElement === audioElement) {
                     this.currentAudioElement = null;
                 }
             };
@@ -649,10 +664,11 @@ const App = {
                 cleanup();
                 reject(new Error(`Audio not found or error for ${item.id}`));
             };
-            audioElement.onended = cleanup; // Cleanup when audio finishes naturally
-            audioElement.onabort = cleanup; // Cleanup if aborted (e.g. by new audio)
+            audioElement.onended = cleanup;
+            audioElement.onabort = cleanup;
 
             loadTimeoutId = window.setTimeout(() => {
+                loadTimeoutId = null; // Clear timeout id as it has executed
                 console.warn(`Audio load timeout for item ID ${item.id} at path ${audioPath}`);
                 cleanup();
                 reject(new Error(`Audio load timeout for ${item.id}`));
@@ -665,7 +681,7 @@ const App = {
         try {
             await playPromise;
             // The `emphatic` parameter is not currently used for MP3 playback rate.
-            // audioElement.playbackRate = emphatic ? 0.9 : 1.0; // If you want to use it
+            // audioElement.playbackRate = emphatic ? 0.9 : 1.0;
             audioElement.play().catch(playError => {
                 console.error(`Error playing custom audio for item ID ${item.id}:`, playError);
                 if (this.currentAudioElement === audioElement) {
@@ -674,7 +690,7 @@ const App = {
             });
         } catch (error) {
             console.log(`No custom audio will be played for item ID ${item.id}. Error: ${(error as Error).message}`);
-            if (this.currentAudioElement === audioElement) { // Ensure cleanup if playPromise rejected
+            if (this.currentAudioElement === audioElement) {
                 this.currentAudioElement = null;
             }
         }
@@ -683,10 +699,6 @@ const App = {
     updateFeedback(message: string, type: 'info' | 'error' | 'success' | 'correct' | 'incorrect') {
         this.DOM.feedbackArea.textContent = message;
         this.DOM.feedbackArea.className = `feedback ${type}`;
-        // Optionally speak error messages using general TTS, respecting mute
-        // if (type === 'error' && !this.isMuted && this.speechSynthesisSupported && this.speechSynthesisReady) {
-        //   this.speak(message, 'en-US');
-        // }
     },
 
     updateProgressDisplay() {
