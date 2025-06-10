@@ -1,8 +1,7 @@
 
-export interface ShareDetails {
-    title: string;
-    text: string;
-    url: string;
+export interface ShareDetailsKeys { // Renamed interface
+    titleKey: string;
+    textKey: string;
 }
 
 export const LOCAL_STORAGE_KEYS = {
@@ -14,8 +13,11 @@ export const LOCAL_STORAGE_KEYS = {
     celebratedModes: 'malayalamAppCelebratedModes_v1',
 };
 
-export const SHARE_DETAILS: ShareDetails = {
-    title: 'Learn Malayalam Free: Letters, Alphabet & Words | Interactive Quiz',
-    text: 'Discover the fun, free way to learn the Malayalam alphabet and words with this interactive quiz app! Master the script with audio, spaced repetition, and engaging exercises.',
-    url: 'https://www.learn-malayalam.org/'
+// Keys for looking up text in english.json
+export const SHARE_DETAILS_KEYS: ShareDetailsKeys = {
+    titleKey: 'shareDetails.title',
+    textKey: 'shareDetails.text',
 };
+
+// URL remains constant
+export const SHARE_URL: string = 'https://www.learn-malayalam.org/';

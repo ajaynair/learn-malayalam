@@ -1,39 +1,36 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn Malayalam Free: Letters, Alphabet & Words | Interactive Quiz</title>
-    <meta name="description" content="Learn Malayalam letters, the full alphabet, and words for free with our interactive quiz. Master the Malayalam script with audio pronunciation and spaced repetition. Ideal for beginners looking for a free Malayalam learning tool.">
-    <meta name="keywords" content="learn malayalam, malayalam quiz free, learn malayalam free, learn malayalam alphabets free, Malayalam, Malayalam alphabet, Malayalam letters, Malayalam words, Malayalam script, interactive quiz, language learning, free Malayalam lessons, audio pronunciation, spaced repetition">
+    <title></title> <!-- Populated by JS -->
+    <meta name="description" content=""> <!-- Populated by JS -->
+    <meta name="keywords" content=""> <!-- Populated by JS -->
     <meta name="author" content="Ajay Nair">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.learn-malayalam.org/">
 
-    <!-- Open Graph / Facebook Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.learn-malayalam.org/">
-    <meta property="og:title" content="Learn Malayalam Free: Letters, Alphabet & Words | Interactive Quiz">
-    <meta property="og:description" content="Learn Malayalam letters, the full alphabet, and words for free with our interactive quiz. Master the Malayalam script with audio pronunciation and spaced repetition.">
+    <meta property="og:title" content=""> <!-- Populated by JS (same as title) -->
+    <meta property="og:description" content=""> <!-- Populated by JS (same as meta desc) -->
     <meta property="og:image" content="https://www.learn-malayalam.org/og-image.jpg">
 
-    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://www.learn-malayalam.org/">
-    <meta name="twitter:title" content="Learn Malayalam Free: Letters, Alphabet & Words | Interactive Quiz">
-    <meta name="twitter:description" content="The fun, free way to learn the Malayalam alphabet and words with quizzes, audio, and SRS.">
+    <meta name="twitter:title" content=""> <!-- Populated by JS (same as title) -->
+    <meta name="twitter:description" content=""> <!-- Populated by JS (same as meta desc) -->
     <meta name="twitter:image" content="https://www.learn-malayalam.org/twitter-image.jpg">
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-    <!-- Google tag (gtag.js) -->
     <script defer src="https://www.googletagmanager.com/gtag/js?id=G-BBVPFJN51V"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-BBVPFJN51V');
     </script>
 
@@ -51,13 +48,13 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Noto+Sans+Malayalam:wght@100..900&display=swap');
 
         html {
-            color-scheme: light;
-            background-color: #f0f4f8;
+            color-scheme: light; 
+            background-color: #f0f4f8; 
         }
 
         body {
             font-family: 'Noto Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
+            background-color: #f0f4f8; 
             color: #333;
             margin: 0;
             padding: 20px;
@@ -66,18 +63,18 @@
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
-            overflow-x: hidden; /* For confetti */
+            overflow-x: hidden; 
         }
 
         .app-container {
             width: 100%;
-            max-width: 900px;
+            max-width: 900px; 
             background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             padding: 25px;
             box-sizing: border-box;
-            position: relative;
+            position: relative; 
         }
 
         header {
@@ -85,30 +82,30 @@
             align-items: center;
             justify-content: space-between;
             text-align: center;
-            margin-bottom: 20px; /* Reduced margin */
+            margin-bottom: 20px; 
             border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 10px; /* Reduced padding */
+            padding-bottom: 10px; 
         }
 
-        header h1 {
-            color: #2c3e50;
-            margin: 0 10px;
+        header h1 { 
+            color: #2c3e50; 
+            margin: 0 10px; 
             font-weight: bold;
-            font-size: 1.5em; /* Adjusted font size */
+            font-size: 1.5em; 
             flex-grow: 1;
             text-align: center;
         }
-
+        
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 10px; /* Space between share and coffee */
+            gap: 10px; 
         }
 
         .header-action-btn {
             padding: 6px 8px;
-            font-size: 1.2rem;
-            line-height: 1;
+            font-size: 1.2rem; 
+            line-height: 1;   
             color: #333;
             border: none;
             border-radius: 6px;
@@ -118,7 +115,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f0f0f0;
+            background-color: #f0f0f0; 
         }
         .header-action-btn:hover {
             transform: translateY(-1px);
@@ -129,41 +126,41 @@
         }
 
         .header-coffee-btn {
-            background-color: #FFBF00;
+            background-color: #FFBF00; 
         }
         .header-coffee-btn:hover {
             background-color: #e6ac00;
         }
 
         .header-share-btn, .header-about-btn {
-            font-size: 0.9rem;
-            padding: 7px 12px;
-            font-weight: 600;
-            line-height: normal;
+            font-size: 0.9rem; 
+            padding: 7px 12px; 
+            font-weight: 600; 
+            line-height: normal; 
             color: white;
         }
-        .header-share-btn, .header-about-btn { /* Combined for shared base color */
-            background-color: #a0ced9;
+        .header-share-btn, .header-about-btn { 
+            background-color: #a0ced9; 
         }
-        .header-share-btn:hover, .header-about-btn:hover { /* Combined for shared hover color */
+        .header-share-btn:hover, .header-about-btn:hover { 
             background-color: #8ab6c1;
         }
-
+        
         main {
             display: flex;
             flex-direction: column;
-            gap: 15px; /* Reduced gap */
+            gap: 15px; 
         }
 
         .card {
             background-color: #ffffff;
             border-radius: 8px;
-            padding: 15px; /* Reduced padding */
+            padding: 15px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
 
         .mode-switcher {
-            padding: 10px; /* Reduced padding */
+            padding: 10px; 
         }
         .mode-switcher-controls {
             display: flex;
@@ -176,20 +173,20 @@
             border: none;
             padding: 8px 10px;
             line-height: 1;
-            color: #333;
+            color: #333; 
             border-radius: 8px;
             cursor: pointer;
             transition: color 0.2s, transform 0.1s, background-color 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 6px; 
         }
         .mode-switcher-mute-btn:hover {
-            transform: scale(1.05);
+            transform: scale(1.05); 
             background-color: rgba(0,0,0,0.05);
         }
         .mode-switcher-mute-btn .mute-icon {
-            font-size: 1.8rem;  /* Slightly reduced */
+            font-size: 1.8rem;  
         }
         .mode-switcher-mute-btn .mute-text {
             font-size: 0.9rem;
@@ -197,16 +194,16 @@
         }
         .mode-switcher-mute-btn.muted .mute-icon,
         .mode-switcher-mute-btn.muted .mute-text {
-            color: #e74c3c;
+            color: #e74c3c; 
         }
 
         .mode-switcher-buttons {
-            display: flex;
+            display: flex; 
             gap: 10px;
         }
         .mode-switcher-buttons button {
-            padding: 8px 12px;
-            font-size: 0.9rem;
+            padding: 8px 12px; 
+            font-size: 0.9rem; 
             border: 1px solid #3498db;
             background-color: #f0f8ff;
             color: #3498db;
@@ -225,39 +222,37 @@
 
         .quiz-layout-wrapper {
             display: flex;
-            flex-direction: column; /* Stack quiz area and progress display vertically by default */
-            gap: 15px;
+            flex-direction: column; 
+            gap: 15px; 
         }
 
         .quiz-layout-wrapper .quiz-area {
-            /* flex: 3; removed, will take full width in column layout */
-            min-width: 0;
-            width: 100%; /* Ensure full width */
+            min-width: 0; 
+            width: 100%; 
         }
 
         .quiz-layout-wrapper .progress-display.card {
-            /* flex: 1; removed, will take full width in column layout */
-             width: 100%; /* Ensure full width */
+             width: 100%; 
         }
 
         .item-display-wrapper {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 10px;
+            justify-content: center; 
+            gap: 8px; 
+            margin-bottom: 10px; 
             background-color: #eaf5ff;
             border-radius: 8px;
-            padding: 8px;
+            padding: 8px; 
         }
-
+        
         .answer-feedback-icon {
-            font-size: 2rem;
+            font-size: 2rem; 
             font-weight: bold;
             line-height: 1;
-            display: none;
+            display: none; 
         }
-
+        
         .noto-sans-malayalam-main-display {
           font-family: "Noto Sans Malayalam", sans-serif;
           font-optical-sizing: auto;
@@ -267,36 +262,36 @@
         }
 
         .quiz-area .item-display {
-            font-size: 3rem;
+            font-size: 3rem; 
             color: #3498db;
             text-align: center;
-            padding: 5px;
-            min-height: 70px;
+            padding: 5px; 
+            min-height: 70px; 
             display: flex;
             align-items: center;
             justify-content: center;
             overflow-wrap: break-word;
-            line-height: 1.2;
-            flex-grow: 1;
+            line-height: 1.2; 
+            flex-grow: 1; 
         }
 
         .replay-audio-btn {
             background-color: transparent;
             border: none;
             color: #3498db;
-            font-size: 1.6rem;
-            padding: 6px;
-            border-radius: 50%;
+            font-size: 1.6rem; 
+            padding: 6px; 
+            border-radius: 50%; 
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
-            display: none;
+            display: none; 
             align-items: center;
             justify-content: center;
             line-height: 1;
-            flex-shrink: 0;
+            flex-shrink: 0; 
         }
         .replay-audio-btn:hover {
-            background-color: rgba(52, 152, 219, 0.1);
+            background-color: rgba(52, 152, 219, 0.1); 
             transform: scale(1.1);
         }
         .replay-audio-btn:active {
@@ -304,36 +299,36 @@
         }
 
         .options {
-            display: flex;
-            justify-content: space-between;
-            gap: 5px;
-            margin-bottom: 10px;
-            flex-wrap: nowrap;
+            display: flex; 
+            justify-content: space-between; 
+            gap: 5px; 
+            margin-bottom: 10px; 
+            flex-wrap: nowrap; 
         }
 
         .options button {
-            flex-grow: 1;
-            flex-basis: 0;
-            padding: 10px 5px;
-            font-size: 0.85rem;
-            background-color: #79c7c2;
+            flex-grow: 1; 
+            flex-basis: 0; 
+            padding: 10px 5px; 
+            font-size: 0.85rem; 
+            background-color: #79c7c2; 
             color: white;
-            border: 1px solid #6aa9a3;
+            border: 1px solid #6aa9a3; 
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s, border-color 0.2s;
             text-align: center;
             font-weight: 500;
             box-shadow: 0 2px 3px rgba(0,0,0,0.08);
-            white-space: nowrap;
+            white-space: nowrap; 
             overflow: hidden;
-            text-overflow: ellipsis;
+            text-overflow: ellipsis; 
         }
 
         .options button:hover {
-            background-color: #88d4cf;
+            background-color: #88d4cf; 
             border-color: #77b7b2;
-            transform: translateY(-1px);
+            transform: translateY(-1px); 
         }
         .options button:active {
             transform: scale(0.98) translateY(0px);
@@ -351,14 +346,14 @@
         .options button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
-            transform: none;
+            transform: none; 
         }
 
         .feedback {
-            min-height: 20px;
-            margin-bottom: 10px;
+            min-height: 20px; 
+            margin-bottom: 10px; 
             text-align: center;
-            font-size: 0.9em;
+            font-size: 0.9em; 
             font-weight: bold;
         }
         .feedback.correct { color: #27ae60; }
@@ -369,12 +364,12 @@
 
         .control-buttons {
             text-align: center;
-            margin-top: 5px;
+            margin-top: 5px; 
         }
 
         .control-buttons button {
-            padding: 10px 18px;
-            font-size: 0.9rem;
+            padding: 10px 18px; 
+            font-size: 0.9rem; 
             font-weight: bold;
             background-color: #3498db;
             color: white;
@@ -382,7 +377,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.2s;
-            display: none;
+            display: none; 
         }
 
         .control-buttons button:hover {
@@ -391,21 +386,21 @@
 
         .progress-display {
             display: flex;
-            flex-direction: column;
-            gap: 5px;
-            padding: 10px 0;
+            flex-direction: column; 
+            gap: 5px; 
+            padding: 10px 0; 
         }
-
+        
         .progress-bar-container-wrapper {
-            margin-bottom: 10px; /* Space between progress bar and stats */
+            margin-bottom: 10px; 
         }
         .progress-bar-label {
             display: block;
-            font-size: 1.1em; /* Increased font size */
-            color: #2980b9;
+            font-size: 1.1em; 
+            color: #2980b9; 
             margin-bottom: 4px;
             text-align: left;
-            font-weight: 600;
+            font-weight: 600; 
             animation: pulse-text 1.8s infinite ease-in-out;
         }
 
@@ -420,12 +415,12 @@
             background-color: #e0e0e0;
             border-radius: 6px;
             height: 12px;
-            overflow: hidden;
+            overflow: hidden; 
         }
         .progress-bar-inner {
             height: 100%;
-            width: 0%;
-            background-color: #3498db;
+            width: 0%; 
+            background-color: #3498db; 
             border-radius: 6px;
             transition: width 0.3s ease-in-out;
             background-image: linear-gradient(
@@ -447,222 +442,119 @@
             to { background-position: 0 0; }
         }
 
-
-        .progress-display div:not(.progress-bar-container-wrapper):not(.progress-bar-container) {
+        .progress-display div:not(.progress-bar-container-wrapper):not(.progress-bar-container) { 
             display: flex;
-            justify-content: space-between; /* Align label left, score right */
+            justify-content: space-between; 
             align-items: baseline;
-            gap: 8px;
-            padding: 4px 0;
+            gap: 8px; 
+            padding: 4px 0; 
         }
 
-        .progress-display strong { /* Style for the score number */
-            font-size: 1.2em;
+        .progress-display strong { 
+            font-size: 1.2em; 
             color: #007bff;
-            font-weight: bold; /* Keep score bold */
-            text-align: right;
-            padding-right: 10px; /* Added buffer to the right */
+            font-weight: bold; 
+            text-align: right; 
+            padding-right: 10px; 
         }
 
-        .progress-display span:not(.progress-bar-label) { /* Style for the text label */
-            font-size: 1.0em;  /* Slightly smaller than score */
-            color: #555;     /* Standard text color */
-            font-weight: normal; /* Not bold */
-            white-space: nowrap;
+        .progress-display span:not(.progress-bar-label) { 
+            font-size: 1.0em;  
+            color: #555;     
+            font-weight: normal; 
+            white-space: nowrap; 
             text-align: left;
         }
-
-        .next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls {
-            margin-top: 20px;
+        
+        .next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls { 
+            margin-top: 20px; 
         }
 
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
+        @media (max-width: 768px) { 
             .app-container {
-                 max-width: 700px;
-                 padding: 20px;
+                 max-width: 700px; 
+                 padding: 20px; 
             }
-            /* .quiz-layout-wrapper no longer needs flex-direction change here */
             .quiz-layout-wrapper {
-                gap: 10px;
+                gap: 10px; 
             }
-            /* .quiz-layout-wrapper .progress-display.card inherits width:100% from base */
-
             .progress-display {
-                flex-direction: column;
+                flex-direction: column; 
             }
             .progress-bar-container-wrapper {
-                padding: 0 5px;
+                padding: 0 5px; 
             }
-            .progress-display div:not(.progress-bar-container-wrapper):not(.progress-bar-container) {
-                flex-direction: row;
+            .progress-display div:not(.progress-bar-container-wrapper):not(.progress-bar-container) { 
+                flex-direction: row; 
                 justify-content: space-between;
                 width: 100%;
-                padding: 5px;
+                padding: 5px;      
             }
-             .progress-display strong { /* Score number */
-                text-align: right;
-                font-size: 1.1em;
+             .progress-display strong { 
+                text-align: right; 
+                font-size: 1.1em; 
             }
-            .progress-display span:not(.progress-bar-label) { /* Text label */
-                font-size: 0.9em;
+            .progress-display span:not(.progress-bar-label) { 
+                font-size: 0.9em; 
                 text-align: left;
             }
-
-            .header-action-btn {
-                top: 5px;
-            }
-            .header-coffee-btn {
-                font-size: 1rem;
-                padding: 5px 7px;
-            }
-            .header-share-btn, .header-about-btn {
-                font-size: 0.9rem;
-                padding: 7px 10px;
-            }
-            header h1 {
-                font-size: 1.3em;
-            }
-            .mode-switcher-mute-btn .mute-icon {
-                font-size: 1.7rem;
-            }
-            .mode-switcher-mute-btn .mute-text {
-                font-size: 0.8rem;
-            }
-            .quiz-area .item-display {
-                font-size: 2.5rem;
-                min-height: 60px;
-            }
-            .replay-audio-btn {
-                font-size: 1.5rem;
-            }
-            .answer-feedback-icon {
-                font-size: 1.8rem;
-            }
-             .options button {
-                font-size: 0.8rem;
-                padding: 8px 5px;
-            }
+            .header-action-btn { top: 5px; }
+            .header-coffee-btn { font-size: 1rem; padding: 5px 7px; }
+            .header-share-btn, .header-about-btn { font-size: 0.9rem; padding: 7px 10px; }
+            header h1 { font-size: 1.3em; }
+            .mode-switcher-mute-btn .mute-icon { font-size: 1.7rem; }
+            .mode-switcher-mute-btn .mute-text { font-size: 0.8rem; }
+            .quiz-area .item-display { font-size: 2.5rem; min-height: 60px; }
+            .replay-audio-btn { font-size: 1.5rem; }
+            .answer-feedback-icon { font-size: 1.8rem; }
+            .options button { font-size: 0.8rem; padding: 8px 5px; }
         }
 
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            .app-container {
-                padding: 10px;
-            }
-            main {
-                gap: 10px;
-            }
-            .card {
-                padding: 10px;
-            }
-            header {
-                padding-bottom: 8px;
-                margin-bottom: 10px;
-            }
-            header h1 {
-                font-size: 1.1em;
-                margin: 0 5px;
-            }
-            .header-coffee-btn {
-                font-size: 0.9rem;
-                padding: 4px 6px;
-            }
-            .header-share-btn, .header-about-btn {
-                font-size: 0.8rem;
-                padding: 5px 8px;
-            }
-            .header-actions {
-                gap: 5px;
-            }
-
+            body { padding: 10px; }
+            .app-container { padding: 10px; }
+            main { gap: 10px; }
+            .card { padding: 10px; }
+            header { padding-bottom: 8px; margin-bottom: 10px; }
+            header h1 { font-size: 1.1em; margin: 0 5px; }
+            .header-coffee-btn { font-size: 0.9rem; padding: 4px 6px; }
+            .header-share-btn, .header-about-btn { font-size: 0.8rem; padding: 5px 8px; }
+            .header-actions { gap: 5px; }
             .mode-switcher { padding: 8px; }
             .mode-switcher-controls { margin-bottom: 5px; }
-            .mode-switcher-buttons button {
-                padding: 6px 10px;
-                font-size: 0.8rem;
-            }
+            .mode-switcher-buttons button { padding: 6px 10px; font-size: 0.8rem; }
             .mode-switcher-mute-btn { padding: 5px 8px; gap: 4px; }
             .mode-switcher-mute-btn .mute-icon { font-size: 1.5rem; }
             .mode-switcher-mute-btn .mute-text { font-size: 0.7rem; }
-
-            .item-display-wrapper {
-                padding: 5px;
-                gap: 5px;
-                margin-bottom: 8px;
-            }
-            .quiz-area .item-display {
-                font-size: 2rem;
-                min-height: 50px;
-                padding: 5px;
-                line-height: 1.1;
-            }
-            .replay-audio-btn {
-                font-size: 1.3rem;
-                padding: 5px;
-            }
-            .answer-feedback-icon {
-                font-size: 1.5rem;
-            }
-
-            .options {
-                gap: 3px;
-                margin-bottom: 8px;
-            }
-            .options button {
-                padding: 8px 3px;
-                font-size: 0.75rem;
-            }
-            .feedback {
-                font-size: 0.8em;
-                min-height: 18px;
-                margin-bottom: 8px;
-            }
-            .control-buttons button {
-                padding: 8px 15px;
-                font-size: 0.8rem;
-            }
-             .progress-display.card {
-                padding: 8px 5px;
-            }
-             .progress-bar-label {
-                font-size: 1em; /* Adjusted for smaller screens */
-            }
-            .progress-bar-container {
-                height: 10px;
-            }
-            .progress-display strong { /* Score */
-                font-size: 1em;
-            }
-            .progress-display span:not(.progress-bar-label) { /* Label */
-                font-size: 0.8em;
-            }
-            .progress-display div:not(.progress-bar-container-wrapper):not(.progress-bar-container) {
-                padding: 3px;
-            }
+            .item-display-wrapper { padding: 5px; gap: 5px; margin-bottom: 8px; }
+            .quiz-area .item-display { font-size: 2rem; min-height: 50px; padding: 5px; line-height: 1.1; }
+            .replay-audio-btn { font-size: 1.3rem; padding: 5px; }
+            .answer-feedback-icon { font-size: 1.5rem; }
+            .options { gap: 3px; margin-bottom: 8px; }
+            .options button { padding: 8px 3px; font-size: 0.75rem; }
+            .feedback { font-size: 0.8em; min-height: 18px; margin-bottom: 8px; }
+            .control-buttons button { padding: 8px 15px; font-size: 0.8rem; }
+            .progress-display.card { padding: 8px 5px; }
+            .progress-bar-label { font-size: 1em; }
+            .progress-bar-container { height: 10px; }
+            .progress-display strong { font-size: 1em; }
+            .progress-display span:not(.progress-bar-label) { font-size: 0.8em; }
+            .progress-display div:not(.progress-bar-container-wrapper):not(.progress-bar-container) { padding: 3px; }
         }
-
+        
         @media (max-width: 400px) {
             header h1 { font-size: 1em; }
             .header-share-btn, .header-about-btn { font-size: 0.7rem; padding: 4px 6px; }
             .header-coffee-btn { font-size: 0.8rem; padding: 3px 5px; }
-
             .mode-switcher-buttons button { font-size: 0.7rem; padding: 5px 8px; }
             .mode-switcher-mute-btn .mute-icon { font-size: 1.4rem; }
             .mode-switcher-mute-btn .mute-text { font-size: 0.65rem; }
-
             .quiz-area .item-display { font-size: 1.8rem; min-height: 45px; }
             .replay-audio-btn { font-size: 1.2rem; padding: 4px;}
             .answer-feedback-icon { font-size: 1.3rem; }
-
             .options button { font-size: 0.7rem; padding: 7px 2px;}
             .feedback { font-size: 0.75em; }
-            .progress-bar-label {
-                font-size: 0.9em; /* Further adjusted */
-            }
+            .progress-bar-label { font-size: 0.9em; }
             .progress-bar-container { height: 8px; }
         }
 
@@ -679,13 +571,10 @@
             font-size: 0.95em;
             line-height: 1.6;
         }
-        .hall-of-fame-card #hall-of-fame-entries {
-            margin-top: 15px;
-        }
+        .hall-of-fame-card #hall-of-fame-entries { margin-top: 15px; }
 
-
-        .share-modal { /* General modal style, used by share, about-me and hall-of-fame modals */
-            display: none;
+        .share-modal { 
+            display: none; 
             position: fixed;
             z-index: 1000;
             left: 0;
@@ -693,41 +582,39 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.5); 
             align-items: center;
             justify-content: center;
         }
 
-        .share-modal-content { /* General modal content style */
+        .share-modal-content { 
             background-color: #fff;
             margin: auto;
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             width: 90%;
-            max-width: 500px; /* Slightly wider for new fields */
+            max-width: 500px; 
             position: relative;
-            text-align: left;
+            text-align: left; 
         }
         .share-modal-content h3, .share-modal-content p, .share-modal-content h2, .share-modal-content ul {
             text-align: left;
             margin-bottom: 10px;
         }
-        .share-modal-content #share-modal-title,
+        .share-modal-content #share-modal-title, 
         .share-modal-content #about-me-modal-title,
-        .share-modal-content #hall-of-fame-modal-title {
+        .share-modal-content #hall-of-fame-modal-title { 
              text-align: center;
              font-size: 1.5em;
              margin-bottom: 15px;
              color: #333;
         }
-         /* Specific centering for share-url-container and social-share-buttons if needed */
         .share-modal-content .share-url-container,
         .share-modal-content .social-share-buttons,
-        .share-modal-content > p:has(~ .share-url-container) {
+        .share-modal-content > p:has(~ .share-url-container) { 
             text-align: center;
         }
-
 
         .share-modal-close-btn {
             position: absolute;
@@ -748,27 +635,17 @@
             text-decoration: none;
         }
 
-        .share-modal-content > h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 1.5em;
-        }
-        .share-modal-content > p {
-            font-size: 1em;
-            color: #555;
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-        /* About me specific content styling within modal */
-        #about-me-modal .share-modal-content h3 {
-            font-size: 1.3em;
+        /* Using specific IDs for modal titles for JS targeting */
+        /* #share-modal-title, #about-me-modal-title, #hall-of-fame-modal-title */
+        
+        #about-me-modal .share-modal-content h3:not(#about-me-modal-title) { /* Target specific h3s if needed */
+            font-size: 1.3em; 
             color: #2c3e50;
             margin-top: 10px;
             margin-bottom: 10px;
         }
         #about-me-modal .share-modal-content p {
-            font-size: 0.95em;
+            font-size: 0.95em; 
             line-height: 1.6;
             margin-bottom: 10px;
         }
@@ -779,7 +656,6 @@
         #about-me-modal .share-modal-content p a:hover {
             color: #0056b3;
         }
-
 
         .share-url-container {
             display: flex;
@@ -821,7 +697,7 @@
             background-color: #f0f0f0;
             color: #333;
             text-decoration: none;
-            border-radius: 20px;
+            border-radius: 20px; 
             font-size: 0.9em;
             transition: background-color 0.2s, color 0.2s;
             border: 1px solid #ddd;
@@ -831,8 +707,7 @@
             color: #000;
         }
 
-        /* Hall of Fame Modal Specifics */
-        #hall-of-fame-modal .share-modal-content p,
+        #hall-of-fame-modal .share-modal-content p, 
         #hall-of-fame-modal .share-modal-content ul {
             font-size: 0.95em;
             line-height: 1.5;
@@ -847,12 +722,10 @@
         }
 
         #hall-of-fame-modal-title {
-            color: #27ae60; /* Green for celebration */
+            color: #27ae60; 
             font-weight: bold;
         }
-        .share-modal-content .form-group {
-            margin-bottom: 12px;
-        }
+        .share-modal-content .form-group { margin-bottom: 12px; }
         .share-modal-content .form-group label {
             display: block;
             margin-bottom: 4px;
@@ -887,12 +760,11 @@
             cursor: pointer;
             transition: background-color 0.2s;
             display: block;
-            margin: 15px auto 0 auto; /* Added top margin */
+            margin: 15px auto 0 auto; 
         }
         #submit-testimonial-btn:hover {
             background-color: #229954;
         }
-
 
         footer {
             margin-top: 30px;
@@ -901,34 +773,24 @@
             font-size: 0.9em;
         }
         @media (max-width: 600px) {
-            .share-modal-content {
-                padding: 15px;
-                width: 95%;
-                max-width: 95%;
-            }
-            .share-modal-content > h3, .share-modal-content > h2 { font-size: 1.2em; }
-            .share-modal-content > p { font-size: 0.9em; }
+            .share-modal-content { padding: 15px; width: 95%; max-width: 95%; }
+            /* .share-modal-content > h3, .share-modal-content > h2 -  Now using specific IDs */
+            .share-modal-content p { font-size: 0.9em; }
             .share-url-container input[type="text"], .share-url-container button { font-size: 0.9em; }
             .social-share-button { font-size: 0.85em; padding: 7px 12px; }
             .buy-coffee-btn { padding: 10px 20px; font-size: 1em; }
-
-            .next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls { padding: 10px 15px; }
-            .next-steps-card h3, .support-me-card h3, .hall-of-fame-card h2 { font-size: 1.1em; }
-            .next-steps-card p, .next-steps-card ul, .support-me-card p, .hall-of-fame-card p { font-size: 0.85em; }
+            
+            .next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls { padding: 10px 15px; } 
+            .next-steps-card h3, .support-me-card h3, .hall-of-fame-card h2 { font-size: 1.1em; } 
+            .next-steps-card p, .next-steps-card ul, .support-me-card p, .hall-of-fame-card p { font-size: 0.85em; } 
 
             #hall-of-fame-modal .share-modal-content p,
-            #hall-of-fame-modal .share-modal-content ul {
-                 font-size: 0.9em;
-            }
+            #hall-of-fame-modal .share-modal-content ul { font-size: 0.9em; }
             .share-modal-content .form-group input[type="text"],
             .share-modal-content .form-group input[type="email"],
-            .share-modal-content .form-group textarea {
-                padding: 8px;
-                font-size: 0.9em;
-            }
+            .share-modal-content .form-group textarea { padding: 8px; font-size: 0.9em; }
         }
 
-        /* Confetti Animation */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -944,7 +806,7 @@
             position: absolute;
             width: 10px;
             height: 10px;
-            background-color: #f00; /* Will be randomized */
+            background-color: #f00; 
             opacity: 0.7;
             animation: fall 3s linear forwards;
         }
@@ -961,11 +823,11 @@
     <div id="confetti-container" class="confetti-container" aria-hidden="true"></div>
     <div class="app-container">
         <header>
-            <h1>Learn Malayalam Alphabet & Words FREE - Quiz</h1>
+            <h1></h1> <!-- Populated by JS -->
             <div class="header-actions">
-                <button id="header-about-btn" class="header-action-btn header-about-btn" title="About the Developer" aria-label="About the Developer" aria-haspopup="dialog" aria-expanded="false">About</button>
-                <button id="header-share-btn" class="header-action-btn header-share-btn" title="Share this app with friends" aria-label="Share this app with friends" aria-haspopup="dialog" aria-expanded="false">Share</button>
-                <button id="header-coffee-btn" class="header-action-btn header-coffee-btn" title="Support the Developer" aria-label="Support the Developer by buying a coffee">☕</button>
+                <button id="header-about-btn" class="header-action-btn header-about-btn" aria-haspopup="dialog" aria-expanded="false"></button> <!-- Text & ARIA by JS -->
+                <button id="header-share-btn" class="header-action-btn header-share-btn" aria-haspopup="dialog" aria-expanded="false"></button> <!-- Text & ARIA by JS -->
+                <button id="header-coffee-btn" class="header-action-btn header-coffee-btn">☕</button> <!-- ARIA by JS -->
             </div>
         </header>
 
@@ -973,12 +835,12 @@
             <section class="mode-switcher card">
                 <div class="mode-switcher-controls">
                     <div class="mode-switcher-buttons">
-                        <button id="letters-mode-btn" aria-pressed="true">Letters</button>
-                        <button id="words-mode-btn" aria-pressed="false">Words</button>
+                        <button id="letters-mode-btn" aria-pressed="true"></button> <!-- Text by JS -->
+                        <button id="words-mode-btn" aria-pressed="false"></button> <!-- Text by JS -->
                     </div>
-                    <button id="mute-toggle-btn" class="mode-switcher-mute-btn" title="Toggle sound" aria-label="Mute audio" aria-pressed="false">
+                    <button id="mute-toggle-btn" class="mode-switcher-mute-btn" aria-pressed="false">
                         <span class="mute-icon">🔊</span>
-                        <span class="mute-text">Mute</span>
+                        <span class="mute-text"></span> <!-- Text by JS (mute.ts) -->
                     </button>
                 </div>
             </section>
@@ -988,184 +850,145 @@
                     <div class="item-display-wrapper">
                         <span id="answer-feedback-icon" class="answer-feedback-icon" aria-live="polite"></span>
                         <div id="item-display" class="item-display noto-sans-malayalam-main-display" role="img" aria-live="polite"></div>
-                        <button id="replay-item-audio-btn" class="replay-audio-btn" aria-label="Replay item sound" title="Replay sound">🔈</button>
+                        <button id="replay-item-audio-btn" class="replay-audio-btn">🔈</button> <!-- ARIA by JS -->
                     </div>
-                    <div id="feedback-area" class="feedback info" aria-live="assertive">Choose the correct option.</div>
-                    <div id="options-container" class="options" role="radiogroup">
-                        <!-- Options will be dynamically inserted here -->
-                    </div>
+                    <div id="feedback-area" class="feedback info" aria-live="assertive"></div> <!-- Text by JS -->
+                    <div id="options-container" class="options" role="radiogroup"></div>
                     <div class="control-buttons">
-                        <button id="next-question-btn">Next Question</button>
+                        <button id="next-question-btn"></button> <!-- Text by JS -->
                     </div>
                 </section>
 
                 <section class="progress-display card">
                     <div class="progress-bar-container-wrapper">
-                        <span class="progress-bar-label" id="progress-bar-label-text">Surprise Loading...</span>
-                        <div id="quiz-progress-bar-container" class="progress-bar-container" role="progressbar" aria-label="Content loading progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                        <span class="progress-bar-label" id="progress-bar-label-text"></span> <!-- Text by JS -->
+                        <div id="quiz-progress-bar-container" class="progress-bar-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                             <div id="quiz-progress-bar" class="progress-bar-inner"></div>
                         </div>
                     </div>
-                    <div>
-                        <span id="reviewed-count-label">Total Score</span>
+                    <div id="score-display-wrapper">
+                        <span></span> <!-- Text by JS -->
                         <strong id="score">0</strong>
                     </div>
-                    <div>
-                        <span id="reviewed-count-label">Current Streak</span>
+                    <div id="streak-display-wrapper">
+                        <span></span> <!-- Text by JS -->
                         <strong id="correct-streak-display">0</strong>
                     </div>
-                    <div>
-                        <span id="reviewed-count-label">Items Reviewed</span>
+                    <div id="reviewed-count-wrapper">
+                        <span></span> <!-- Text by JS -->
                         <strong id="reviewed-count">0</strong>
                     </div>
-                    <div>
-                        <span id="total-items-label">Total Items</span>
+                    <div id="total-items-wrapper">
+                        <span></span> <!-- Text by JS -->
                         <strong id="total-items-count">0</strong>
                     </div>
                 </section>
             </div>
-
+            
             <section class="next-steps-card card">
-                <h3><span class="emoji" role="img" aria-label="Seedling">🌱</span> Keep Growing Your Malayalam!</h3>
-                <p>Awesome work on the quizzes! You're building a fantastic foundation in Malayalam.</p>
-
-                <h4><span class="emoji" role="img" aria-label="Brain lightbulb">🧠💡</span> Why This Works & How to Maximize Your Learning:</h4>
-                <p>
-                    Want to <em>truly</em> master Malayalam, not just cram and forget? This app is your secret weapon!
-                    We use <strong>Spaced Repetition (SRS)</strong>, a powerful technique backed by science. It intelligently
-                    schedules what you learn, bringing items back for review <em>just before</em> you might forget them.
-                    This means less wasted effort and more knowledge that sticks – permanently!
-                </p>
-                <p>
-                    Plus, learning here is <strong>active and engaging, like a game!</strong> Research consistently shows
-                    that interactive quizzing beats passive learning hands-down. You'll grasp concepts faster, remember more,
-                    and actually <em>enjoy</em> the process.
-                </p>
-                <p>
-                    <strong>Transform your learning:</strong> Make this app your daily 5-minute Malayalam habit.
-                    <span class="bookmark-tip" role="tooltip" title="Press Ctrl+D or Cmd+D to bookmark!">Bookmark this page now</span>
-                    and visit every day. Consistent, smart practice is the express lane to fluency. You've got this! <span class="emoji" role="img" aria-label="Rocket">🚀</span>
-                </p>
-
-                <h4>Here's how to keep the momentum going:</h4>
+                <h3></h3> <!-- Populated by JS -->
+                <p></p> <!-- Populated by JS -->
+                <h4></h4> <!-- Populated by JS -->
+                <p></p> <!-- Populated by JS -->
+                <p></p> <!-- Populated by JS -->
+                <p></p> <!-- Populated by JS, contains bookmark span -->
+                <h4></h4> <!-- Populated by JS -->
                 <ul>
-                    <li><strong>Daily Dose:</strong> Just 5-10 minutes daily reinforces learning. Revisit reviewed items and tackle new ones.</li>
-                    <li><strong>Listen Up:</strong> Tune into Malayalam music or simple dialogues. Get your ear accustomed to the sounds. <span class="emoji" role="img" aria-label="Headphones">🎧</span></li>
-                    <li><strong>Speak Out:</strong> Try saying words and simple phrases aloud. Practice makes perfect! <span class="emoji" role="img" aria-label="Speech bubble">💬</span></li>
-                    <li><strong>Explore More:</strong> As you grow, look for children's stories, or apps that teach grammar and conversation.</li>
-                    <li><strong>Switch & Solidify:</strong> Regularly switch between 'Letters' and 'Words' modes to strengthen all areas.</li>
+                    <li></li> <!-- Populated by JS -->
+                    <li></li> <!-- Populated by JS -->
+                    <li></li> <!-- Populated by JS -->
+                    <li></li> <!-- Populated by JS -->
+                    <li></li> <!-- Populated by JS -->
                 </ul>
-                <p class="encouragement">Every bit of practice counts. <span lang="ml-IN">മുന്നോട്ട് പോകുക!</span> (Munnottu pokuka! - Go forward!) <span class="emoji" role="img" aria-label="Victory hand">✌️</span></p>
+                <p class="encouragement"></p> <!-- Populated by JS -->
             </section>
 
             <section class="hall-of-fame-card card">
-                <h2>Hall of Fame <span class="emoji" role="img" aria-label="Trophy">🏆</span></h2>
+                <h2></h2> <!-- Populated by JS -->
                 <div id="hall-of-fame-entries">
-                    <p>Be the first to conquer a quiz and share your inspiring story here!</p>
-                    <!-- Testimonies will be manually added here in the future or remain as placeholder -->
+                    <p></p> <!-- Populated by JS -->
                 </div>
             </section>
 
             <section class="support-me-card card">
-                <h3>Enjoying Your Language Adventure? <span class="emoji" role="img" aria-label="Rocket">🚀</span></h3>
-                <p>
-                    This app is brewed with passion (and lots of virtual <span class="emoji" role="img" aria-label="Coffee cup">☕</span>) to help you master the script and words.
-                    If you find it helpful and want to support its continued development and new features, a small coffee donation would be amazing!
-                </p>
-                <a href="https://buymeacoffee.com/ajaynair" target="_blank" rel="noopener noreferrer" class="buy-coffee-btn">
-                    <span class="emoji" role="img" aria-label="Coffee cup">☕</span> Buy Me a Coffee
-                </a>
-                <p class="thanks-note">
-                    Your support keeps this project brewing strong! <span lang="ml-IN">നന്ദി!</span> (Thank you!) <span class="emoji" role="img" aria-label="Praying hands">🙏</span>
-                </p>
+                <h3></h3> <!-- Populated by JS -->
+                <p></p> <!-- Populated by JS -->
+                <a href="https://buymeacoffee.com/ajaynair" target="_blank" rel="noopener noreferrer" class="buy-coffee-btn"></a> <!-- Text by JS -->
+                <p class="thanks-note"></p> <!-- Populated by JS -->
             </section>
 
             <div class="test-controls card" style="text-align: center; padding: 15px;">
-                <button id="test-hof-btn" class="control-buttons" style="display: inline-block; background-color: #6c757d; padding: 10px 15px; font-size: 0.9em;">Test Hall Of Fame Modal</button>
+                <button id="test-hof-btn" class="control-buttons" style="display: inline-block; background-color: #6c757d; padding: 10px 15px; font-size: 0.9em;"></button> <!-- Text by JS -->
             </div>
 
         </main>
         <footer>
-            <p>&copy; <span id="current-year"></span> Learn Malayalam by Ajay Nair. All rights reserved.</p>
-            <script>document.getElementById('current-year').textContent = new Date().getFullYear();</script>
+            <p></p> <!-- Populated by JS -->
+            <script>document.getElementById('current-year').textContent = new Date().getFullYear();</script> <!-- Year part is fine to keep -->
         </footer>
     </div>
 
-    <div id="share-modal" class="share-modal" style="display: none;" role="dialog" aria-labelledby="share-modal-title" aria-modal="true" aria-hidden="true">
+    <div id="share-modal" class="share-modal" style="display: none;" role="dialog" aria-modal="true" aria-hidden="true">
         <div class="share-modal-content">
-            <button id="share-modal-close-btn" class="share-modal-close-btn" aria-label="Close share dialog">&times;</button>
-            <h3 id="share-modal-title">Share this App!</h3>
-            <p>Help others discover this Malayalam learning app by sharing the link:</p>
+            <button id="share-modal-close-btn" class="share-modal-close-btn"></button> <!-- ARIA by JS -->
+            <h3 id="share-modal-title"></h3> <!-- Text by JS -->
+            <p></p> <!-- Text by JS -->
             <div class="share-url-container">
-                <input type="text" id="share-url-input" readonly aria-label="Sharable link">
-                <button id="copy-url-btn">Copy URL</button>
+                <input type="text" id="share-url-input" readonly> <!-- ARIA by JS -->
+                <button id="copy-url-btn"></button> <!-- Text by JS -->
             </div>
-            <p>Or share directly on:</p>
+            <p></p> <!-- Text by JS -->
             <div class="social-share-buttons">
-                <a id="share-twitter" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button" aria-label="Share on Twitter">Twitter</a>
-                <a id="share-facebook" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button" aria-label="Share on Facebook">Facebook</a>
-                <a id="share-whatsapp" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button" aria-label="Share on WhatsApp">WhatsApp</a>
-                <a id="share-linkedin" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button" aria-label="Share on LinkedIn">LinkedIn</a>
-                <a id="share-email" href="#" class="social-share-button" aria-label="Share via Email">Email</a>
+                <a id="share-twitter" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button"></a> <!-- Text by JS -->
+                <a id="share-facebook" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button"></a> <!-- Text by JS -->
+                <a id="share-whatsapp" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button"></a> <!-- Text by JS -->
+                <a id="share-linkedin" href="#" target="_blank" rel="noopener noreferrer" class="social-share-button"></a> <!-- Text by JS -->
+                <a id="share-email" href="#" class="social-share-button"></a> <!-- Text by JS -->
             </div>
         </div>
     </div>
 
-    <div id="about-me-modal" class="share-modal" style="display: none;" role="dialog" aria-labelledby="about-me-modal-title" aria-modal="true" aria-hidden="true">
+    <div id="about-me-modal" class="share-modal" style="display: none;" role="dialog" aria-modal="true" aria-hidden="true">
         <div class="share-modal-content">
-            <button id="about-me-modal-close-btn" class="share-modal-close-btn" aria-label="Close about dialog">&times;</button>
-            <h3 id="about-me-modal-title" style="text-align: center; font-size: 1.4em; margin-bottom: 15px; color: #2c3e50; font-weight: bold;">About Me</h3>
-            <h3><span class="emoji" role="img" aria-label="Waving hand">👋</span> Hey There, Language Adventurer!</h3>
-            <p>
-                This little corner of the internet was lovingly crafted by <strong>Ajay Nair</strong>.
-                Yep, just one person fueled by a passion for the language and a whole lot of <span class="emoji" role="img" aria-label="Coffee">☕</span> (and maybe a few late nights <span class="emoji" role="img" aria-label="Owl">🦉</span>).
-            </p>
-            <p>
-                The mission? To make learning the beautiful script and basic words a bit more fun, a tad less daunting, and hopefully, super effective with the magic of spaced repetition!
-                Think of it as your friendly digital guide to mastering those elegant swirls and curls, and some foundational vocabulary. <span class="emoji" role="img" aria-label="Sparkles">✨</span>
-            </p>
-            <p>
-                Got feedback, found a mischievous bug <span class="emoji" role="img" aria-label="Bug">🐛</span>, or just want to say "ഹായ്!" (that's "Hi!" in Malayalam)?
-                Feel free to drop a line at: <a href="mailto:ajaynair59@gmail.com">ajaynair59 [at] gmail [dot] com</a>.
-            </p>
-            <p>Happy learning, or as we say, "<span lang="ml-IN">നന്നായി പഠിക്കൂ!</span>" (Nannaayi padhikku!) <span class="emoji" role="img" aria-label="Smiling face with sunglasses">😎</span></p>
+            <button id="about-me-modal-close-btn" class="share-modal-close-btn"></button> <!-- ARIA by JS -->
+            <h3 id="about-me-modal-title"></h3> <!-- Text by JS -->
+            <h3></h3> <!-- Text by JS (greeting) -->
+            <p></p> <!-- Text by JS -->
+            <p></p> <!-- Text by JS -->
+            <p></p> <!-- Text by JS -->
+            <p></p> <!-- Text by JS -->
         </div>
     </div>
 
-    <div id="hall-of-fame-modal" class="share-modal" style="display: none;" role="dialog" aria-labelledby="hall-of-fame-modal-title" aria-modal="true" aria-hidden="true">
+    <div id="hall-of-fame-modal" class="share-modal" style="display: none;" role="dialog" aria-modal="true" aria-hidden="true">
         <div class="share-modal-content">
-            <button id="hall-of-fame-modal-close-btn" class="share-modal-close-btn" aria-label="Close dialog">&times;</button>
-            <h2 id="hall-of-fame-modal-title">🎉 You're a Champion! 🎉</h2>
-            <p>
-                WHOA, Malayalam Maestro! You didn't just learn, you CONQUERED the <strong><span id="hof-completed-mode-text">current</span></strong> challenge! 🌟 Your brain is officially dazzling with new script superpowers!
-            </p>
-            <p>
-                Ready to etch your legend in our Hall of Fame? We're super stoked to hear your adventure!
-            </p>
-            <p><strong>Spill the beans (or the sambar!):</strong></p>
+            <button id="hall-of-fame-modal-close-btn" class="share-modal-close-btn"></button> <!-- ARIA by JS -->
+            <h2 id="hall-of-fame-modal-title"></h2> <!-- Text by JS (hallOfFame.ts) -->
+            <p></p> <!-- Text by JS (hallOfFame.ts) -->
+            <p></p> <!-- Text by JS (hallOfFame.ts) -->
+            <p></p> <!-- Text by JS (hallOfFame.ts) -->
             <ul>
-                <li>How was your epic quest learning Malayalam letters/words?</li>
-                <li>What sparks joy for you about the Malayalam language?</li>
-                <li>Got any cool tips, random thoughts, or a victory dance to share?</li>
+                <li></li> <!-- Text by JS (hallOfFame.ts) -->
+                <li></li> <!-- Text by JS (hallOfFame.ts) -->
+                <li></li> <!-- Text by JS (hallOfFame.ts) -->
             </ul>
-            <p>Your story will inspire future language explorers and look absolutely amazing here!</p>
-
+            <p></p> <!-- Text by JS (hallOfFame.ts) -->
+            
             <div class="form-group">
-                <label for="hall-of-fame-name-input">Your Name (required):</label>
-                <input type="text" id="hall-of-fame-name-input" required placeholder="E.g., Super Learner Ajay">
+                <label for="hall-of-fame-name-input"></label> <!-- Text by JS -->
+                <input type="text" id="hall-of-fame-name-input" required> <!-- Placeholder by JS -->
             </div>
             <div class="form-group">
-                <label for="hall-of-fame-email-input">Your Email (optional, for updates or thanks!):</label>
-                <input type="email" id="hall-of-fame-email-input" placeholder="you@example.com">
+                <label for="hall-of-fame-email-input"></label> <!-- Text by JS -->
+                <input type="email" id="hall-of-fame-email-input"> <!-- Placeholder by JS -->
             </div>
             <div class="form-group">
-                <label for="hall-of-fame-testimonial-input">Your Awesome Story:</label>
-                <textarea id="hall-of-fame-testimonial-input" rows="4" placeholder="Share your journey, tips, or anything cool!" aria-label="Your testimonial"></textarea>
+                <label for="hall-of-fame-testimonial-input"></label> <!-- Text by JS -->
+                <textarea id="hall-of-fame-testimonial-input" rows="4"></textarea> <!-- Placeholder & ARIA by JS -->
             </div>
-            <button id="submit-testimonial-btn">Share My Story!</button>
+            <button id="submit-testimonial-btn"></button> <!-- Text by JS -->
         </div>
     </div>
-
 
     <script type="module" src="/index.tsx"></script>
 
@@ -1175,7 +998,7 @@
       "@type": "WebSite",
       "name": "Learn Malayalam Letters and Words",
       "url": "https://www.learn-malayalam.org/",
-      "description": "Interactive quiz app to master Malayalam letters and simple words with audio and spaced repetition. Learn vowels, consonants, matras, chillu, kootaksharam and basic vocabulary.",
+      "description": "", 
       "creator": {
         "@type": "Person",
         "name": "Ajay Nair"
@@ -1185,7 +1008,7 @@
         "target": "https://www.learn-malayalam.org/"
       },
       "inLanguage": "en-US",
-      "keywords": "Malayalam, learn Malayalam, Malayalam alphabet, Malayalam letters, Malayalam words, Malayalam script, interactive quiz, language learning"
+      "keywords": "" 
     }
     </script>
     <script type="application/ld+json">
@@ -1201,12 +1024,12 @@
       },
       "aggregateRating": {
         "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "ratingCount": "150",
+        "ratingValue": "4.8", 
+        "ratingCount": "150", 
         "bestRating": "5",
         "worstRating": "1"
       },
-      "description": "A free interactive web application designed to help users learn the Malayalam alphabet (vowels, consonants, ligatures, etc.) and simple Malayalam words. Master the script through engaging quizzes, audio pronunciation, and a spaced repetition system. Perfect for those searching for 'learn malayalam free' or 'malayalam quiz free'.",
+      "description": "", 
       "inLanguage": "en",
       "learningResourceType": ["quiz", "language learning tool", "vocabulary builder", "free educational tool"],
       "author": {

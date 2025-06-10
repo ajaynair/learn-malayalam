@@ -1,31 +1,8 @@
 
-import type { AppType, CelebratedModes } from '../index.tsx';
-import { LOCAL_STORAGE_KEYS } from '../constants.ts';
+import type { AppType } from '../index.tsx';
+import { saveCelebratedModesToStorage } from './quizDataHandler.ts';
 
 type DOMType = AppType['DOM'];
-
-export function loadCelebratedModes(app: AppType) {
-    const savedCelebrated = localStorage.getItem(LOCAL_STORAGE_KEYS.celebratedModes);
-    if (savedCelebrated) {
-        try {
-            const parsed = JSON.parse(savedCelebrated) as CelebratedModes;
-            if (typeof parsed.letters === 'boolean' && typeof parsed.words === 'boolean') {
-                app.celebratedModes = parsed;
-            }
-        } catch (e) {
-            console.error('Error parsing celebrated modes:', e);
-            app.celebratedModes = { letters: false, words: false };
-        }
-    }
-}
-
-export function saveCelebratedModes(app: AppType) {
-    try {
-        localStorage.setItem(LOCAL_STORAGE_KEYS.celebratedModes, JSON.stringify(app.celebratedModes));
-    } catch (e) {
-        console.error('Error saving celebrated modes:', e);
-    }
-}
 
 export function playCelebrationAnimation(dom: DOMType) {
     dom.confettiContainer.innerHTML = '';
@@ -47,14 +24,17 @@ export function playCelebrationAnimation(dom: DOMType) {
 }
 
 export function openHallOfFameModal(app: AppType, dom: DOMType) {
-    const modalTitleEl = dom.hallOfFameModal.querySelector('#hall-of-fame-modal-title');
+    const modalTitleEl = dom.hallOfFameModal.querySelector<HTMLHeadingElement>('#hall-of-fame-modal-title');
     if (modalTitleEl) {
-        modalTitleEl.innerHTML = `🎉 You're a ${app.quizMode.charAt(0).toUpperCase() + app.quizMode.slice(1)} Champion! 🎉`;
+        modalTitleEl.innerHTML = app.getText('hallOfFameModal.baseTitle', { mode: app.quizMode.charAt(0).toUpperCase() + app.quizMode.slice(1) });
     }
-    const hofModeTextEl = dom.hallOfFameModal.querySelector('#hof-completed-mode-text');
-    if (hofModeTextEl) {
-        hofModeTextEl.textContent = app.quizMode;
-    }
+    dom.hallOfFameModal.querySelector<HTMLSpanElement>('#hof-completed-mode-text');
+// This element was in the HOF modal title, might be part of the p now
+
+    // Set paragraph texts dynamically using app.getText
+    const congratsMsgEl = dom.hofModalCongratsMessage; // Assuming this is the correct DOM element now
+    if (congratsMsgEl) congratsMsgEl.innerHTML = app.getText('hallOfFameModal.congratsMessage', { mode: `<strong>${app.quizMode}</strong>` });
+    // Other static texts for HoF modal are set in app.populateStaticTexts()
 
     dom.hallOfFameModal.style.display = 'flex';
     dom.hallOfFameModal.setAttribute('aria-hidden', 'false');
@@ -64,7 +44,7 @@ export function openHallOfFameModal(app: AppType, dom: DOMType) {
     dom.hallOfFameModalCloseBtn.focus();
 }
 
-export function closeHallOfFameModal(dom: DOMType) {
+export function closeHallOfFameModal(dom: DOMType, _app: AppType) { // app might not be needed if no getText here
     dom.hallOfFameModal.style.display = 'none';
     dom.hallOfFameModal.setAttribute('aria-hidden', 'true');
 }
@@ -75,17 +55,17 @@ export function submitTestimonial(app: AppType, dom: DOMType) {
     const testimonialText = dom.hallOfFameTestimonialInput.value.trim();
 
     if (!name) {
-        app.updateFeedback('Hold on, superstar! Please enter your name for the Hall of Fame!', 'error');
+        app.updateFeedback('hallOfFameModal.feedbackNameRequired', 'error');
         dom.hallOfFameNameInput.focus();
         return;
     }
     if (!testimonialText) {
-        app.updateFeedback('Almost there! Please share your awesome story or thoughts!', 'error');
+        app.updateFeedback('hallOfFameModal.feedbackStoryRequired', 'error');
         dom.hallOfFameTestimonialInput.focus();
         return;
     }
 
-    const subject = encodeURIComponent(`HOF Submission: ${app.quizMode.toUpperCase()} Champ - ${name}`);
+    const subject = encodeURIComponent(app.getText('hallOfFameModal.baseTitle', {mode: app.quizMode.toUpperCase()}) + ` - ${name}`); // Simplified subject
     let bodyContent = `Malayalam Learning Journey - Hall of Fame Submission!\n\n`;
     bodyContent += `Name: ${name}\n`;
     if (email) {
@@ -98,10 +78,10 @@ export function submitTestimonial(app: AppType, dom: DOMType) {
     const body = encodeURIComponent(bodyContent);
     window.location.href = `mailto:ajaynair59@gmail.com?subject=${subject}&body=${body}`;
 
-    app.updateFeedback('Awesome! Your story is on its way. Your email client should open.', 'success');
+    app.updateFeedback('hallOfFameModal.feedbackSubmissionSuccess', 'success');
 
     setTimeout(() => {
-        closeHallOfFameModal(dom);
+        closeHallOfFameModal(dom, app);
     }, 3000);
 }
 
@@ -113,7 +93,7 @@ export function checkCompletionAndCelebrate(app: AppType) {
 
     if (currentScore >= totalPossibleScore && !app.celebratedModes[app.quizMode]) {
         app.celebratedModes[app.quizMode] = true;
-        saveCelebratedModes(app);
+        saveCelebratedModesToStorage(app);
         playCelebrationAnimation(app.DOM);
 
         setTimeout(() => {
@@ -124,14 +104,17 @@ export function checkCompletionAndCelebrate(app: AppType) {
 
 export function setupHallOfFameEventListeners(app: AppType, dom: DOMType) {
     if(dom.hallOfFameModalCloseBtn) {
-        dom.hallOfFameModalCloseBtn.addEventListener('click', () => closeHallOfFameModal(dom));
+        dom.hallOfFameModalCloseBtn.addEventListener('click', () => closeHallOfFameModal(dom, app));
     }
     if(dom.submitTestimonialBtn) {
         dom.submitTestimonialBtn.addEventListener('click', () => submitTestimonial(app, dom));
     }
     if (dom.testHofBtn) {
         dom.testHofBtn.addEventListener('click', () => {
+            // Temporarily set a mode for testing display
+            // app.quizMode = 'letters'; // Or 'words'
             openHallOfFameModal(app, dom);
+            // app.quizMode = originalMode; // Reset if changed
         });
     }
 }

@@ -1,19 +1,23 @@
 
-import { LOCAL_STORAGE_KEYS, SHARE_DETAILS } from './constants.ts';
-import type { ShareDetails } from './constants.ts'; // Import type if needed elsewhere
+import { SHARE_DETAILS_KEYS, SHARE_URL } from './constants.ts'; // Updated import
 import {
-    loadCelebratedModes,
-    saveCelebratedModes,
-    playCelebrationAnimation,
-    openHallOfFameModal,
     closeHallOfFameModal,
-    submitTestimonial,
     checkCompletionAndCelebrate,
     setupHallOfFameEventListeners
 } from './src/hallOfFame.ts';
+import {
+    loadQuizData,
+    saveQuizData,
+    loadQuizModeFromStorage,
+    saveQuizModeToStorage,
+    loadSessionStatsFromStorage,
+    saveSessionStatsToStorage,
+    loadCelebratedModesFromStorage
+} from './src/quizDataHandler.ts';
+import { initializeMuteControls } from './src/mute.ts';
+import { initializeSpeechSynthesisHandler, speakItemHandler } from './src/audio.ts';
 
-// Define types previously in lettersData.ts and wordsData.ts
-interface InitialLetter {
+export interface InitialLetter {
     id: string;
     character: string;
     displayCharacterOverride?: string;
@@ -21,14 +25,13 @@ interface InitialLetter {
     transliteration: string;
 }
 
-interface InitialWord {
+export interface InitialWord {
     id:string;
     word: string;
     transliteration: string;
 }
 
-// Runtime QuizItem including SRS fields
-type QuizItem = (InitialLetter | InitialWord) & {
+export type QuizItem = (InitialLetter | InitialWord) & {
     lastReviewedTimestamp: number;
     nextReviewTimestamp: number;
     intervalDays: number;
@@ -37,19 +40,18 @@ type QuizItem = (InitialLetter | InitialWord) & {
     totalCorrect: number;
     totalIncorrect: number;
     reviewed: boolean;
-    // Optional type guards/fields for easier differentiation
-    character?: string; // Present for letters
-    word?: string;      // Present for words
+    character?: string;
+    word?: string;
 };
 
-type QuizMode = 'letters' | 'words';
+export type QuizMode = 'letters' | 'words';
 
-interface SessionModeStats {
+export interface SessionModeStats {
     score: number;
     streak: number;
 }
 
-export interface CelebratedModes { // Export if needed by hallOfFame.ts directly, though it's part of AppType
+export interface CelebratedModes {
     letters: boolean;
     words: boolean;
 }
@@ -75,6 +77,7 @@ const App = {
     voiceLoadTimeoutId: null as number | null,
     currentAudioElement: null as HTMLAudioElement | null,
     isMuted: false,
+    translations: {} as Record<string, any>, // To store loaded translations
 
     DOM: {
         itemDisplay: document.getElementById('item-display')!,
@@ -87,11 +90,17 @@ const App = {
         correctStreakDisplay: document.getElementById('correct-streak-display')!,
         reviewedCountDisplay: document.getElementById('reviewed-count')!,
         totalItemsCountDisplay: document.getElementById('total-items-count')!,
-        reviewedCountLabel: document.getElementById('reviewed-count-label')!,
-        totalItemsLabel: document.getElementById('total-items-label')!,
+        // Static labels in HTML, but their text will be set
+        totalScoreLabel: document.querySelector('#score-display-wrapper span') as HTMLSpanElement, // Assuming a wrapper to find label
+        currentStreakLabel: document.querySelector('#streak-display-wrapper span') as HTMLSpanElement,
+        reviewedCountLabelStatic: document.querySelector('#reviewed-count-wrapper span') as HTMLSpanElement,
+        totalItemsLabelStatic: document.querySelector('#total-items-wrapper span') as HTMLSpanElement,
+
+
         lettersModeBtn: document.getElementById('letters-mode-btn') as HTMLButtonElement,
         wordsModeBtn: document.getElementById('words-mode-btn') as HTMLButtonElement,
 
+        headerMainTitle: document.querySelector('header h1') as HTMLHeadingElement,
         headerAboutBtn: document.getElementById('header-about-btn') as HTMLButtonElement,
         headerCoffeeBtn: document.getElementById('header-coffee-btn') as HTMLButtonElement,
         headerShareBtn: document.getElementById('header-share-btn') as HTMLButtonElement,
@@ -107,9 +116,20 @@ const App = {
         shareWhatsApp: document.getElementById('share-whatsapp') as HTMLAnchorElement,
         shareLinkedIn: document.getElementById('share-linkedin') as HTMLAnchorElement,
         shareEmail: document.getElementById('share-email') as HTMLAnchorElement,
+        shareModalTitle: document.getElementById('share-modal-title') as HTMLHeadingElement,
+        shareModalDescription: document.querySelector('#share-modal .share-modal-content > p:nth-of-type(1)') as HTMLParagraphElement,
+        shareModalOrShareText: document.querySelector('#share-modal .share-modal-content > p:nth-of-type(2)') as HTMLParagraphElement,
+
 
         aboutMeModal: document.getElementById('about-me-modal') as HTMLDivElement,
         aboutMeModalCloseBtn: document.getElementById('about-me-modal-close-btn') as HTMLButtonElement,
+        aboutMeModalTitle: document.getElementById('about-me-modal-title') as HTMLHeadingElement,
+        aboutMeModalGreeting: document.querySelector('#about-me-modal .share-modal-content h3:nth-of-type(2)') as HTMLHeadingElement, // Assuming this is the greeting
+        aboutMeModalPara1: document.querySelector('#about-me-modal .share-modal-content p:nth-of-type(1)') as HTMLParagraphElement,
+        aboutMeModalPara2: document.querySelector('#about-me-modal .share-modal-content p:nth-of-type(2)') as HTMLParagraphElement,
+        aboutMeModalPara3: document.querySelector('#about-me-modal .share-modal-content p:nth-of-type(3)') as HTMLParagraphElement,
+        aboutMeModalPara4: document.querySelector('#about-me-modal .share-modal-content p:nth-of-type(4)') as HTMLParagraphElement,
+
 
         quizProgressBarContainer: document.getElementById('quiz-progress-bar-container') as HTMLDivElement,
         quizProgressBar: document.getElementById('quiz-progress-bar') as HTMLDivElement,
@@ -123,9 +143,61 @@ const App = {
         hallOfFameTestimonialInput: document.getElementById('hall-of-fame-testimonial-input') as HTMLTextAreaElement,
         submitTestimonialBtn: document.getElementById('submit-testimonial-btn') as HTMLButtonElement,
         testHofBtn: document.getElementById('test-hof-btn') as HTMLButtonElement,
+        // Hall of Fame Modal static texts
+        hofModalCongratsMessage: document.querySelector('#hall-of-fame-modal .share-modal-content > p:nth-of-type(1)') as HTMLParagraphElement,
+        hofModalInvitationMessage: document.querySelector('#hall-of-fame-modal .share-modal-content > p:nth-of-type(2)') as HTMLParagraphElement,
+        hofModalPromptTitle: document.querySelector('#hall-of-fame-modal .share-modal-content > p:nth-of-type(3)') as HTMLParagraphElement,
+        hofModalPromptItem1: document.querySelector('#hall-of-fame-modal .share-modal-content ul li:nth-of-type(1)') as HTMLLIElement,
+        hofModalPromptItem2: document.querySelector('#hall-of-fame-modal .share-modal-content ul li:nth-of-type(2)') as HTMLLIElement,
+        hofModalPromptItem3: document.querySelector('#hall-of-fame-modal .share-modal-content ul li:nth-of-type(3)') as HTMLLIElement,
+        hofModalInspirationMessage: document.querySelector('#hall-of-fame-modal .share-modal-content > p:nth-of-type(4)') as HTMLParagraphElement,
+        hofNameLabel: document.querySelector('label[for="hall-of-fame-name-input"]') as HTMLLabelElement,
+        hofEmailLabel: document.querySelector('label[for="hall-of-fame-email-input"]') as HTMLLabelElement,
+        hofTestimonialLabel: document.querySelector('label[for="hall-of-fame-testimonial-input"]') as HTMLLabelElement,
+
+        // Next Steps Card
+        nextStepsTitle: document.querySelector('.next-steps-card h3') as HTMLHeadingElement,
+        nextStepsIntro: document.querySelector('.next-steps-card > p:nth-of-type(1)') as HTMLParagraphElement,
+        nextStepsWhyWorksTitle: document.querySelector('.next-steps-card h4:nth-of-type(1)') as HTMLHeadingElement,
+        nextStepsWhyWorksPara1: document.querySelector('.next-steps-card > p:nth-of-type(2)') as HTMLParagraphElement,
+        nextStepsWhyWorksPara2: document.querySelector('.next-steps-card > p:nth-of-type(3)') as HTMLParagraphElement,
+        nextStepsWhyWorksPara3: document.querySelector('.next-steps-card > p:nth-of-type(4)') as HTMLParagraphElement, // Contains bookmark
+        nextStepsHowToTitle: document.querySelector('.next-steps-card h4:nth-of-type(2)') as HTMLHeadingElement,
+        nextStepsListItemDaily: document.querySelector('.next-steps-card ul li:nth-of-type(1)') as HTMLLIElement,
+        nextStepsListItemListen: document.querySelector('.next-steps-card ul li:nth-of-type(2)') as HTMLLIElement,
+        nextStepsListItemSpeak: document.querySelector('.next-steps-card ul li:nth-of-type(3)') as HTMLLIElement,
+        nextStepsListItemExplore: document.querySelector('.next-steps-card ul li:nth-of-type(4)') as HTMLLIElement,
+        nextStepsListItemSwitch: document.querySelector('.next-steps-card ul li:nth-of-type(5)') as HTMLLIElement,
+        nextStepsEncouragement: document.querySelector('.next-steps-card p.encouragement') as HTMLParagraphElement,
+
+        // Hall of Fame Section (static)
+        hofSectionTitle: document.querySelector('.hall-of-fame-card h2') as HTMLHeadingElement,
+        hofSectionPlaceholder: document.querySelector('#hall-of-fame-entries p') as HTMLParagraphElement,
+
+        // Support Me Card
+        supportMeTitle: document.querySelector('.support-me-card h3') as HTMLHeadingElement,
+        supportMeDescription: document.querySelector('.support-me-card > p:nth-of-type(1)') as HTMLParagraphElement,
+        supportMeButton: document.querySelector('.support-me-card .buy-coffee-btn') as HTMLAnchorElement,
+        supportMeThanksNote: document.querySelector('.support-me-card p.thanks-note') as HTMLParagraphElement,
+
+        // Footer
+        footerCopyright: document.querySelector('footer p') as HTMLParagraphElement,
     },
 
     async init() {
+        try {
+            const response = await fetch('/english.json');
+            if (!response.ok) {
+                throw new Error(`Failed to load translations: ${response.statusText}`);
+            }
+            this.translations = await response.json();
+        } catch (error) {
+            console.error("Error loading translations:", error);
+            // Fallback or error display an be added here
+        }
+
+        this.populateStaticTexts(); // Populate texts after loading translations
+
         this.DOM.nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
         this.DOM.lettersModeBtn.addEventListener('click', () => this.switchQuizMode('letters'));
         this.DOM.wordsModeBtn.addEventListener('click', () => this.switchQuizMode('words'));
@@ -139,13 +211,11 @@ const App = {
         if(this.DOM.headerShareBtn) {
             this.DOM.headerShareBtn.addEventListener('click', () => this.handleShare());
         }
-        if(this.DOM.muteToggleBtn) {
-            this.DOM.muteToggleBtn.addEventListener('click', () => this.toggleMute());
-        }
+
         if(this.DOM.replayItemAudioBtn) {
             this.DOM.replayItemAudioBtn.addEventListener('click', () => {
                 if (this.currentItem) {
-                    this.speakItem(this.currentItem, false, true); // bypassMute = true
+                    speakItemHandler(this, this.currentItem, false, true);
                 }
             });
         }
@@ -159,17 +229,16 @@ const App = {
             this.DOM.aboutMeModalCloseBtn.addEventListener('click', () => this.closeAboutMeModal());
         }
 
-        setupHallOfFameEventListeners(this, this.DOM); // Moved HoF event listeners here
+        setupHallOfFameEventListeners(this, this.DOM);
 
-        this.initializeSpeechSynthesis();
-        this.loadMuteState();
-        this.updateMuteButtonAppearance();
-        this.loadQuizMode();
-        this.loadSessionStats();
-        loadCelebratedModes(this); // Use imported function
+        initializeSpeechSynthesisHandler(this);
+        initializeMuteControls(this, this.DOM);
+        loadQuizModeFromStorage(this);
+        loadSessionStatsFromStorage(this);
+        loadCelebratedModesFromStorage(this);
         this.updateModeButtonStyles();
-        await this.loadQuizData();
-        this.updateProgressDisplay();
+        await loadQuizData(this);
+        this.updateProgressDisplay(); // Also updates progress bar labels
         this.nextQuestion();
 
         window.addEventListener('keydown', (event) => {
@@ -181,11 +250,161 @@ const App = {
                     this.closeAboutMeModal();
                 }
                 if (this.DOM.hallOfFameModal.style.display === 'flex') {
-                    closeHallOfFameModal(this.DOM); // Use imported function
+                    closeHallOfFameModal(this.DOM, this); // Pass app for getText
                 }
             }
         });
     },
+
+    getText(key: string, replacements?: Record<string, string>): string {
+        const keys = key.split('.');
+        let value = this.translations;
+        for (const k of keys) {
+            if (value && typeof value === 'object' && k in value) {
+                value = value[k];
+            } else {
+                console.warn(`Translation key not found: ${key}`);
+                return key; // Fallback to key
+            }
+        }
+        if (typeof value !== 'string') {
+            // It's okay if it's not a string if the last key was an object itself (not expected for this use case)
+            // For this app, we expect strings.
+            console.warn(`Translation value for key '${key}' is not a string:`, value);
+            return key; // Fallback to key
+        }
+        let result = value as string;
+        if (replacements) {
+            for (const placeholder in replacements) {
+                result = result.replace(new RegExp(`\\{${placeholder}\\}`, 'g'), replacements[placeholder]);
+            }
+        }
+        return result;
+    },
+
+    populateStaticTexts() {
+        document.title = this.getText('meta.title');
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute('content', this.getText('meta.description'));
+        const metaKeywords = document.querySelector('meta[name="keywords"]');
+        if (metaKeywords) metaKeywords.setAttribute('content', this.getText('meta.keywords'));
+
+        if (this.DOM.headerMainTitle) this.DOM.headerMainTitle.innerHTML = this.getText('header.mainTitle');
+        if (this.DOM.headerAboutBtn) {
+            this.DOM.headerAboutBtn.textContent = this.getText('header.aboutButton');
+            this.DOM.headerAboutBtn.setAttribute('aria-label', this.getText('header.aboutButtonAriaLabel'));
+            this.DOM.headerAboutBtn.title = this.getText('header.aboutButtonAriaLabel');
+        }
+        if (this.DOM.headerShareBtn) {
+            this.DOM.headerShareBtn.textContent = this.getText('header.shareButton');
+            this.DOM.headerShareBtn.setAttribute('aria-label', this.getText('header.shareButtonAriaLabel'));
+            this.DOM.headerShareBtn.title = this.getText('header.shareButtonAriaLabel');
+        }
+        if (this.DOM.headerCoffeeBtn) {
+            this.DOM.headerCoffeeBtn.setAttribute('aria-label', this.getText('header.coffeeButtonAriaLabel'));
+            this.DOM.headerCoffeeBtn.title = this.getText('header.coffeeButtonAriaLabel');
+        }
+
+
+        if (this.DOM.lettersModeBtn) this.DOM.lettersModeBtn.textContent = this.getText('modeSwitcher.lettersButton');
+        if (this.DOM.wordsModeBtn) this.DOM.wordsModeBtn.textContent = this.getText('modeSwitcher.wordsButton');
+        // Mute button text is handled by updateMuteButtonIconAndText in mute.ts
+
+        if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.setAttribute('aria-label', this.getText('quiz.replayAudioButtonAriaLabel'));
+        if (this.DOM.nextQuestionBtn) this.DOM.nextQuestionBtn.textContent = this.getText('quiz.nextQuestionButton');
+
+        // Progress Display Labels
+        const totalScoreWrapper = this.DOM.scoreDisplay.parentElement;
+        if (totalScoreWrapper) (totalScoreWrapper.querySelector('span:first-child') as HTMLElement).textContent = this.getText('progressDisplay.totalScoreLabel');
+        const streakWrapper = this.DOM.correctStreakDisplay.parentElement;
+        if (streakWrapper) (streakWrapper.querySelector('span:first-child') as HTMLElement).textContent = this.getText('progressDisplay.currentStreakLabel');
+        const reviewedWrapper = this.DOM.reviewedCountDisplay.parentElement;
+        if (reviewedWrapper) (reviewedWrapper.querySelector('span:first-child') as HTMLElement).textContent = this.getText('progressDisplay.itemsReviewedLabel');
+        const totalItemsWrapper = this.DOM.totalItemsCountDisplay.parentElement;
+        if (totalItemsWrapper) (totalItemsWrapper.querySelector('span:first-child') as HTMLElement).textContent = this.getText('progressDisplay.totalItemsLabel');
+
+
+        // Share Modal
+        if (this.DOM.shareModalTitle) this.DOM.shareModalTitle.textContent = this.getText('shareModal.title');
+        if (this.DOM.shareModalCloseBtn) this.DOM.shareModalCloseBtn.setAttribute('aria-label', this.getText('shareModal.closeButtonAriaLabel'));
+        if (this.DOM.shareModalDescription) this.DOM.shareModalDescription.innerHTML = this.getText('shareModal.description');
+        if (this.DOM.copyUrlBtn) this.DOM.copyUrlBtn.textContent = this.getText('shareModal.copyUrlButton');
+        if (this.DOM.shareModalOrShareText) this.DOM.shareModalOrShareText.innerHTML = this.getText('shareModal.shareOnText');
+        if (this.DOM.shareTwitter) this.DOM.shareTwitter.textContent = this.getText('shareModal.twitterButton');
+        if (this.DOM.shareFacebook) this.DOM.shareFacebook.textContent = this.getText('shareModal.facebookButton');
+        if (this.DOM.shareWhatsApp) this.DOM.shareWhatsApp.textContent = this.getText('shareModal.whatsappButton');
+        if (this.DOM.shareLinkedIn) this.DOM.shareLinkedIn.textContent = this.getText('shareModal.linkedinButton');
+        if (this.DOM.shareEmail) this.DOM.shareEmail.textContent = this.getText('shareModal.emailButton');
+        if (this.DOM.shareUrlInput) this.DOM.shareUrlInput.setAttribute('aria-label', this.getText('shareModal.shareUrlInputAriaLabel'));
+
+        // About Me Modal
+        if (this.DOM.aboutMeModalTitle) this.DOM.aboutMeModalTitle.textContent = this.getText('aboutMeModal.title');
+        if (this.DOM.aboutMeModalCloseBtn) this.DOM.aboutMeModalCloseBtn.setAttribute('aria-label', this.getText('aboutMeModal.closeButtonAriaLabel'));
+        if (this.DOM.aboutMeModalGreeting) this.DOM.aboutMeModalGreeting.innerHTML = this.getText('aboutMeModal.greeting');
+        if (this.DOM.aboutMeModalPara1) this.DOM.aboutMeModalPara1.innerHTML = this.getText('aboutMeModal.para1');
+        if (this.DOM.aboutMeModalPara2) this.DOM.aboutMeModalPara2.innerHTML = this.getText('aboutMeModal.para2');
+        if (this.DOM.aboutMeModalPara3) this.DOM.aboutMeModalPara3.innerHTML = this.getText('aboutMeModal.para3');
+        if (this.DOM.aboutMeModalPara4) this.DOM.aboutMeModalPara4.innerHTML = this.getText('aboutMeModal.para4');
+
+        // Hall of Fame Modal (Static parts, dynamic title set in openHallOfFameModal)
+        if (this.DOM.hallOfFameModalCloseBtn) this.DOM.hallOfFameModalCloseBtn.setAttribute('aria-label', this.getText('hallOfFameModal.closeButtonAriaLabel'));
+        // Dynamic title is set in hallOfFame.ts using app.getText
+        if (this.DOM.hofModalInvitationMessage) this.DOM.hofModalInvitationMessage.innerHTML = this.getText('hallOfFameModal.invitationMessage');
+        if (this.DOM.hofModalPromptTitle) this.DOM.hofModalPromptTitle.innerHTML = this.getText('hallOfFameModal.promptTitle');
+        if (this.DOM.hofModalPromptItem1) this.DOM.hofModalPromptItem1.innerHTML = this.getText('hallOfFameModal.promptItem1');
+        if (this.DOM.hofModalPromptItem2) this.DOM.hofModalPromptItem2.innerHTML = this.getText('hallOfFameModal.promptItem2');
+        if (this.DOM.hofModalPromptItem3) this.DOM.hofModalPromptItem3.innerHTML = this.getText('hallOfFameModal.promptItem3');
+        if (this.DOM.hofModalInspirationMessage) this.DOM.hofModalInspirationMessage.innerHTML = this.getText('hallOfFameModal.inspirationMessage');
+        if (this.DOM.hofNameLabel) this.DOM.hofNameLabel.textContent = this.getText('hallOfFameModal.form.nameLabel');
+        if (this.DOM.hallOfFameNameInput) this.DOM.hallOfFameNameInput.placeholder = this.getText('hallOfFameModal.form.namePlaceholder');
+        if (this.DOM.hofEmailLabel) this.DOM.hofEmailLabel.textContent = this.getText('hallOfFameModal.form.emailLabel');
+        if (this.DOM.hallOfFameEmailInput) this.DOM.hallOfFameEmailInput.placeholder = this.getText('hallOfFameModal.form.emailPlaceholder');
+        if (this.DOM.hofTestimonialLabel) this.DOM.hofTestimonialLabel.textContent = this.getText('hallOfFameModal.form.testimonialLabel');
+        if (this.DOM.hallOfFameTestimonialInput) {
+            this.DOM.hallOfFameTestimonialInput.placeholder = this.getText('hallOfFameModal.form.testimonialPlaceholder');
+            this.DOM.hallOfFameTestimonialInput.setAttribute('aria-label', this.getText('hallOfFameModal.form.testimonialAriaLabel'));
+        }
+        if (this.DOM.submitTestimonialBtn) this.DOM.submitTestimonialBtn.textContent = this.getText('hallOfFameModal.form.submitButton');
+
+        // Next Steps Card
+        if(this.DOM.nextStepsTitle) this.DOM.nextStepsTitle.innerHTML = this.getText('nextSteps.title');
+        if(this.DOM.nextStepsIntro) this.DOM.nextStepsIntro.innerHTML = this.getText('nextSteps.intro');
+        if(this.DOM.nextStepsWhyWorksTitle) this.DOM.nextStepsWhyWorksTitle.innerHTML = this.getText('nextSteps.whyWorksTitle');
+        if(this.DOM.nextStepsWhyWorksPara1) this.DOM.nextStepsWhyWorksPara1.innerHTML = this.getText('nextSteps.whyWorksPara1');
+        if(this.DOM.nextStepsWhyWorksPara2) this.DOM.nextStepsWhyWorksPara2.innerHTML = this.getText('nextSteps.whyWorksPara2');
+        // For the bookmark span:
+        const whyWorksPara3Text = this.getText('nextSteps.whyWorksPara3Start') +
+            ` <span class="bookmark-tip" role="tooltip" title="${this.getText('nextSteps.whyWorksPara3BookmarkTip')}">${this.getText('nextSteps.whyWorksPara3Bookmark')}</span> ` +
+            this.getText('nextSteps.whyWorksPara3End');
+        if(this.DOM.nextStepsWhyWorksPara3) this.DOM.nextStepsWhyWorksPara3.innerHTML = whyWorksPara3Text;
+
+        if(this.DOM.nextStepsHowToTitle) this.DOM.nextStepsHowToTitle.innerHTML = this.getText('nextSteps.howToTitle');
+        if(this.DOM.nextStepsListItemDaily) this.DOM.nextStepsListItemDaily.innerHTML = this.getText('nextSteps.listItemDailyDose');
+        if(this.DOM.nextStepsListItemListen) this.DOM.nextStepsListItemListen.innerHTML = this.getText('nextSteps.listItemListenUp');
+        if(this.DOM.nextStepsListItemSpeak) this.DOM.nextStepsListItemSpeak.innerHTML = this.getText('nextSteps.listItemSpeakOut');
+        if(this.DOM.nextStepsListItemExplore) this.DOM.nextStepsListItemExplore.innerHTML = this.getText('nextSteps.listItemExploreMore');
+        if(this.DOM.nextStepsListItemSwitch) this.DOM.nextStepsListItemSwitch.innerHTML = this.getText('nextSteps.listItemSwitchSolidify');
+        if(this.DOM.nextStepsEncouragement) this.DOM.nextStepsEncouragement.innerHTML = this.getText('nextSteps.encouragement');
+
+        // Hall of Fame Section (Static)
+        if(this.DOM.hofSectionTitle) this.DOM.hofSectionTitle.innerHTML = this.getText('hallOfFameSection.title');
+        if(this.DOM.hofSectionPlaceholder) this.DOM.hofSectionPlaceholder.innerHTML = this.getText('hallOfFameSection.placeholder');
+
+        // Support Me Card
+        if(this.DOM.supportMeTitle) this.DOM.supportMeTitle.innerHTML = this.getText('supportMe.title');
+        if(this.DOM.supportMeDescription) this.DOM.supportMeDescription.innerHTML = this.getText('supportMe.description');
+        if(this.DOM.supportMeButton) this.DOM.supportMeButton.innerHTML = this.getText('supportMe.buttonText');
+        if(this.DOM.supportMeThanksNote) this.DOM.supportMeThanksNote.innerHTML = this.getText('supportMe.thanksNote');
+
+        // Test Controls
+        if(this.DOM.testHofBtn) this.DOM.testHofBtn.textContent = this.getText('testControls.testHofButton');
+
+        // Footer
+        if(this.DOM.footerCopyright) this.DOM.footerCopyright.innerHTML = this.getText('footer.copyright', { year: new Date().getFullYear().toString() });
+
+        this.updateFeedback('quiz.initialFeedback', 'info'); // Initial feedback
+    },
+
 
     scrollToSupportSection() {
         const supportSection = document.querySelector('.support-me-card');
@@ -194,106 +413,23 @@ const App = {
         }
     },
 
-    initializeSpeechSynthesis() {
-        if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
-            this.speechSynthesisSupported = true;
-            this.speechSynthesisUtterance = new SpeechSynthesisUtterance();
-
-            const loadVoices = () => {
-                if (this.voiceLoadTimeoutId !== null) {
-                    clearTimeout(this.voiceLoadTimeoutId);
-                    this.voiceLoadTimeoutId = null;
-                }
-                this.voices = window.speechSynthesis.getVoices();
-                if (this.voices.length > 0) {
-                    this.speechSynthesisReady = true;
-                }
-            };
-
-            window.speechSynthesis.onvoiceschanged = loadVoices;
-            loadVoices();
-
-            this.voiceLoadTimeoutId = window.setTimeout(() => {
-                this.voiceLoadTimeoutId = null;
-                if (!this.speechSynthesisReady && this.voices.length === 0) {
-                    loadVoices();
-                    if (!this.speechSynthesisReady && this.voices.length === 0) {
-                        console.error("Speech synthesis voices still not available after timeout (for UI feedback).");
-                    }
-                }
-            }, 2000);
-
-        } else {
-            console.warn('Speech synthesis not supported by this browser (for UI feedback).');
-            this.speechSynthesisSupported = false;
-        }
-    },
-
-    loadMuteState() {
-        const savedMuteState = localStorage.getItem(LOCAL_STORAGE_KEYS.mute);
-        if (savedMuteState === 'true') {
-            this.isMuted = true;
-        } else if (savedMuteState === 'false') {
-            this.isMuted = false;
-        } else {
-            this.isMuted = false;
-        }
-    },
-
-    saveMuteState() {
-        localStorage.setItem(LOCAL_STORAGE_KEYS.mute, this.isMuted.toString());
-    },
-
-    toggleMute() {
-        this.isMuted = !this.isMuted;
-        this.saveMuteState();
-        this.updateMuteButtonAppearance();
-
-        if (this.isMuted) {
-            if (this.speechSynthesisSupported && window.speechSynthesis.speaking) {
-                window.speechSynthesis.cancel();
-            }
-            if (this.currentAudioElement) {
-                this.currentAudioElement.pause();
-            }
-        }
-    },
-
-    updateMuteButtonAppearance() {
-        if (!this.DOM.muteToggleBtn) return;
-
-        const iconSpan = this.DOM.muteToggleBtn.querySelector('.mute-icon');
-        const textSpan = this.DOM.muteToggleBtn.querySelector('.mute-text');
-
-        if (this.isMuted) {
-            if (iconSpan) iconSpan.textContent = '🔇';
-            if (textSpan) textSpan.textContent = 'Unmute';
-            this.DOM.muteToggleBtn.setAttribute('aria-label', 'Unmute audio');
-            this.DOM.muteToggleBtn.setAttribute('aria-pressed', 'true');
-            this.DOM.muteToggleBtn.classList.add('muted');
-        } else {
-            if (iconSpan) iconSpan.textContent = '🔊';
-            if (textSpan) textSpan.textContent = 'Mute';
-            this.DOM.muteToggleBtn.setAttribute('aria-label', 'Mute audio');
-            this.DOM.muteToggleBtn.setAttribute('aria-pressed', 'false');
-            this.DOM.muteToggleBtn.classList.remove('muted');
-        }
-    },
-
     async handleShare() {
+        const shareTitle = this.getText(SHARE_DETAILS_KEYS.titleKey);
+        const shareText = this.getText(SHARE_DETAILS_KEYS.textKey);
+
         if (navigator.share) {
             try {
-                await navigator.share(SHARE_DETAILS);
-                this.updateFeedback('Link shared!', 'success');
+                await navigator.share({ title: shareTitle, text: shareText, url: SHARE_URL });
+                this.updateFeedback('feedbackMessages.linkShared', 'success');
             } catch (error: unknown) {
                 console.error('Error sharing via Web Share API:', error);
                 if (error instanceof DOMException && error.name === 'AbortError') {
                     // User aborted share
                 } else if (error instanceof Error) {
-                    this.updateFeedback(`Could not share: ${error.message}. Try copying the link.`, 'error');
+                    this.updateFeedback('feedbackMessages.shareError', 'error', { errorMessage: error.message });
                     this.openShareModal();
                 } else {
-                    this.updateFeedback('Could not share due to an unknown error. Try copying the link.', 'error');
+                    this.updateFeedback('feedbackMessages.shareErrorUnknown', 'error');
                     this.openShareModal();
                 }
             }
@@ -303,7 +439,7 @@ const App = {
     },
 
     openShareModal() {
-        this.DOM.shareUrlInput.value = SHARE_DETAILS.url;
+        this.DOM.shareUrlInput.value = SHARE_URL;
         this.configureSocialShareLinks();
         this.DOM.shareModal.style.display = 'flex';
         this.DOM.shareModal.setAttribute('aria-hidden', 'false');
@@ -339,25 +475,23 @@ const App = {
     async copyShareUrl() {
         try {
             await navigator.clipboard.writeText(this.DOM.shareUrlInput.value);
-            this.updateFeedback('URL copied to clipboard!', 'success');
-            const originalText = this.DOM.copyUrlBtn.textContent;
-            this.DOM.copyUrlBtn.textContent = 'Copied!';
+            this.DOM.copyUrlBtn.textContent = this.getText('shareModal.copiedFeedback');
             this.DOM.copyUrlBtn.disabled = true;
             setTimeout(() => {
-                this.DOM.copyUrlBtn.textContent = originalText;
+                this.DOM.copyUrlBtn.textContent = this.getText('shareModal.copyUrlButton'); // Reset to original translated text
                 this.DOM.copyUrlBtn.disabled = false;
             }, 2000);
         } catch (err) {
             console.error('Failed to copy URL: ', err);
-            this.updateFeedback('Failed to copy URL.', 'error');
+            this.updateFeedback('shareModal.copyFailedFeedback', 'error');
         }
     },
 
     configureSocialShareLinks() {
-        const title = encodeURIComponent(SHARE_DETAILS.title);
-        const text = encodeURIComponent(SHARE_DETAILS.text);
-        const shortTextForTwitter = encodeURIComponent(SHARE_DETAILS.title);
-        const url = encodeURIComponent(SHARE_DETAILS.url);
+        const title = encodeURIComponent(this.getText(SHARE_DETAILS_KEYS.titleKey));
+        const text = encodeURIComponent(this.getText(SHARE_DETAILS_KEYS.textKey));
+        const shortTextForTwitter = encodeURIComponent(this.getText(SHARE_DETAILS_KEYS.titleKey)); // Often shorter for Twitter
+        const url = encodeURIComponent(SHARE_URL);
 
         this.DOM.shareTwitter.href = `https://twitter.com/intent/tweet?text=${shortTextForTwitter}&url=${url}`;
         this.DOM.shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
@@ -366,65 +500,17 @@ const App = {
         this.DOM.shareEmail.href = `mailto:?subject=${title}&body=${text}%0A%0A${url}`;
     },
 
-    loadQuizMode() {
-        const savedMode = localStorage.getItem(LOCAL_STORAGE_KEYS.mode) as QuizMode | null;
-        if (savedMode && (savedMode === 'letters' || savedMode === 'words')) {
-            this.quizMode = savedMode;
-        } else {
-            this.quizMode = 'letters';
-        }
-    },
-
-    saveQuizMode() {
-        localStorage.setItem(LOCAL_STORAGE_KEYS.mode, this.quizMode);
-    },
-
-    loadSessionStats() {
-        const savedStats = localStorage.getItem(LOCAL_STORAGE_KEYS.sessionStats);
-        const defaultStats = {
-            letters: { score: 0, streak: 0 },
-            words: { score: 0, streak: 0 },
-        };
-
-        if (savedStats) {
-            try {
-                const parsedStats = JSON.parse(savedStats);
-                if (parsedStats && parsedStats.letters && parsedStats.words &&
-                    typeof parsedStats.letters.score === 'number' &&
-                    typeof parsedStats.letters.streak === 'number' &&
-                    typeof parsedStats.words.score === 'number' &&
-                    typeof parsedStats.words.streak === 'number') {
-                    this.sessionStats = parsedStats;
-                    return;
-                } else {
-                    console.warn('Invalid session stats format in localStorage. Using defaults.');
-                }
-            } catch (error) {
-                console.error('Error parsing session stats from localStorage:', error);
-            }
-        }
-        this.sessionStats = defaultStats;
-    },
-
-    saveSessionStats() {
-        try {
-            localStorage.setItem(LOCAL_STORAGE_KEYS.sessionStats, JSON.stringify(this.sessionStats));
-        } catch (error) {
-            console.error('Error saving session stats to localStorage:', error);
-        }
-    },
-
     async switchQuizMode(newMode: QuizMode) {
         if (this.quizMode === newMode) return;
 
         this.quizMode = newMode;
-        this.saveQuizMode();
+        saveQuizModeToStorage(this);
         this.updateModeButtonStyles();
 
-        await this.loadQuizData();
+        await loadQuizData(this);
         this.updateProgressDisplay();
         this.nextQuestion();
-        this.updateFeedback(`Switched to ${newMode} quiz. Choose the correct option.`, 'info');
+        this.updateFeedback('feedbackMessages.switchedMode', 'info', { mode: newMode });
     },
 
     updateModeButtonStyles() {
@@ -441,81 +527,6 @@ const App = {
         }
     },
 
-    async loadQuizData() {
-        const currentLocalStorageKey = this.quizMode === 'letters' ? LOCAL_STORAGE_KEYS.letters : LOCAL_STORAGE_KEYS.words;
-        const dataPath = this.quizMode === 'letters' ? '/lettersData.json' : '/wordsData.json';
-
-        let fetchedInitialData: (InitialLetter[] | InitialWord[]) = [];
-        try {
-            const response = await fetch(dataPath);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch ${dataPath}: ${response.status} ${response.statusText}`);
-            }
-            fetchedInitialData = await response.json();
-            if (!Array.isArray(fetchedInitialData)) {
-                throw new Error(`Data from ${dataPath} is not an array.`);
-            }
-        } catch (fetchError) {
-            console.error(`Error fetching or parsing initial quiz data from ${dataPath}:`, fetchError);
-            this.updateFeedback(`Could not load ${this.quizMode} data. Please check your connection or refresh.`, 'error');
-            this.quizItems = [];
-            this.DOM.totalItemsCountDisplay.textContent = '0';
-            this.DOM.reviewedCountDisplay.textContent = '0';
-            if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'none';
-            if (this.DOM.answerFeedbackIcon) this.DOM.answerFeedbackIcon.style.display = 'none';
-            this.updateProgressDisplay();
-            return;
-        }
-
-        let useInitialDataStructure = true;
-        const savedData = localStorage.getItem(currentLocalStorageKey);
-
-        if (savedData) {
-            try {
-                const parsedSavedData: QuizItem[] = JSON.parse(savedData);
-                if (Array.isArray(parsedSavedData)) {
-                    const validSavedItems = parsedSavedData.filter(si =>
-                        fetchedInitialData.some(ii => ii.id === si.id) && typeof si.reviewed === 'boolean'
-                    );
-
-                    this.quizItems = fetchedInitialData.map(initialItem => {
-                        const savedVersion = validSavedItems.find(si => si.id === initialItem.id);
-                        if (savedVersion) {
-                            return {
-                                ...initialItem,
-                                ...this.getDefaultSRDFields(),
-                                ...savedVersion,
-                                ...(initialItem as InitialLetter).character && { character: (initialItem as InitialLetter).character },
-                                ...(initialItem as InitialWord).word && { word: (initialItem as InitialWord).word },
-                                transliteration: initialItem.transliteration,
-                                category: (initialItem as InitialLetter).category,
-                                displayCharacterOverride: (initialItem as InitialLetter).displayCharacterOverride,
-                            } as QuizItem;
-                        }
-                        return { ...initialItem, ...this.getDefaultSRDFields() } as QuizItem;
-                    });
-                    useInitialDataStructure = false;
-                } else {
-                    console.warn(`Invalid saved data format for ${currentLocalStorageKey}. Expected an array. Using fresh data.`);
-                }
-            } catch (error) {
-                console.error(`Error parsing saved data for ${currentLocalStorageKey} from localStorage:`, error);
-            }
-        }
-
-        if (useInitialDataStructure) {
-            this.quizItems = fetchedInitialData.map(item => ({
-                ...item,
-                ...this.getDefaultSRDFields()
-            })) as QuizItem[];
-        }
-
-        this.DOM.totalItemsCountDisplay.textContent = this.quizItems.length.toString();
-        this.DOM.reviewedCountLabel.textContent = this.quizMode === 'letters' ? 'Letters Reviewed' : 'Words Reviewed';
-        this.DOM.totalItemsLabel.textContent = this.quizMode === 'letters' ? 'Total Letters' : 'Total Words';
-        this.updateProgressDisplay();
-    },
-
     getDefaultSRDFields(): Pick<QuizItem, 'lastReviewedTimestamp' | 'nextReviewTimestamp' | 'intervalDays' | 'easeFactor' | 'correctStreak' | 'totalCorrect' | 'totalIncorrect' | 'reviewed'> {
         return {
             lastReviewedTimestamp: 0,
@@ -527,15 +538,6 @@ const App = {
             totalIncorrect: 0,
             reviewed: false,
         };
-    },
-
-    saveQuizData() {
-        const currentLocalStorageKey = this.quizMode === 'letters' ? LOCAL_STORAGE_KEYS.letters : LOCAL_STORAGE_KEYS.words;
-        try {
-            localStorage.setItem(currentLocalStorageKey, JSON.stringify(this.quizItems));
-        } catch (error) {
-            console.error(`Error saving quiz data for ${this.quizMode} to localStorage:`, error);
-        }
     },
 
     selectItemForQuiz(): QuizItem | null {
@@ -555,7 +557,6 @@ const App = {
             const sortedByLastReviewed = [...this.quizItems].filter(item => item.reviewed).sort((a,b) => a.lastReviewedTimestamp - b.lastReviewedTimestamp);
             if (sortedByLastReviewed.length > 0) return sortedByLastReviewed[0];
         }
-
         return null;
     },
 
@@ -564,7 +565,6 @@ const App = {
         options.add(correctItem.transliteration);
 
         const distractors = this.quizItems.filter(item => item.id !== correctItem.id && item.transliteration !== correctItem.transliteration);
-
         const numOptions = Math.min(4, this.quizItems.length > 0 ? this.quizItems.length : 1);
 
         while (options.size < numOptions && distractors.length > 0) {
@@ -579,49 +579,41 @@ const App = {
         if (!this.currentItem) return;
 
         this.DOM.optionsContainer.querySelectorAll('button').forEach(btn => (btn as HTMLButtonElement).disabled = true);
-        this.DOM.nextQuestionBtn.style.display = 'inline-block'; // Changed to inline-block for centering
+        this.DOM.nextQuestionBtn.style.display = 'inline-block';
 
         const isCorrect = selectedTransliteration === this.currentItem.transliteration;
-
         const currentModeStats = this.sessionStats[this.quizMode];
 
         if (this.DOM.answerFeedbackIcon) {
             if (isCorrect) {
                 this.DOM.answerFeedbackIcon.textContent = '✔';
                 this.DOM.answerFeedbackIcon.style.color = '#2e73b8';
-                this.DOM.answerFeedbackIcon.setAttribute('aria-label', 'Correct');
+                this.DOM.answerFeedbackIcon.setAttribute('aria-label', this.getText('quiz.feedbackIconCorrectAriaLabel'));
             } else {
                 this.DOM.answerFeedbackIcon.textContent = '✖';
                 this.DOM.answerFeedbackIcon.style.color = '#d9534f';
-                this.DOM.answerFeedbackIcon.setAttribute('aria-label', 'Incorrect');
+                this.DOM.answerFeedbackIcon.setAttribute('aria-label', this.getText('quiz.feedbackIconIncorrectAriaLabel'));
             }
             this.DOM.answerFeedbackIcon.style.display = 'inline';
         }
-
 
         if (isCorrect) {
             currentModeStats.score++;
             currentModeStats.streak++;
             this.currentItem.correctStreak++;
             this.currentItem.totalCorrect++;
-            this.speakItem(this.currentItem, false, false);
-
+            speakItemHandler(this, this.currentItem, false, false);
             if (this.currentItem.correctStreak === 1) this.currentItem.intervalDays = 1;
             else if (this.currentItem.correctStreak === 2) this.currentItem.intervalDays = 6;
             else this.currentItem.intervalDays = Math.ceil(this.currentItem.intervalDays * this.currentItem.easeFactor);
             this.currentItem.intervalDays = Math.min(this.currentItem.intervalDays, 365);
             this.currentItem.easeFactor += 0.1;
-
         } else {
             currentModeStats.streak = 0;
             this.currentItem.correctStreak = 0;
             this.currentItem.totalIncorrect++;
-            this.speakItem(this.currentItem, true, false);
-
-            if (navigator.vibrate) {
-                navigator.vibrate(200);
-            }
-
+            speakItemHandler(this, this.currentItem, true, false);
+            if (navigator.vibrate) navigator.vibrate(200);
             this.currentItem.intervalDays = 1;
             this.currentItem.easeFactor = Math.max(1.3, this.currentItem.easeFactor - 0.2);
         }
@@ -630,10 +622,10 @@ const App = {
         this.currentItem.nextReviewTimestamp = Date.now() + (this.currentItem.intervalDays * 24 * 60 * 60 * 1000);
         this.currentItem.reviewed = true;
 
-        this.saveQuizData();
-        this.saveSessionStats();
+        saveQuizData(this);
+        saveSessionStatsToStorage(this);
         this.updateProgressDisplay();
-        checkCompletionAndCelebrate(this); // Use imported function
+        checkCompletionAndCelebrate(this);
 
         this.DOM.optionsContainer.querySelectorAll('button').forEach(button => {
             const btn = button as HTMLButtonElement;
@@ -659,20 +651,22 @@ const App = {
         if (this.currentItem) {
             this.options = this.generateOptions(this.currentItem);
             this.renderQuiz();
-            this.updateFeedback('Choose the correct option.', 'info');
+            this.updateFeedback('quiz.initialFeedback', 'info');
             if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'inline-flex';
         } else {
-            this.DOM.itemDisplay.textContent = '🎉';
+            this.DOM.itemDisplay.textContent = this.getText('quiz.itemDisplayAllLearned');
             if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'none';
 
             const allReviewed = this.quizItems.length > 0 && this.quizItems.every(item => item.reviewed);
             if (allReviewed && this.quizItems.length > 0 && !this.celebratedModes[this.quizMode]) {
-                this.updateFeedback('All items learned! Preparing your celebration...', 'success');
-                checkCompletionAndCelebrate(this);  // Use imported function
+                this.updateFeedback('quiz.feedbackAllLearnedCelebration', 'success');
+                checkCompletionAndCelebrate(this);
             } else if (allReviewed && this.quizItems.length > 0) {
-                this.updateFeedback('All items reviewed for now! Come back later or switch modes.', 'success');
+                this.updateFeedback('quiz.feedbackAllLearnedDone', 'success');
             } else {
-                this.updateFeedback(this.quizItems.length > 0 ? 'All items learned for now! Come back later for review or switch modes.' : 'No items loaded. Check data files or connection.', this.quizItems.length > 0 ? 'success' : 'error');
+                const feedbackKey = this.quizItems.length > 0 ? 'quiz.feedbackAllLearnedNoNew' : 'quiz.feedbackNoItemsLoaded';
+                const feedbackType = this.quizItems.length > 0 ? 'success' : 'error';
+                this.updateFeedback(feedbackKey, feedbackType);
             }
             this.DOM.optionsContainer.innerHTML = '';
         }
@@ -682,130 +676,28 @@ const App = {
         if (!this.currentItem) return;
         const displayForm = this.currentItem.character ? ((this.currentItem as InitialLetter).displayCharacterOverride || (this.currentItem as InitialLetter).character) : (this.currentItem as InitialWord).word;
         this.DOM.itemDisplay.textContent = displayForm;
-        this.DOM.itemDisplay.setAttribute('aria-label', `Quiz item: ${displayForm}`);
+        this.DOM.itemDisplay.setAttribute('aria-label', this.getText('quiz.itemDisplayAriaLabel', { displayForm }));
         if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'inline-flex';
-
 
         this.DOM.optionsContainer.innerHTML = '';
         this.options.forEach(opt => {
             const button = document.createElement('button');
             button.textContent = opt;
-            button.setAttribute('aria-label', `Option: ${opt}`);
+            button.setAttribute('aria-label', this.getText('optionButtonAriaLabel', { optionText: opt }));
             button.onclick = () => this.handleOptionClick(opt);
             this.DOM.optionsContainer.appendChild(button);
         });
     },
 
-    speak(text: string, lang: string = 'ml-IN', rate: number = 0.9, pitch: number = 1.1) {
-        if (this.isMuted) return;
-        if (!this.speechSynthesisSupported || !this.speechSynthesisUtterance) {
-            return;
-        }
-        if (!this.speechSynthesisReady) {
-            return;
-        }
+    updateFeedback(keyOrMessage: string, type: 'info' | 'error' | 'success' | 'correct' | 'incorrect', replacements?: Record<string, string>) {
+        // Check if it's a key by looking for a dot, or common prefixes
+        const isKey = keyOrMessage.includes('.') || keyOrMessage.startsWith('feedbackMessages.') || keyOrMessage.startsWith('quiz.') || keyOrMessage.startsWith('shareModal.');
+        const message = isKey ? this.getText(keyOrMessage, replacements) : keyOrMessage; // Fallback to raw message if not clearly a key
 
-        if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-        }
-
-        const utterance = this.speechSynthesisUtterance;
-        utterance.text = text;
-        utterance.lang = lang;
-        utterance.rate = rate;
-        utterance.pitch = pitch;
-        utterance.voice = null;
-
-        let selectedVoice = this.voices.find(voice => voice.lang === 'ml-IN' && voice.localService);
-        if (!selectedVoice) selectedVoice = this.voices.find(voice => voice.lang === 'ml-IN');
-        if (!selectedVoice) selectedVoice = this.voices.find(voice => voice.lang.startsWith('ml-') && voice.localService);
-        if (!selectedVoice) selectedVoice = this.voices.find(voice => voice.lang.startsWith('ml-'));
-
-        if (selectedVoice) utterance.voice = selectedVoice;
-
-        utterance.onerror = (event) => {
-            console.error('Speech synthesis error (UI feedback):', event.error, event);
-        };
-
-        window.speechSynthesis.speak(utterance);
-    },
-
-    async speakItem(item: QuizItem, _emphatic: boolean = false, bypassMute: boolean = false) {
-        if (this.isMuted && !bypassMute) return;
-        if (!item) return;
-
-        if (this.currentAudioElement) {
-            this.currentAudioElement.pause();
-            this.currentAudioElement.removeAttribute('src');
-            this.currentAudioElement.load();
-            this.currentAudioElement = null;
-        }
-        if (this.speechSynthesisSupported && window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-        }
-
-
-        const audioType = item.character ? 'letters' : 'words';
-        const audioPath = `/audio/${audioType}/${item.id}.mp3`; // Use absolute path
-
-        const audioElement = new Audio();
-        this.currentAudioElement = audioElement;
-
-        const playPromise = new Promise<void>((resolve, reject) => {
-            const timeoutDuration = 5000;
-            let loadTimeoutId: number | null = null;
-
-            const cleanup = () => {
-                if (loadTimeoutId !== null) clearTimeout(loadTimeoutId);
-                audioElement.oncanplaythrough = null;
-                audioElement.onerror = null;
-                audioElement.onended = null;
-                audioElement.onabort = null;
-                if (this.currentAudioElement === audioElement) {
-                    this.currentAudioElement = null;
-                }
-            };
-
-            audioElement.oncanplaythrough = () => {
-                cleanup();
-                resolve();
-            };
-            audioElement.onerror = (e) => {
-                cleanup();
-                reject(new Error(`Audio not found or error for ${item.id}`));
-            };
-            audioElement.onended = cleanup;
-            audioElement.onabort = cleanup;
-
-            loadTimeoutId = window.setTimeout(() => {
-                loadTimeoutId = null;
-                cleanup();
-                reject(new Error(`Audio load timeout for ${item.id}`));
-            }, timeoutDuration);
-
-            audioElement.src = audioPath;
-            audioElement.load();
-        });
-
-        try {
-            await playPromise;
-            audioElement.play().catch(playError => {
-                console.error(`Error playing custom audio for item ID ${item.id}:`, playError);
-                if (this.currentAudioElement === audioElement) {
-                    this.currentAudioElement = null;
-                }
-            });
-        } catch (error) {
-            if (this.currentAudioElement === audioElement) {
-                this.currentAudioElement = null;
-            }
-        }
-    },
-
-    updateFeedback(message: string, type: 'info' | 'error' | 'success' | 'correct' | 'incorrect') {
         this.DOM.feedbackArea.textContent = message;
         this.DOM.feedbackArea.className = `feedback ${type}`;
     },
+
 
     updateProgressDisplay() {
         const currentModeStats = this.sessionStats[this.quizMode];
@@ -824,17 +716,12 @@ const App = {
         this.DOM.quizProgressBar.style.width = `${Math.min(100, percentage)}%`;
         this.DOM.quizProgressBarContainer.setAttribute('aria-valuenow', Math.min(100, percentage).toFixed(0));
 
-        this.DOM.progressBarLabelText.textContent = 'Surprise Loading...';
-        this.DOM.quizProgressBarContainer.setAttribute('aria-label', 'Content loading progress');
-
-
-        this.DOM.reviewedCountLabel.textContent = this.quizMode === 'letters' ? 'Letters Reviewed' : 'Words Reviewed';
-        this.DOM.totalItemsLabel.textContent = this.quizMode === 'letters' ? 'Total Letters' : 'Total Words';
+        this.DOM.progressBarLabelText.textContent = this.getText('progressDisplay.surpriseLoadingText');
+        this.DOM.quizProgressBarContainer.setAttribute('aria-label', this.getText('progressDisplay.progressBarAriaLabel'));
     }
-
 };
 
-export type AppType = typeof App; // Export AppType for use in other modules
+export type AppType = typeof App;
 
 document.addEventListener('DOMContentLoaded', async () => {
     await App.init();

@@ -22,6 +22,6 @@
 
     "types": ["vite/client"]
   },
-  "include": ["index.tsx", "constants.ts", "src/hallOfFame.ts"],
+  "include": ["index.tsx", "constants.ts", "src/hallOfFame.ts", "src/quizDataHandler.ts", "src/mute.ts", "src/audio.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

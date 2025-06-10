@@ -1,0 +1,138 @@
+
+{
+  "meta": {
+    "title": "Learn Malayalam Free: Letters, Alphabet & Words | Interactive Quiz",
+    "description": "Learn Malayalam letters, the full alphabet, and words for free with our interactive quiz. Master the Malayalam script with audio pronunciation and spaced repetition. Ideal for beginners looking for a free Malayalam learning tool.",
+    "keywords": "learn malayalam, malayalam quiz free, learn malayalam free, learn malayalam alphabets free, Malayalam, Malayalam alphabet, Malayalam letters, Malayalam words, Malayalam script, interactive quiz, language learning, free Malayalam lessons, audio pronunciation, spaced repetition"
+  },
+  "header": {
+    "mainTitle": "Learn Malayalam Alphabet & Words FREE - Quiz",
+    "aboutButton": "About",
+    "aboutButtonAriaLabel": "About the Developer",
+    "shareButton": "Share",
+    "shareButtonAriaLabel": "Share this app with friends",
+    "coffeeButtonAriaLabel": "Support the Developer by buying a coffee"
+  },
+  "modeSwitcher": {
+    "lettersButton": "Letters",
+    "wordsButton": "Words",
+    "muteButton": {
+      "muteText": "Mute",
+      "unmuteText": "Unmute",
+      "muteAriaLabel": "Mute audio",
+      "unmuteAriaLabel": "Unmute audio"
+    }
+  },
+  "quiz": {
+    "itemDisplayAriaLabel": "Quiz item: {displayForm}",
+    "replayAudioButtonAriaLabel": "Replay item sound",
+    "feedbackIconCorrectAriaLabel": "Correct",
+    "feedbackIconIncorrectAriaLabel": "Incorrect",
+    "initialFeedback": "Choose the correct option.",
+    "nextQuestionButton": "Next Question",
+    "itemDisplayAllLearned": "🎉",
+    "feedbackAllLearnedCelebration": "All items learned! Preparing your celebration...",
+    "feedbackAllLearnedDone": "All items reviewed for now! Come back later or switch modes.",
+    "feedbackAllLearnedNoNew": "All items learned for now! Come back later for review or switch modes.",
+    "feedbackNoItemsLoaded": "No items loaded. Check data files or connection."
+  },
+  "progressDisplay": {
+    "surpriseLoadingText": "Surprise Loading...",
+    "progressBarAriaLabel": "Content loading progress",
+    "totalScoreLabel": "Total Score",
+    "currentStreakLabel": "Current Streak",
+    "itemsReviewedLabel": "Items Reviewed",
+    "totalItemsLabel": "Total Items"
+  },
+  "nextSteps": {
+    "title": "<span class=\"emoji\" role=\"img\" aria-label=\"Seedling\">🌱</span> Keep Growing Your Malayalam!",
+    "intro": "Awesome work on the quizzes! You're building a fantastic foundation in Malayalam.",
+    "whyWorksTitle": "<span class=\"emoji\" role=\"img\" aria-label=\"Brain lightbulb\">🧠💡</span> Why This Works & How to Maximize Your Learning:",
+    "whyWorksPara1": "Want to <em>truly</em> master Malayalam, not just cram and forget? This app is your secret weapon! We use <strong>Spaced Repetition (SRS)</strong>, a powerful technique backed by science. It intelligently schedules what you learn, bringing items back for review <em>just before</em> you might forget them. This means less wasted effort and more knowledge that sticks – permanently!",
+    "whyWorksPara2": "Plus, learning here is <strong>active and engaging, like a game!</strong> Research consistently shows that interactive quizzing beats passive learning hands-down. You'll grasp concepts faster, remember more, and actually <em>enjoy</em> the process.",
+    "whyWorksPara3Start": "<strong>Transform your learning:</strong> Make this app your daily 5-minute Malayalam habit.",
+    "whyWorksPara3Bookmark": "Bookmark this page now",
+    "whyWorksPara3BookmarkTip": "Press Ctrl+D or Cmd+D to bookmark!",
+    "whyWorksPara3End": "and visit every day. Consistent, smart practice is the express lane to fluency. You've got this! <span class=\"emoji\" role=\"img\" aria-label=\"Rocket\">🚀</span>",
+    "howToTitle": "Here's how to keep the momentum going:",
+    "listItemDailyDose": "<strong>Daily Dose:</strong> Just 5-10 minutes daily reinforces learning. Revisit reviewed items and tackle new ones.",
+    "listItemListenUp": "<strong>Listen Up:</strong> Tune into Malayalam music or simple dialogues. Get your ear accustomed to the sounds. <span class=\"emoji\" role=\"img\" aria-label=\"Headphones\">🎧</span>",
+    "listItemSpeakOut": "<strong>Speak Out:</strong> Try saying words and simple phrases aloud. Practice makes perfect! <span class=\"emoji\" role=\"img\" aria-label=\"Speech bubble\">💬</span>",
+    "listItemExploreMore": "<strong>Explore More:</strong> As you grow, look for children's stories, or apps that teach grammar and conversation.",
+    "listItemSwitchSolidify": "<strong>Switch & Solidify:</strong> Regularly switch between 'Letters' and 'Words' modes to strengthen all areas.",
+    "encouragement": "Every bit of practice counts. <span lang=\"ml-IN\">മുന്നോട്ട് പോകുക!</span> (Munnottu pokuka! - Go forward!) <span class=\"emoji\" role=\"img\" aria-label=\"Victory hand\">✌️</span>"
+  },
+  "hallOfFameSection": {
+    "title": "Hall of Fame <span class=\"emoji\" role=\"img\" aria-label=\"Trophy\">🏆</span>",
+    "placeholder": "Be the first to conquer a quiz and share your inspiring story here!"
+  },
+  "supportMe": {
+    "title": "Enjoying Your Language Adventure? <span class=\"emoji\" role=\"img\" aria-label=\"Rocket\">🚀</span>",
+    "description": "This app is brewed with passion (and lots of virtual <span class=\"emoji\" role=\"img\" aria-label=\"Coffee cup\">☕</span>) to help you master the script and words. If you find it helpful and want to support its continued development and new features, a small coffee donation would be amazing!",
+    "buttonText": "<span class=\"emoji\" role=\"img\" aria-label=\"Coffee cup\">☕</span> Buy Me a Coffee",
+    "thanksNote": "Your support keeps this project brewing strong! <span lang=\"ml-IN\">നന്ദി!</span> (Thank you!) <span class=\"emoji\" role=\"img\" aria-label=\"Praying hands\">🙏</span>"
+  },
+  "testControls": {
+    "testHofButton": "Test Hall Of Fame Modal"
+  },
+  "footer": {
+    "copyright": "&copy; {year} Learn Malayalam by Ajay Nair. All rights reserved."
+  },
+  "shareModal": {
+    "title": "Share this App!",
+    "closeButtonAriaLabel": "Close share dialog",
+    "description": "Help others discover this Malayalam learning app by sharing the link:",
+    "copyUrlButton": "Copy URL",
+    "copiedFeedback": "URL copied to clipboard!",
+    "copyFailedFeedback": "Failed to copy URL.",
+    "shareOnText": "Or share directly on:",
+    "twitterButton": "Twitter",
+    "facebookButton": "Facebook",
+    "whatsappButton": "WhatsApp",
+    "linkedinButton": "LinkedIn",
+    "emailButton": "Email",
+    "shareUrlInputAriaLabel": "Sharable link"
+  },
+  "aboutMeModal": {
+    "title": "About Me",
+    "closeButtonAriaLabel": "Close about dialog",
+    "greeting": "<span class=\"emoji\" role=\"img\" aria-label=\"Waving hand\">👋</span> Hey There, Language Adventurer!",
+    "para1": "This little corner of the internet was lovingly crafted by <strong>Ajay Nair</strong>. Yep, just one person fueled by a passion for the language and a whole lot of <span class=\"emoji\" role=\"img\" aria-label=\"Coffee\">☕</span> (and maybe a few late nights <span class=\"emoji\" role=\"img\" aria-label=\"Owl\">🦉</span>).",
+    "para2": "The mission? To make learning the beautiful script and basic words a bit more fun, a tad less daunting, and hopefully, super effective with the magic of spaced repetition! Think of it as your friendly digital guide to mastering those elegant swirls and curls, and some foundational vocabulary. <span class=\"emoji\" role=\"img\" aria-label=\"Sparkles\">✨</span>",
+    "para3": "Got feedback, found a mischievous bug <span class=\"emoji\" role=\"img\" aria-label=\"Bug\">🐛</span>, or just want to say \"ഹായ്!\" (that's \"Hi!\" in Malayalam)? Feel free to drop a line at: <a href=\"mailto:ajaynair59@gmail.com\">ajaynair59 [at] gmail [dot] com</a>.",
+    "para4": "Happy learning, or as we say, \"<span lang=\"ml-IN\">നന്നായി പഠിക്കൂ!</span>\" (Nannaayi padhikku!) <span class=\"emoji\" role=\"img\" aria-label=\"Smiling face with sunglasses\">😎</span>"
+  },
+  "hallOfFameModal": {
+    "baseTitle": "🎉 You're a {mode} Champion! 🎉",
+    "closeButtonAriaLabel": "Close dialog",
+    "congratsMessage": "WHOA, Malayalam Maestro! You didn't just learn, you CONQUERED the <strong>{mode}</strong> challenge! 🌟 Your brain is officially dazzling with new script superpowers!",
+    "invitationMessage": "Ready to etch your legend in our Hall of Fame? We're super stoked to hear your adventure!",
+    "promptTitle": "<strong>Spill the beans (or the sambar!):</strong>",
+    "promptItem1": "How was your epic quest learning Malayalam letters/words?",
+    "promptItem2": "What sparks joy for you about the Malayalam language?",
+    "promptItem3": "Got any cool tips, random thoughts, or a victory dance to share?",
+    "inspirationMessage": "Your story will inspire future language explorers and look absolutely amazing here!",
+    "nameLabel": "Your Name (required):",
+    "namePlaceholder": "E.g., Super Learner Ajay",
+    "emailLabel": "Your Email (optional, for updates or thanks!):",
+    "emailPlaceholder": "you@example.com",
+    "testimonialLabel": "Your Awesome Story:",
+    "testimonialPlaceholder": "Share your journey, tips, or anything cool!",
+    "testimonialAriaLabel": "Your testimonial",
+    "submitButton": "Share My Story!",
+    "feedbackNameRequired": "Hold on, superstar! Please enter your name for the Hall of Fame!",
+    "feedbackStoryRequired": "Almost there! Please share your awesome story or thoughts!",
+    "feedbackSubmissionSuccess": "Awesome! Your story is on its way. Your email client should open."
+  },
+  "feedbackMessages": {
+    "switchedMode": "Switched to {mode} quiz. Choose the correct option.",
+    "linkShared": "Link shared!",
+    "shareError": "Could not share: {errorMessage}. Try copying the link.",
+    "shareErrorUnknown": "Could not share due to an unknown error. Try copying the link."
+  },
+  "shareDetails": {
+    "title": "Learn Malayalam Free: Letters, Alphabet & Words | Interactive Quiz",
+    "text": "Discover the fun, free way to learn the Malayalam alphabet and words with this interactive quiz app! Master the script with audio, spaced repetition, and engaging exercises."
+  },
+  "optionButtonAriaLabel": "Option: {optionText}"
+}
