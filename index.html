@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learn Malayalam Free: Letters, Alphabet & Words | Interactive Quiz</title>
     <meta name="description" content="Learn Malayalam letters, the full alphabet, and words for free with our interactive quiz. Master the Malayalam script with audio pronunciation and spaced repetition. Ideal for beginners looking for a free Malayalam learning tool.">
-    <meta name="keywords" content="learn malayalam, malayalam quiz free, learn malayalam free, learn malayalam alphabets free, Malayalam, Malayalam alphabet, Malayalam letters, Malayalam words, Malayalam script, interactive quiz, language learning, free Malayalam lessons, audio pronunciation, spaced repetition">
+    <meta name="keywords" content="learn malayalam, malayalam quiz free, quiz gamify, malayalam alphabet free, read malayalam free, Malayalam, Malayalam alphabet, Malayalam letters, Malayalam words, Malayalam script, interactive quiz, language learning, free Malayalam lessons, audio pronunciation, spaced repetition">
     <meta name="author" content="Ajay Nair">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.learn-malayalam.org/">
@@ -49,13 +49,13 @@
 
     <style>
         html {
-            color-scheme: light; /* Explicitly set the color scheme to light */
-            background-color: #f0f4f8; /* Ensure HTML element itself has a light background */
+            color-scheme: light;
+            background-color: #f0f4f8;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8; /* Fallback if html bg isn't enough, but html should cover it */
+            background-color: #f0f4f8;
             color: #333;
             margin: 0;
             padding: 20px;
@@ -68,45 +68,46 @@
 
         .app-container {
             width: 100%;
-            max-width: 900px; /* Increased max-width for sidebar layout */
+            max-width: 900px;
             background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             padding: 25px;
             box-sizing: border-box;
-            position: relative; /* For share modal positioning context */
+            position: relative;
         }
 
         header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px; /* Reduced margin */
             border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 15px;
-            position: relative; /* For positioning the coffee button */
-            padding-right: 120px; /* Space for the coffee and share buttons */
+            padding-bottom: 10px; /* Reduced padding */
         }
 
-        header h1 { /* New English H1 - main title */
+        header h1 {
             color: #2c3e50;
-            margin: 0 0 5px 0;
+            margin: 0 10px;
             font-weight: bold;
-            font-size: 1.8em;
+            font-size: 1.5em; /* Adjusted font size */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            flex-grow: 1;
+            text-align: center;
         }
-        header h2 { /* New Malayalam H2 - subtitle */
-            font-family: 'Noto Sans Malayalam', sans-serif;
-            color: #555;
-            margin: 5px 0 0 0;
-            font-weight: normal;
-            font-size: 1.5em;
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between share and coffee */
         }
 
         .header-action-btn {
-            position: absolute;
-            top: 10px;
+            /* removed position:absolute */
             padding: 6px 8px;
-            font-size: 1.2rem; /* Default for icon buttons like coffee */
-            line-height: 1;   /* Default for icon buttons */
+            font-size: 1.2rem;
+            line-height: 1;
             color: #333;
             border: none;
             border-radius: 6px;
@@ -116,7 +117,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f0f0f0; /* Default background for icon buttons */
+            background-color: #f0f0f0;
         }
         .header-action-btn:hover {
             transform: translateY(-1px);
@@ -127,7 +128,6 @@
         }
 
         .header-coffee-btn {
-            right: 10px;
             background-color: #FFBF00;
         }
         .header-coffee-btn:hover {
@@ -135,12 +135,11 @@
         }
 
         .header-share-btn {
-            right: 55px; /* Positioned to the left of coffee button */
             background-color: #a0ced9;
-            font-size: 0.9rem; /* Adjusted for text */
-            padding: 7px 12px; /* Adjusted padding for text */
+            font-size: 0.9rem;
+            padding: 7px 12px;
             font-weight: 600;
-            line-height: normal; /* Use default line-height for text */
+            line-height: normal;
         }
         .header-share-btn:hover {
             background-color: #8ab6c1;
@@ -149,84 +148,62 @@
         main {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px; /* Reduced gap */
         }
 
         .card {
             background-color: #ffffff;
             border-radius: 8px;
-            padding: 20px;
+            padding: 15px; /* Reduced padding */
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
 
         .mode-switcher {
-            padding: 15px;
+            padding: 10px; /* Reduced padding */
         }
-        .mode-switcher-header {
-            text-align: center; /* Center the inline/inline-block children like h3 */
-            position: relative; /* For absolute positioning of mute button */
+        .mode-switcher-controls {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-top: 5px; /* Adjust if mute button text makes it taller */
-            padding-bottom: 5px;
         }
-        .mode-switcher-header h3 {
-            display: inline-block; /* To be centered by text-align on parent */
-            margin-top: 0;
-            margin-bottom: 0;
-            font-size: 1.5em; /* Made larger */
-            font-weight: bold;
-            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%); /* Colorful gradient */
-            -webkit-background-clip: text;
-            -moz-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            -moz-text-fill-color: transparent;
-            text-fill-color: transparent;
-        }
+
         .mode-switcher-mute-btn {
             background-color: transparent;
             border: none;
             padding: 8px 10px;
             line-height: 1;
-            color: #333; /* Default unmuted color */
+            color: #333;
             border-radius: 8px;
             cursor: pointer;
             transition: color 0.2s, transform 0.1s, background-color 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px; /* Space between icon and text */
-            position: absolute; /* Positioned to the right of the centered title */
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
+            gap: 6px;
+            /* Removed absolute positioning */
         }
         .mode-switcher-mute-btn:hover {
-            transform: translateY(-50%) scale(1.05); /* Keep vertical centering on scale */
+            transform: scale(1.05);
             background-color: rgba(0,0,0,0.05);
         }
         .mode-switcher-mute-btn .mute-icon {
-            font-size: 2rem;  /* Even bigger icon */
+            font-size: 1.8rem;  /* Slightly reduced */
         }
         .mode-switcher-mute-btn .mute-text {
             font-size: 0.9rem;
             font-weight: 500;
         }
-        .mode-switcher-mute-btn.muted .mute-icon {
-            color: #e74c3c; /* Reddish color when muted */
-        }
+        .mode-switcher-mute-btn.muted .mute-icon,
         .mode-switcher-mute-btn.muted .mute-text {
             color: #e74c3c;
         }
 
         .mode-switcher-buttons {
-            text-align: center;
-            margin-top: 10px; /* Add some space if mute button made header taller */
+            display: flex; /* For alignment with mute button if needed */
+            gap: 10px;
         }
         .mode-switcher-buttons button {
-            padding: 10px 15px;
-            font-size: 0.95rem;
-            margin: 0 5px;
+            padding: 8px 12px; /* Reduced padding */
+            font-size: 0.9rem; /* Reduced font size */
             border: 1px solid #3498db;
             background-color: #f0f8ff;
             color: #3498db;
@@ -245,7 +222,7 @@
 
         .quiz-layout-wrapper {
             display: flex;
-            gap: 20px;
+            gap: 15px; /* Reduced gap */
         }
 
         .quiz-layout-wrapper .quiz-area {
@@ -260,81 +237,90 @@
         .item-display-wrapper {
             display: flex;
             align-items: center;
-            justify-content: center; /* Center content if item-display doesn't take full width */
-            gap: 10px; /* Space between item and replay button */
-            margin-bottom: 20px;
+            justify-content: center;
+            gap: 8px; /* Reduced gap */
+            margin-bottom: 10px; /* Reduced margin */
             background-color: #eaf5ff;
             border-radius: 8px;
-            padding: 10px; /* Reduced padding for wrapper */
+            padding: 8px; /* Reduced padding */
+        }
+
+        .answer-feedback-icon {
+            font-size: 2rem; /* Adjusted */
+            font-weight: bold;
+            line-height: 1;
+            display: none;
         }
 
         .quiz-area .item-display {
             font-family: 'Noto Sans Malayalam', sans-serif;
-            font-size: 3.5rem;
+            font-size: 3rem; /* Adjusted */
             color: #3498db;
             text-align: center;
-            /* margin-bottom: 20px; /* Removed as wrapper has margin */
-            padding: 10px; /* Adjusted padding for item display itself */
-            /* background-color: #eaf5ff; /* Moved to wrapper */
-            /* border-radius: 8px; /* Moved to wrapper */
-            min-height: 100px;
+            padding: 5px; /* Reduced padding */
+            min-height: 70px; /* Reduced min-height */
             display: flex;
             align-items: center;
             justify-content: center;
             overflow-wrap: break-word;
-            line-height: 1.3;
-            flex-grow: 1; /* Allow item display to take available space */
+            line-height: 1.2; /* Adjusted */
+            flex-grow: 1;
         }
 
         .replay-audio-btn {
             background-color: transparent;
             border: none;
             color: #3498db;
-            font-size: 1.8rem; /* Size of the replay icon */
-            padding: 8px;
-            border-radius: 50%; /* Make it circular */
+            font-size: 1.6rem; /* Adjusted */
+            padding: 6px; /* Adjusted */
+            border-radius: 50%;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
-            display: none; /* Initially hidden */
+            display: none;
             align-items: center;
             justify-content: center;
             line-height: 1;
-            flex-shrink: 0; /* Prevent button from shrinking */
+            flex-shrink: 0;
         }
         .replay-audio-btn:hover {
-            background-color: rgba(52, 152, 219, 0.1); /* Light blue hover */
+            background-color: rgba(52, 152, 219, 0.1);
             transform: scale(1.1);
         }
         .replay-audio-btn:active {
             transform: scale(1.0);
         }
 
-
         .options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
+            display: flex; /* Changed from grid to flex */
+            justify-content: space-between; /* Distribute items */
+            gap: 5px; /* Small gap */
+            margin-bottom: 10px; /* Reduced margin */
+            flex-wrap: nowrap; /* Ensure single line */
         }
 
         .options button {
-            padding: 12px 15px;
-            font-size: 1rem;
-            background-color: #79c7c2; /* Attractive teal */
+            flex-grow: 1; /* Allow buttons to grow */
+            flex-basis: 0; /* Distribute space evenly */
+            padding: 10px 5px; /* Adjusted padding */
+            font-size: 0.85rem; /* Adjusted font size */
+            background-color: #79c7c2;
             color: white;
-            border: 1px solid #6aa9a3; /* Darker teal border */
+            border: 1px solid #6aa9a3;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s, border-color 0.2s;
             text-align: center;
             font-weight: 500;
             box-shadow: 0 2px 3px rgba(0,0,0,0.08);
+            white-space: nowrap; /* Prevent text wrapping */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Handle long text */
         }
 
         .options button:hover {
-            background-color: #88d4cf; /* Lighter teal on hover */
+            background-color: #88d4cf;
             border-color: #77b7b2;
-            transform: translateY(-1px); /* Subtle lift */
+            transform: translateY(-1px);
         }
         .options button:active {
             transform: scale(0.98) translateY(0px);
@@ -352,15 +338,14 @@
         .options button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
-            transform: none; /* Disable hover transform when disabled */
+            transform: none;
         }
 
-
         .feedback {
-            min-height: 24px;
-            margin-bottom: 15px;
+            min-height: 20px; /* Reduced min-height */
+            margin-bottom: 10px; /* Reduced margin */
             text-align: center;
-            font-size: 1.1em;
+            font-size: 0.9em; /* Reduced font size */
             font-weight: bold;
         }
         .feedback.correct { color: #27ae60; }
@@ -369,14 +354,14 @@
         .feedback.error { color: #e74c3c; }
         .feedback.success { color: #27ae60; }
 
-
         .control-buttons {
             text-align: center;
+            margin-top: 5px; /* Added small margin */
         }
 
         .control-buttons button {
-            padding: 12px 20px;
-            font-size: 1rem;
+            padding: 10px 18px; /* Adjusted padding */
+            font-size: 0.9rem; /* Adjusted font size */
             font-weight: bold;
             background-color: #3498db;
             color: white;
@@ -394,7 +379,8 @@
         .progress-display {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px; /* Reduced gap */
+            padding: 10px 0; /* Adjusted padding */
         }
 
         .progress-display div {
@@ -402,194 +388,226 @@
             justify-content: flex-start;
             align-items: baseline;
             gap: 8px;
-            padding: 6px 0;
+            padding: 4px 0; /* Reduced padding */
         }
 
         .progress-display strong {
-            font-size: 1.4em;
+            font-size: 1.2em; /* Reduced font size */
             color: #007bff;
-            min-width: 30px;
+            min-width: 25px; /* Reduced min-width */
             text-align: right;
         }
 
         .progress-display span {
-            font-size: 0.9em;
+            font-size: 0.85em; /* Reduced font size */
             color: #6c757d;
             white-space: nowrap;
         }
 
-        /* Next Steps Card Styles */
-        .next-steps-card {
-            background-color: #e8f5e9; /* Light green background */
-            border-left: 5px solid #4CAF50; /* Green accent */
-            padding: 20px 25px;
-        }
-        .next-steps-card h3 {
-            color: #388E3C; /* Darker green for heading */
-            font-size: 1.4em;
-            margin-top: 0;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
-        .next-steps-card h3 .emoji {
-            font-size: 1.2em;
-            margin-right: 10px;
-        }
-        .next-steps-card p, .next-steps-card ul {
-            font-size: 1em;
-            line-height: 1.6;
-            color: #333;
-            margin-bottom: 12px;
-        }
-        .next-steps-card h4 {
-            color: #4CAF50; /* Green for subheadings */
-            font-size: 1.15em;
-            margin-top: 20px; /* More space before a new h4 */
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
-         .next-steps-card h4 .emoji {
-            font-size: 1.1em; /* Emoji size for H4 */
-            margin-right: 8px;
-        }
-        .next-steps-card p strong {
-            color: #388E3C; /* Darker green for emphasis, matching h3 */
-        }
-        .next-steps-card .bookmark-tip {
-            font-weight: bold;
-            background-color: #fff9c4; /* Subtle highlight for bookmark tip */
-            padding: 2px 5px;
-            border-radius: 4px;
-            color: #555; /* Ensure text is readable on yellow */
-            display: inline-block; /* Allows padding to apply correctly */
-        }
-
-        .next-steps-card ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        .next-steps-card ul li {
-            padding-left: 1.5em;
-            position: relative;
-            margin-bottom: 8px;
-        }
-        .next-steps-card ul li::before {
-            content: '🔹';
-            position: absolute;
-            left: 0;
-            color: #4CAF50;
-            font-size: 0.9em;
-        }
-        .next-steps-card ul li .emoji {
-            margin-left: 5px;
-        }
-        .next-steps-card .encouragement {
-            font-weight: bold;
-            color: #388E3C;
-            text-align: center;
-            margin-top: 15px;
-            margin-bottom: 0;
-        }
-        .next-steps-card .encouragement .emoji {
-            font-size: 1.1em;
-        }
+        .next-steps-card, .about-me-card, .support-me-card { margin-top: 20px; }
 
 
-        .about-me-card {
-            background-color: #fdfaf6;
-            color: #4a4a4a;
-            border-left: 5px solid #ffaf40;
-            padding: 20px 25px;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .app-container {
+                 max-width: 700px;
+                 padding: 20px; /* Slightly reduced */
+            }
+            .quiz-layout-wrapper {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .quiz-layout-wrapper .progress-display.card {
+                width: 100%;
+                flex: auto;
+            }
+            .progress-display {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-around;
+                align-items: center;
+            }
+            .progress-display div {
+                flex-direction: column;
+                align-items: center;
+                padding: 5px;
+                min-width: 70px;
+                text-align: center;
+                gap: 2px; /* Reduced gap between strong and span */
+            }
+             .progress-display strong {
+                min-width: auto;
+                text-align: center;
+                font-size: 1.1em; /* Further adjust for mobile */
+                margin-bottom: 0;
+            }
+            .progress-display span {
+                font-size: 0.7em; /* Further adjust for mobile */
+                white-space: normal;
+            }
+            .header-action-btn {
+                top: 5px;
+            }
+             .header-coffee-btn {
+                font-size: 1rem;
+                padding: 5px 7px;
+            }
+            .header-share-btn {
+                font-size: 0.9rem;
+                padding: 7px 10px;
+            }
+            header h1 {
+                font-size: 1.3em; /* Adjusted for tablet */
+            }
+            .mode-switcher-mute-btn .mute-icon {
+                font-size: 1.7rem;
+            }
+            .mode-switcher-mute-btn .mute-text {
+                font-size: 0.8rem;
+            }
+            .quiz-area .item-display {
+                font-size: 2.5rem; /* Adjusted for tablet */
+                min-height: 60px; /* Adjusted for tablet */
+            }
+            .replay-audio-btn {
+                font-size: 1.5rem; /* Adjusted for tablet */
+            }
+            .answer-feedback-icon {
+                font-size: 1.8rem; /* Adjusted for tablet */
+            }
+             .options button {
+                font-size: 0.8rem; /* Adjusted for tablet */
+                padding: 8px 5px;
+            }
         }
 
-        .about-me-card h3 {
-            color: #d9534f;
-            font-family: 'Georgia', serif;
-            font-size: 1.6em;
-            margin-top: 0;
-            margin-bottom: 15px;
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .app-container {
+                padding: 10px; /* Reduced padding */
+            }
+            main {
+                gap: 10px; /* Further reduce gap */
+            }
+            .card {
+                padding: 10px; /* Further reduce padding */
+            }
+            header {
+                padding-bottom: 8px;
+                margin-bottom: 10px;
+            }
+            header h1 {
+                font-size: 1.1em; /* Reduced for mobile */
+                margin: 0 5px; /* Reduce H1 margin */
+            }
+            .header-coffee-btn {
+                font-size: 0.9rem;
+                padding: 4px 6px;
+            }
+            .header-share-btn {
+                font-size: 0.8rem;
+                padding: 5px 8px;
+            }
+            .header-actions {
+                gap: 5px; /* Reduce gap between header buttons */
+            }
+
+            .mode-switcher { padding: 8px; }
+            .mode-switcher-controls { margin-bottom: 5px; }
+            .mode-switcher-buttons button {
+                padding: 6px 10px; /* Further reduce padding */
+                font-size: 0.8rem; /* Further reduce font size */
+            }
+            .mode-switcher-mute-btn { padding: 5px 8px; gap: 4px; }
+            .mode-switcher-mute-btn .mute-icon { font-size: 1.5rem; }
+            .mode-switcher-mute-btn .mute-text { font-size: 0.7rem; }
+
+            .item-display-wrapper {
+                padding: 5px; /* Reduced */
+                gap: 5px; /* Reduced */
+                margin-bottom: 8px; /* Reduced */
+            }
+            .quiz-area .item-display {
+                font-size: 2rem; /* Reduced for mobile */
+                min-height: 50px; /* Reduced for mobile */
+                padding: 5px;
+                line-height: 1.1;
+            }
+            .replay-audio-btn {
+                font-size: 1.3rem; /* Reduced for mobile */
+                padding: 5px;
+            }
+            .answer-feedback-icon {
+                font-size: 1.5rem; /* Reduced for mobile */
+            }
+
+            .options {
+                gap: 3px; /* Further reduce gap */
+                margin-bottom: 8px; /* Reduced */
+            }
+            .options button {
+                padding: 8px 3px; /* Reduced padding */
+                font-size: 0.75rem; /* Reduced font size */
+            }
+            .feedback {
+                font-size: 0.8em; /* Reduced font size */
+                min-height: 18px; /* Reduced */
+                margin-bottom: 8px; /* Reduced */
+            }
+            .control-buttons button {
+                padding: 8px 15px; /* Reduced padding */
+                font-size: 0.8rem; /* Reduced font size */
+            }
+             .progress-display.card {
+                padding: 8px 5px; /* Reduce padding for progress card */
+            }
+            .progress-display strong {
+                font-size: 1em; /* Reduced for mobile */
+            }
+            .progress-display span {
+                font-size: 0.65em; /* Reduced for mobile */
+            }
+            .progress-display div {
+                padding: 3px;
+                min-width: 60px;
+            }
         }
 
-        .about-me-card p {
-            font-size: 1.05em;
-            line-height: 1.7;
-            margin-bottom: 12px;
+        @media (max-width: 400px) {
+            header h1 { font-size: 1em; }
+            .header-share-btn { font-size: 0.7rem; padding: 4px 6px; }
+            .header-coffee-btn { font-size: 0.8rem; padding: 3px 5px; }
+
+            .mode-switcher-buttons button { font-size: 0.7rem; padding: 5px 8px; }
+            .mode-switcher-mute-btn .mute-icon { font-size: 1.4rem; }
+            .mode-switcher-mute-btn .mute-text { font-size: 0.65rem; }
+
+            .quiz-area .item-display { font-size: 1.8rem; min-height: 45px; }
+            .replay-audio-btn { font-size: 1.2rem; padding: 4px;}
+            .answer-feedback-icon { font-size: 1.3rem; }
+
+            .options button { font-size: 0.7rem; padding: 7px 2px;}
+            .feedback { font-size: 0.75em; }
         }
 
-        .about-me-card a {
-            color: #ffaf40;
-            text-decoration: none;
-            font-weight: bold;
-        }
 
-        .about-me-card a:hover {
-            text-decoration: underline;
+        .next-steps-card, .about-me-card, .support-me-card {
+            /* General styling for these cards, less aggressive than quiz area for mobile */
+            padding: 15px 20px;
         }
-
-        .about-me-card .emoji, .support-me-card .emoji {
-            font-size: 1.2em;
+        .next-steps-card h3, .about-me-card h3, .support-me-card h3 {
+            font-size: 1.3em;
         }
-
-        .support-me-card {
-            background-color: #fff9e6;
-            text-align: center;
-            border-left: 5px solid #ffc107;
-            padding: 20px 25px;
-        }
-
-        .support-me-card h3 {
-            color: #8B4513;
-            font-family: 'Georgia', serif;
-            font-size: 1.6em;
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        .support-me-card p {
-            font-size: 1.05em;
-            line-height: 1.7;
-            color: #5D4037;
-            margin-bottom: 20px;
-        }
-
-        .buy-coffee-btn {
-            display: inline-block;
-            padding: 12px 25px;
-            background-color: #FFBF00;
-            color: #333;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 8px;
-            font-size: 1.1em;
-            transition: background-color 0.2s, transform 0.1s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
-        }
-
-        .buy-coffee-btn .emoji {
-            margin-right: 8px;
-        }
-
-        .buy-coffee-btn:hover {
-            background-color: #e6ac00;
-            transform: scale(1.03);
-        }
-        .buy-coffee-btn:active {
-            transform: scale(0.99);
-        }
-
-        .support-me-card .thanks-note {
+         .next-steps-card p, .next-steps-card ul, .about-me-card p, .support-me-card p {
             font-size: 0.95em;
-            color: #795548;
-            margin-top: 15px;
-            margin-bottom: 0;
         }
 
-        /* Share Modal Styles */
+
+        /* Share Modal Styles (largely unchanged, but ensure they work with new body padding) */
         .share-modal {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             z-index: 1000;
             left: 0;
@@ -597,7 +615,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.5); /* Semi-transparent overlay */
+            background-color: rgba(0,0,0,0.5);
             align-items: center;
             justify-content: center;
         }
@@ -685,7 +703,7 @@
             background-color: #f0f0f0;
             color: #333;
             text-decoration: none;
-            border-radius: 20px; /* Pill shape */
+            border-radius: 20px;
             font-size: 0.9em;
             transition: background-color 0.2s, color 0.2s;
             border: 1px solid #ddd;
@@ -702,198 +720,21 @@
             color: #777;
             font-size: 0.9em;
         }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .app-container {
-                 max-width: 700px;
-            }
-            .quiz-layout-wrapper {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .quiz-layout-wrapper .progress-display.card {
-                width: 100%;
-                flex: auto;
-            }
-
-            .quiz-layout-wrapper .progress-display.card div {
-                justify-content: center;
-            }
-             .progress-display strong {
-                min-width: auto;
-                text-align: left;
-            }
-            .header-action-btn {
-                top: 5px;
-            }
-             .header-coffee-btn {
-                font-size: 1rem;
-                padding: 5px 7px;
-                right: 5px;
-            }
-            .header-share-btn {
-                font-size: 0.9rem;
-                padding: 7px 10px;
-                right: 40px;
-            }
-            header {
-                padding-right: 100px;
-            }
-             .share-modal-content {
-                padding: 20px;
-            }
-            .share-modal h3 {
-                font-size: 1.3em;
-            }
-            .next-steps-card, .about-me-card, .support-me-card {
-                padding: 15px 20px;
-            }
-            .next-steps-card h3, .about-me-card h3, .support-me-card h3 {
-                font-size: 1.3em;
-            }
-             .next-steps-card p, .next-steps-card ul, .about-me-card p, .support-me-card p {
-                font-size: 0.95em;
-            }
-            .mode-switcher-header h3 {
-                font-size: 1.3em;
-            }
-            .mode-switcher-mute-btn .mute-icon {
-                font-size: 1.8rem;
-            }
-            .mode-switcher-mute-btn .mute-text {
-                font-size: 0.8rem;
-            }
-            .quiz-area .item-display {
-                font-size: 3rem;
-            }
-            .replay-audio-btn {
-                font-size: 1.6rem;
-            }
-        }
-
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            .app-container {
-                padding: 15px;
-            }
-            .item-display-wrapper {
-                padding: 8px;
-            }
-            .quiz-area .item-display {
-                font-size: 2.5rem;
-                min-height: 80px;
-                padding: 8px;
-            }
-            .replay-audio-btn {
-                font-size: 1.5rem;
-                padding: 6px;
-            }
-            .options {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            }
-            .options button {
-                padding: 10px;
-                font-size: 0.9rem;
-            }
-
-            .progress-display strong {
-                font-size: 1.3em;
-            }
-            .progress-display span {
-                font-size: 0.85em;
-            }
-
-            header {
-                padding-bottom: 10px;
-                padding-right: 85px;
-            }
-            header h1 {
-                font-size: 1.6em;
-            }
-            header h2 {
-                font-size: 1.3em;
-            }
-             .header-coffee-btn {
-                font-size: 0.9rem;
-                padding: 4px 6px;
-                right: 5px;
-            }
-            .header-share-btn {
-                font-size: 0.85rem;
-                padding: 6px 9px;
-                right: 35px;
-            }
-            .next-steps-card, .about-me-card, .support-me-card {
-                padding: 15px 20px;
-            }
-            .next-steps-card h3, .about-me-card h3, .support-me-card h3 {
-                font-size: 1.2em;
-            }
-            .next-steps-card p, .next-steps-card ul, .about-me-card p, .support-me-card p {
-                font-size: 0.9em;
-            }
-            .mode-switcher-buttons button {
-                padding: 8px 12px;
-                font-size: 0.9rem;
-            }
-             .mode-switcher-header h3 {
-                font-size: 1.2em;
-            }
-            .mode-switcher-mute-btn {
-                padding: 6px 8px; /* Slightly reduce padding to prevent overflow with text */
-            }
-            .mode-switcher-mute-btn .mute-icon {
-                font-size: 1.6rem; /* Slightly smaller on very small screens */
-            }
-            .mode-switcher-mute-btn .mute-text {
-                font-size: 0.75rem; /* Smaller text on small screens */
-                display: none; /* Optionally hide text on very small screens if space is tight */
-            }
-            @media (max-width: 400px) {
-                 .mode-switcher-mute-btn .mute-text {
-                    display: none; /* Hide text on very small screens */
-                }
-                .mode-switcher-mute-btn {
-                    gap: 0;
-                }
-                 .item-display-wrapper {
-                    padding: 5px;
-                }
-                .quiz-area .item-display {
-                    font-size: 2.2rem;
-                }
-                .replay-audio-btn {
-                    font-size: 1.3rem;
-                    padding: 5px;
-                }
-            }
-
-             .buy-coffee-btn {
-                padding: 10px 20px;
-                font-size: 1em;
-            }
             .share-modal-content {
                 padding: 15px;
                 width: 95%;
             }
-            .share-modal h3 {
-                font-size: 1.2em;
-            }
-             .share-modal p {
-                font-size: 0.9em;
-            }
-            .share-url-container input[type="text"], .share-url-container button {
-                font-size: 0.9em;
-            }
-            .social-share-button {
-                font-size: 0.85em;
-                padding: 7px 12px;
-            }
+            .share-modal h3 { font-size: 1.2em; }
+            .share-modal p { font-size: 0.9em; }
+            .share-url-container input[type="text"], .share-url-container button { font-size: 0.9em; }
+            .social-share-button { font-size: 0.85em; padding: 7px 12px; }
+            .buy-coffee-btn { padding: 10px 20px; font-size: 1em; }
+            .next-steps-card, .about-me-card, .support-me-card { padding: 10px 15px; }
+            .next-steps-card h3, .about-me-card h3, .support-me-card h3 { font-size: 1.1em; }
+            .next-steps-card p, .next-steps-card ul, .about-me-card p, .support-me-card p { font-size: 0.85em; }
         }
+
 
         @font-face {
             font-family: 'Noto Sans Malayalam';
@@ -914,30 +755,31 @@
 <body>
     <div class="app-container">
         <header>
-            <button id="header-share-btn" class="header-action-btn header-share-btn" title="Share this app with friends" aria-label="Share this app with friends" aria-haspopup="dialog" aria-expanded="false">Share</button>
-            <button id="header-coffee-btn" class="header-action-btn header-coffee-btn" title="Support the Developer" aria-label="Support the Developer by buying a coffee">☕</button>
-            <h1>Learn the Malayalam Alphabet & Words for free</h1>
-            <h2><span lang="ml-IN">മലയാള അക്ഷരമാല പഠിക്കാം</span></h2>
+            <h1>Learn Malayalam Alphabet & Words FREE - Quiz</h1>
+            <div class="header-actions">
+                <button id="header-share-btn" class="header-action-btn header-share-btn" title="Share this app with friends" aria-label="Share this app with friends" aria-haspopup="dialog" aria-expanded="false">Share</button>
+                <button id="header-coffee-btn" class="header-action-btn header-coffee-btn" title="Support the Developer" aria-label="Support the Developer by buying a coffee">☕</button>
+            </div>
         </header>
 
         <main>
             <section class="mode-switcher card">
-                <div class="mode-switcher-header">
-                    <h3>Quiz Mode</h3>
+                <div class="mode-switcher-controls">
+                    <div class="mode-switcher-buttons">
+                        <button id="letters-mode-btn" aria-pressed="true">Letters</button>
+                        <button id="words-mode-btn" aria-pressed="false">Words</button>
+                    </div>
                     <button id="mute-toggle-btn" class="mode-switcher-mute-btn" title="Toggle sound" aria-label="Mute audio" aria-pressed="false">
                         <span class="mute-icon">🔊</span>
                         <span class="mute-text">Mute</span>
                     </button>
-                </div>
-                <div class="mode-switcher-buttons">
-                    <button id="letters-mode-btn" aria-pressed="true">Letters</button>
-                    <button id="words-mode-btn" aria-pressed="false">Words</button>
                 </div>
             </section>
 
             <div class="quiz-layout-wrapper">
                 <section class="quiz-area card">
                     <div class="item-display-wrapper">
+                        <span id="answer-feedback-icon" class="answer-feedback-icon" aria-live="polite"></span>
                         <div id="item-display" class="item-display" role="img" aria-live="polite"></div>
                         <button id="replay-item-audio-btn" class="replay-audio-btn" aria-label="Replay item sound" title="Replay sound">🔈</button>
                     </div>

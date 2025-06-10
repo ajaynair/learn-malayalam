@@ -68,6 +68,7 @@ const App = {
     DOM: {
         itemDisplay: document.getElementById('item-display')!,
         replayItemAudioBtn: document.getElementById('replay-item-audio-btn') as HTMLButtonElement,
+        answerFeedbackIcon: document.getElementById('answer-feedback-icon') as HTMLSpanElement,
         optionsContainer: document.getElementById('options-container')!,
         feedbackArea: document.getElementById('feedback-area')!,
         nextQuestionBtn: document.getElementById('next-question-btn') as HTMLButtonElement,
@@ -109,7 +110,7 @@ const App = {
         if(this.DOM.replayItemAudioBtn) {
             this.DOM.replayItemAudioBtn.addEventListener('click', () => {
                 if (this.currentItem) {
-                    this.speakItem(this.currentItem, true); // bypassMute = true
+                    this.speakItem(this.currentItem, false, true); // bypassMute = true
                 }
             });
         }
@@ -205,23 +206,11 @@ const App = {
         this.updateMuteButtonAppearance();
 
         if (this.isMuted) {
-            // Stop any currently playing audio ONLY if it wasn't initiated by bypassMute
-            // The speakItem function itself will now handle its own audio element.
-            // We only need to stop general UI speech here.
             if (this.speechSynthesisSupported && window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();
             }
-            // If currentAudioElement is playing (and not from a bypassMute source), speakItem will handle it.
-            // No, let's explicitly stop it if it wasn't from bypass. This is tricky.
-            // The current `speakItem` logic of stopping `currentAudioElement` first is good.
-            // If muted, `speakItem` called without `bypassMute` will return early.
-            // If muted, `speakItem` called *with* `bypassMute` will play.
-            // So, if we just toggled mute ON, any non-bypassed audio should stop.
-            // The `speakItem` already handles stopping its own `currentAudioElement`
-            // if a new sound starts. So this should be fine.
             if (this.currentAudioElement) {
                 this.currentAudioElement.pause();
-                // Do not reset src, a bypass call might be active or a new one might start.
             }
         }
     },
@@ -358,7 +347,6 @@ const App = {
 
     async loadQuizData() {
         const currentLocalStorageKey = this.quizMode === 'letters' ? this.localStorageKeyLetters : this.localStorageKeyWords;
-        // Paths are relative to the public directory, which is served at the root
         const dataPath = this.quizMode === 'letters' ? './lettersData.json' : './wordsData.json';
 
         let fetchedInitialData: (InitialLetter[] | InitialWord[]) = [];
@@ -374,10 +362,11 @@ const App = {
         } catch (fetchError) {
             console.error(`Error fetching or parsing initial quiz data from ${dataPath}:`, fetchError);
             this.updateFeedback(`Could not load ${this.quizMode} data. Please check your connection or refresh.`, 'error');
-            this.quizItems = []; // Ensure quizItems is empty if data load fails
+            this.quizItems = [];
             this.DOM.totalItemsCountDisplay.textContent = '0';
             this.DOM.reviewedCountDisplay.textContent = '0';
             if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'none';
+            if (this.DOM.answerFeedbackIcon) this.DOM.answerFeedbackIcon.style.display = 'none';
             return;
         }
 
@@ -388,7 +377,6 @@ const App = {
             try {
                 const parsedSavedData: QuizItem[] = JSON.parse(savedData);
                 if (Array.isArray(parsedSavedData)) {
-                    // Filter out saved items that no longer exist in the fetched initial data
                     const validSavedItems = parsedSavedData.filter(si =>
                         fetchedInitialData.some(ii => ii.id === si.id) && typeof si.reviewed === 'boolean'
                     );
@@ -396,12 +384,10 @@ const App = {
                     this.quizItems = fetchedInitialData.map(initialItem => {
                         const savedVersion = validSavedItems.find(si => si.id === initialItem.id);
                         if (savedVersion) {
-                            // Merge, prioritizing saved SRS fields but ensuring core data is from fetchedInitialData
                             return {
-                                ...initialItem, // Core data from JSON
-                                ...this.getDefaultSRDFields(), // Default SRS structure
-                                ...savedVersion, // Overwrite with saved SRS fields
-                                // Ensure core properties from initialItem are not overwritten by potentially stale saved versions
+                                ...initialItem,
+                                ...this.getDefaultSRDFields(),
+                                ...savedVersion,
                                 ...(initialItem as InitialLetter).character && { character: (initialItem as InitialLetter).character },
                                 ...(initialItem as InitialWord).word && { word: (initialItem as InitialWord).word },
                                 transliteration: initialItem.transliteration,
@@ -430,7 +416,7 @@ const App = {
         this.DOM.totalItemsCountDisplay.textContent = this.quizItems.length.toString();
         this.DOM.reviewedCountLabel.textContent = this.quizMode === 'letters' ? 'Letters Reviewed' : 'Words Reviewed';
         this.DOM.totalItemsLabel.textContent = this.quizMode === 'letters' ? 'Total Letters' : 'Total Words';
-        this.updateProgressDisplay(); // Update reviewed count too
+        this.updateProgressDisplay();
     },
 
     getDefaultSRDFields(): Pick<QuizItem, 'lastReviewedTimestamp' | 'nextReviewTimestamp' | 'intervalDays' | 'easeFactor' | 'correctStreak' | 'totalCorrect' | 'totalIncorrect' | 'reviewed'> {
@@ -495,17 +481,31 @@ const App = {
         this.DOM.nextQuestionBtn.style.display = 'block';
 
         const isCorrect = selectedTransliteration === this.currentItem.transliteration;
-        const displayForm = this.currentItem.character ? ((this.currentItem as InitialLetter).displayCharacterOverride || (this.currentItem as InitialLetter).character) : (this.currentItem as InitialWord).word;
+        // const displayForm = this.currentItem.character ? ((this.currentItem as InitialLetter).displayCharacterOverride || (this.currentItem as InitialLetter).character) : (this.currentItem as InitialWord).word;
 
         const currentModeStats = this.sessionStats[this.quizMode];
+
+        if (this.DOM.answerFeedbackIcon) {
+            if (isCorrect) {
+                this.DOM.answerFeedbackIcon.textContent = '✔';
+                this.DOM.answerFeedbackIcon.style.color = '#2e73b8'; // Blue
+                this.DOM.answerFeedbackIcon.setAttribute('aria-label', 'Correct');
+            } else {
+                this.DOM.answerFeedbackIcon.textContent = '✖';
+                this.DOM.answerFeedbackIcon.style.color = '#d9534f'; // Red
+                this.DOM.answerFeedbackIcon.setAttribute('aria-label', 'Incorrect');
+            }
+            this.DOM.answerFeedbackIcon.style.display = 'inline';
+        }
+
 
         if (isCorrect) {
             currentModeStats.score++;
             currentModeStats.streak++;
             this.currentItem.correctStreak++;
             this.currentItem.totalCorrect++;
-            this.updateFeedback(`${displayForm} is correct! (${this.currentItem.transliteration})`, 'correct');
-            this.speakItem(this.currentItem, false); // Play audio on correct, non-emphatic, respect mute
+            // this.updateFeedback(`${displayForm} is correct! (${this.currentItem.transliteration})`, 'correct'); // Removed
+            this.speakItem(this.currentItem, false, false);
 
             if (this.currentItem.correctStreak === 1) this.currentItem.intervalDays = 1;
             else if (this.currentItem.correctStreak === 2) this.currentItem.intervalDays = 6;
@@ -517,11 +517,11 @@ const App = {
             currentModeStats.streak = 0;
             this.currentItem.correctStreak = 0;
             this.currentItem.totalIncorrect++;
-            this.updateFeedback(`Incorrect. This is ${displayForm} (${this.currentItem.transliteration}).`, 'incorrect');
-            this.speakItem(this.currentItem, false); // Play audio on incorrect, emphatic, respect mute
+            // this.updateFeedback(`Incorrect. This is ${displayForm} (${this.currentItem.transliteration}).`, 'incorrect'); // Removed
+            this.speakItem(this.currentItem, true, false);
 
             if (navigator.vibrate) {
-                navigator.vibrate(200); // Vibrate for 200ms on incorrect answer
+                navigator.vibrate(200);
             }
 
             this.currentItem.intervalDays = 1;
@@ -549,6 +549,12 @@ const App = {
     nextQuestion() {
         this.currentItem = this.selectItemForQuiz();
         this.DOM.nextQuestionBtn.style.display = 'none';
+
+        if (this.DOM.answerFeedbackIcon) {
+            this.DOM.answerFeedbackIcon.style.display = 'none';
+            this.DOM.answerFeedbackIcon.textContent = '';
+            this.DOM.answerFeedbackIcon.removeAttribute('aria-label');
+        }
 
         if (this.currentItem) {
             this.options = this.generateOptions(this.currentItem);
@@ -583,7 +589,7 @@ const App = {
 
     // General purpose TTS for UI feedback
     speak(text: string, lang: string = 'ml-IN', rate: number = 0.9, pitch: number = 1.1) {
-        if (this.isMuted) return; // Respect mute state
+        if (this.isMuted) return;
         if (!this.speechSynthesisSupported || !this.speechSynthesisUtterance) {
             return;
         }
@@ -592,7 +598,7 @@ const App = {
         }
 
         if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel(); // Stop previous UI speech before starting new
+            window.speechSynthesis.cancel();
         }
 
         const utterance = this.speechSynthesisUtterance;
@@ -618,18 +624,17 @@ const App = {
     },
 
     // Audio for item pronunciation (MP3)
-    async speakItem(item: QuizItem, bypassMute: boolean = false) {
-        if (this.isMuted && !bypassMute) return; // Respect mute state unless bypassed
+    async speakItem(item: QuizItem, _emphatic: boolean = false, bypassMute: boolean = false) {
+        if (this.isMuted && !bypassMute) return;
         if (!item) return;
 
-        // Stop any currently playing audio (MP3 or TTS)
         if (this.currentAudioElement) {
             this.currentAudioElement.pause();
-            this.currentAudioElement.removeAttribute('src'); // Detach source
-            this.currentAudioElement.load(); // Reset element state
+            this.currentAudioElement.removeAttribute('src');
+            this.currentAudioElement.load();
             this.currentAudioElement = null;
         }
-        if (this.speechSynthesisSupported && window.speechSynthesis.speaking) { // Stop UI speech too
+        if (this.speechSynthesisSupported && window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
         }
 
@@ -668,7 +673,7 @@ const App = {
             audioElement.onabort = cleanup;
 
             loadTimeoutId = window.setTimeout(() => {
-                loadTimeoutId = null; // Clear timeout id as it has executed
+                loadTimeoutId = null;
                 console.warn(`Audio load timeout for item ID ${item.id} at path ${audioPath}`);
                 cleanup();
                 reject(new Error(`Audio load timeout for ${item.id}`));
@@ -680,8 +685,6 @@ const App = {
 
         try {
             await playPromise;
-            // The `emphatic` parameter is not currently used for MP3 playback rate.
-            // audioElement.playbackRate = emphatic ? 0.9 : 1.0;
             audioElement.play().catch(playError => {
                 console.error(`Error playing custom audio for item ID ${item.id}:`, playError);
                 if (this.currentAudioElement === audioElement) {
