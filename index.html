@@ -38,13 +38,14 @@
     </script>
 
     <script type="importmap">
-    {
-      "imports": {
-        "vite": "https://esm.sh/vite@^6.3.5",
-        "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^4.5.1"
-      }
-    }
-    </script>
+{
+  "imports": {
+    "vite": "https://esm.sh/vite@^6.3.5",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^4.5.1",
+    "@google/genai": "https://esm.sh/@google/genai@^1.4.0"
+  }
+}
+</script>
 
     <style>
         html {
@@ -82,7 +83,7 @@
             border-bottom: 1px solid #e0e0e0;
             padding-bottom: 15px;
             position: relative; /* For positioning the coffee button */
-            padding-right: 125px; /* Space for the coffee and share buttons */
+            padding-right: 120px; /* Space for the coffee and share buttons */
         }
 
         header h1 { /* New English H1 - main title */
@@ -110,14 +111,16 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: background-color 0.2s, transform 0.1s, color 0.2s;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
             justify-content: center;
+            background-color: #f0f0f0; /* Default background for icon buttons */
         }
         .header-action-btn:hover {
             transform: translateY(-1px);
+            background-color: #e0e0e0;
         }
         .header-action-btn:active {
             transform: translateY(0px);
@@ -132,7 +135,7 @@
         }
 
         .header-share-btn {
-            right: 50px; /* Positioned to the left of coffee button */
+            right: 55px; /* Positioned to the left of coffee button */
             background-color: #a0ced9;
             font-size: 0.9rem; /* Adjusted for text */
             padding: 7px 12px; /* Adjusted padding for text */
@@ -157,16 +160,70 @@
         }
 
         .mode-switcher {
-            text-align: center;
             padding: 15px;
         }
-        .mode-switcher h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #333;
-            font-size: 1.2em;
+        .mode-switcher-header {
+            text-align: center; /* Center the inline/inline-block children like h3 */
+            position: relative; /* For absolute positioning of mute button */
+            align-items: center;
+            margin-bottom: 15px;
+            padding-top: 5px; /* Adjust if mute button text makes it taller */
+            padding-bottom: 5px;
         }
-        .mode-switcher button {
+        .mode-switcher-header h3 {
+            display: inline-block; /* To be centered by text-align on parent */
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 1.5em; /* Made larger */
+            font-weight: bold;
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%); /* Colorful gradient */
+            -webkit-background-clip: text;
+            -moz-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -moz-text-fill-color: transparent;
+            text-fill-color: transparent;
+        }
+        .mode-switcher-mute-btn {
+            background-color: transparent;
+            border: none;
+            padding: 8px 10px;
+            line-height: 1;
+            color: #333; /* Default unmuted color */
+            border-radius: 8px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.1s, background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px; /* Space between icon and text */
+            position: absolute; /* Positioned to the right of the centered title */
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .mode-switcher-mute-btn:hover {
+            transform: translateY(-50%) scale(1.05); /* Keep vertical centering on scale */
+            background-color: rgba(0,0,0,0.05);
+        }
+        .mode-switcher-mute-btn .mute-icon {
+            font-size: 2rem;  /* Even bigger icon */
+        }
+        .mode-switcher-mute-btn .mute-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .mode-switcher-mute-btn.muted .mute-icon {
+            color: #e74c3c; /* Reddish color when muted */
+        }
+        .mode-switcher-mute-btn.muted .mute-text {
+            color: #e74c3c;
+        }
+
+        .mode-switcher-buttons {
+            text-align: center;
+            margin-top: 10px; /* Add some space if mute button made header taller */
+        }
+        .mode-switcher-buttons button {
             padding: 10px 15px;
             font-size: 0.95rem;
             margin: 0 5px;
@@ -177,10 +234,10 @@
             cursor: pointer;
             transition: background-color 0.2s, color 0.2s;
         }
-        .mode-switcher button:hover {
+        .mode-switcher-buttons button:hover {
             background-color: #d6eaf8;
         }
-        .mode-switcher button.active-mode {
+        .mode-switcher-buttons button.active-mode {
             background-color: #3498db;
             color: white;
             font-weight: bold;
@@ -227,20 +284,24 @@
         .options button {
             padding: 12px 15px;
             font-size: 1rem;
-            background-color: #f0f0f0;
-            color: #333;
-            border: 1px solid #ddd;
+            background-color: #79c7c2; /* Attractive teal */
+            color: white;
+            border: 1px solid #6aa9a3; /* Darker teal border */
             border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: background-color 0.2s, transform 0.1s, border-color 0.2s;
             text-align: center;
+            font-weight: 500;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.08);
         }
 
         .options button:hover {
-            background-color: #e0e0e0;
+            background-color: #88d4cf; /* Lighter teal on hover */
+            border-color: #77b7b2;
+            transform: translateY(-1px); /* Subtle lift */
         }
         .options button:active {
-            transform: scale(0.98);
+            transform: scale(0.98) translateY(0px);
         }
         .options button.correct {
             background-color: #2ecc71 !important;
@@ -255,6 +316,7 @@
         .options button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+            transform: none; /* Disable hover transform when disabled */
         }
 
 
@@ -641,7 +703,7 @@
                 right: 40px;
             }
             header {
-                padding-right: 115px;
+                padding-right: 100px;
             }
              .share-modal-content {
                 padding: 20px;
@@ -657,6 +719,15 @@
             }
              .next-steps-card p, .next-steps-card ul, .about-me-card p, .support-me-card p {
                 font-size: 0.95em;
+            }
+            .mode-switcher-header h3 {
+                font-size: 1.3em;
+            }
+            .mode-switcher-mute-btn .mute-icon {
+                font-size: 1.8rem;
+            }
+            .mode-switcher-mute-btn .mute-text {
+                font-size: 0.8rem;
             }
         }
 
@@ -688,7 +759,7 @@
 
             header {
                 padding-bottom: 10px;
-                padding-right: 110px;
+                padding-right: 85px;
             }
             header h1 {
                 font-size: 1.6em;
@@ -715,10 +786,32 @@
             .next-steps-card p, .next-steps-card ul, .about-me-card p, .support-me-card p {
                 font-size: 0.9em;
             }
-            .mode-switcher button {
+            .mode-switcher-buttons button {
                 padding: 8px 12px;
                 font-size: 0.9rem;
             }
+             .mode-switcher-header h3 {
+                font-size: 1.2em;
+            }
+            .mode-switcher-mute-btn {
+                padding: 6px 8px; /* Slightly reduce padding to prevent overflow with text */
+            }
+            .mode-switcher-mute-btn .mute-icon {
+                font-size: 1.6rem; /* Slightly smaller on very small screens */
+            }
+            .mode-switcher-mute-btn .mute-text {
+                font-size: 0.75rem; /* Smaller text on small screens */
+                display: none; /* Optionally hide text on very small screens if space is tight */
+            }
+            @media (max-width: 400px) {
+                 .mode-switcher-mute-btn .mute-text {
+                    display: none; /* Hide text on very small screens */
+                }
+                .mode-switcher-mute-btn {
+                    gap: 0;
+                }
+            }
+
              .buy-coffee-btn {
                 padding: 10px 20px;
                 font-size: 1em;
@@ -769,9 +862,17 @@
 
         <main>
             <section class="mode-switcher card">
-                <h3>Quiz Mode</h3>
-                <button id="letters-mode-btn" aria-pressed="true">Letters</button>
-                <button id="words-mode-btn" aria-pressed="false">Words</button>
+                <div class="mode-switcher-header">
+                    <h3>Quiz Mode</h3>
+                    <button id="mute-toggle-btn" class="mode-switcher-mute-btn" title="Toggle sound" aria-label="Mute audio" aria-pressed="false">
+                        <span class="mute-icon">🔊</span>
+                        <span class="mute-text">Mute</span>
+                    </button>
+                </div>
+                <div class="mode-switcher-buttons">
+                    <button id="letters-mode-btn" aria-pressed="true">Letters</button>
+                    <button id="words-mode-btn" aria-pressed="false">Words</button>
+                </div>
             </section>
 
             <div class="quiz-layout-wrapper">
@@ -832,6 +933,7 @@
                 <ul>
                     <li><strong>Daily Dose:</strong> Just 5-10 minutes daily reinforces learning. Revisit reviewed items and tackle new ones.</li>
                     <li><strong>Listen Up:</strong> Tune into Malayalam music or simple dialogues. Get your ear accustomed to the sounds. <span class="emoji" role="img" aria-label="Headphones">🎧</span></li>
+                    <li><strong>Speak Out:</strong> Try saying words and simple phrases aloud. Practice makes perfect! <span class="emoji" role="img" aria-label="Speech bubble">💬</span></li>
                     <li><strong>Explore More:</strong> As you grow, look for children's stories, or apps that teach grammar and conversation.</li>
                     <li><strong>Switch & Solidify:</strong> Regularly switch between 'Letters' and 'Words' modes to strengthen all areas.</li>
                 </ul>
