@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learn Malayalam Free: Letters, Alphabet & Words | Interactive Quiz</title>
     <meta name="description" content="Learn Malayalam letters, the full alphabet, and words for free with our interactive quiz. Master the Malayalam script with audio pronunciation and spaced repetition. Ideal for beginners looking for a free Malayalam learning tool.">
-    <meta name="keywords" content="learn malayalam, malayalam quiz free, quiz gamify, malayalam alphabet free, read malayalam free, Malayalam, Malayalam alphabet, Malayalam letters, Malayalam words, Malayalam script, interactive quiz, language learning, free Malayalam lessons, audio pronunciation, spaced repetition">
+    <meta name="keywords" content="learn malayalam, malayalam quiz free, learn malayalam free, learn malayalam alphabets free, Malayalam, Malayalam alphabet, Malayalam letters, Malayalam words, Malayalam script, interactive quiz, language learning, free Malayalam lessons, audio pronunciation, spaced repetition">
     <meta name="author" content="Ajay Nair">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://www.learn-malayalam.org/">
@@ -48,13 +48,15 @@
 </script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Noto+Sans+Malayalam:wght@100..900&display=swap');
+
         html {
             color-scheme: light;
             background-color: #f0f4f8;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Noto Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f4f8;
             color: #333;
             margin: 0;
@@ -64,6 +66,7 @@
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
+            overflow-x: hidden; /* For confetti */
         }
 
         .app-container {
@@ -92,7 +95,6 @@
             margin: 0 10px;
             font-weight: bold;
             font-size: 1.5em; /* Adjusted font size */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             flex-grow: 1;
             text-align: center;
         }
@@ -104,7 +106,6 @@
         }
 
         .header-action-btn {
-            /* removed position:absolute */
             padding: 6px 8px;
             font-size: 1.2rem;
             line-height: 1;
@@ -134,14 +135,17 @@
             background-color: #e6ac00;
         }
 
-        .header-share-btn {
-            background-color: #a0ced9;
+        .header-share-btn, .header-about-btn {
             font-size: 0.9rem;
             padding: 7px 12px;
             font-weight: 600;
             line-height: normal;
+            color: white;
         }
-        .header-share-btn:hover {
+        .header-share-btn, .header-about-btn { /* Combined for shared base color */
+            background-color: #a0ced9;
+        }
+        .header-share-btn:hover, .header-about-btn:hover { /* Combined for shared hover color */
             background-color: #8ab6c1;
         }
 
@@ -179,7 +183,6 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            /* Removed absolute positioning */
         }
         .mode-switcher-mute-btn:hover {
             transform: scale(1.05);
@@ -198,12 +201,12 @@
         }
 
         .mode-switcher-buttons {
-            display: flex; /* For alignment with mute button if needed */
+            display: flex;
             gap: 10px;
         }
         .mode-switcher-buttons button {
-            padding: 8px 12px; /* Reduced padding */
-            font-size: 0.9rem; /* Reduced font size */
+            padding: 8px 12px;
+            font-size: 0.9rem;
             border: 1px solid #3498db;
             background-color: #f0f8ff;
             color: #3498db;
@@ -222,48 +225,58 @@
 
         .quiz-layout-wrapper {
             display: flex;
-            gap: 15px; /* Reduced gap */
+            flex-direction: column; /* Stack quiz area and progress display vertically by default */
+            gap: 15px;
         }
 
         .quiz-layout-wrapper .quiz-area {
-            flex: 3;
+            /* flex: 3; removed, will take full width in column layout */
             min-width: 0;
+            width: 100%; /* Ensure full width */
         }
 
         .quiz-layout-wrapper .progress-display.card {
-            flex: 1;
+            /* flex: 1; removed, will take full width in column layout */
+             width: 100%; /* Ensure full width */
         }
 
         .item-display-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px; /* Reduced gap */
-            margin-bottom: 10px; /* Reduced margin */
+            gap: 8px;
+            margin-bottom: 10px;
             background-color: #eaf5ff;
             border-radius: 8px;
-            padding: 8px; /* Reduced padding */
+            padding: 8px;
         }
 
         .answer-feedback-icon {
-            font-size: 2rem; /* Adjusted */
+            font-size: 2rem;
             font-weight: bold;
             line-height: 1;
             display: none;
         }
 
+        .noto-sans-malayalam-main-display {
+          font-family: "Noto Sans Malayalam", sans-serif;
+          font-optical-sizing: auto;
+          font-weight: 400;
+          font-style: normal;
+          font-variation-settings: "wdth" 100;
+        }
+
         .quiz-area .item-display {
-            font-family: 'Noto Sans Malayalam', sans-serif;
-            font-size: 3rem; /* Adjusted */
+            font-size: 3rem;
             color: #3498db;
             text-align: center;
-            padding: 5px; /* Reduced padding */
-            min-height: 70px; /* Reduced min-height */
+            padding: 5px;
+            min-height: 70px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow-wrap: break-word;
-            line-height: 1.2; /* Adjusted */
+            line-height: 1.2;
             flex-grow: 1;
         }
 
@@ -271,8 +284,8 @@
             background-color: transparent;
             border: none;
             color: #3498db;
-            font-size: 1.6rem; /* Adjusted */
-            padding: 6px; /* Adjusted */
+            font-size: 1.6rem;
+            padding: 6px;
             border-radius: 50%;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
@@ -291,18 +304,18 @@
         }
 
         .options {
-            display: flex; /* Changed from grid to flex */
-            justify-content: space-between; /* Distribute items */
-            gap: 5px; /* Small gap */
-            margin-bottom: 10px; /* Reduced margin */
-            flex-wrap: nowrap; /* Ensure single line */
+            display: flex;
+            justify-content: space-between;
+            gap: 5px;
+            margin-bottom: 10px;
+            flex-wrap: nowrap;
         }
 
         .options button {
-            flex-grow: 1; /* Allow buttons to grow */
-            flex-basis: 0; /* Distribute space evenly */
-            padding: 10px 5px; /* Adjusted padding */
-            font-size: 0.85rem; /* Adjusted font size */
+            flex-grow: 1;
+            flex-basis: 0;
+            padding: 10px 5px;
+            font-size: 0.85rem;
             background-color: #79c7c2;
             color: white;
             border: 1px solid #6aa9a3;
@@ -312,9 +325,9 @@
             text-align: center;
             font-weight: 500;
             box-shadow: 0 2px 3px rgba(0,0,0,0.08);
-            white-space: nowrap; /* Prevent text wrapping */
+            white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; /* Handle long text */
+            text-overflow: ellipsis;
         }
 
         .options button:hover {
@@ -342,10 +355,10 @@
         }
 
         .feedback {
-            min-height: 20px; /* Reduced min-height */
-            margin-bottom: 10px; /* Reduced margin */
+            min-height: 20px;
+            margin-bottom: 10px;
             text-align: center;
-            font-size: 0.9em; /* Reduced font size */
+            font-size: 0.9em;
             font-weight: bold;
         }
         .feedback.correct { color: #27ae60; }
@@ -356,12 +369,12 @@
 
         .control-buttons {
             text-align: center;
-            margin-top: 5px; /* Added small margin */
+            margin-top: 5px;
         }
 
         .control-buttons button {
-            padding: 10px 18px; /* Adjusted padding */
-            font-size: 0.9rem; /* Adjusted font size */
+            padding: 10px 18px;
+            font-size: 0.9rem;
             font-weight: bold;
             background-color: #3498db;
             color: white;
@@ -379,85 +392,137 @@
         .progress-display {
             display: flex;
             flex-direction: column;
-            gap: 5px; /* Reduced gap */
-            padding: 10px 0; /* Adjusted padding */
+            gap: 5px;
+            padding: 10px 0;
         }
 
-        .progress-display div {
+        .progress-bar-container-wrapper {
+            margin-bottom: 10px; /* Space between progress bar and stats */
+        }
+        .progress-bar-label {
+            display: block;
+            font-size: 1.1em; /* Increased font size */
+            color: #2980b9;
+            margin-bottom: 4px;
+            text-align: left;
+            font-weight: 600;
+            animation: pulse-text 1.8s infinite ease-in-out;
+        }
+
+        @keyframes pulse-text {
+            0% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+            100% { opacity: 0.7; transform: scale(1); }
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 6px;
+            height: 12px;
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            width: 0%;
+            background-color: #3498db;
+            border-radius: 6px;
+            transition: width 0.3s ease-in-out;
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 30px 30px;
+            animation: progress-bar-stripes 1s linear infinite;
+        }
+
+        @keyframes progress-bar-stripes {
+            from { background-position: 30px 0; }
+            to { background-position: 0 0; }
+        }
+
+
+        .progress-display div:not(.progress-bar-container-wrapper):not(.progress-bar-container) {
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between; /* Align label left, score right */
             align-items: baseline;
             gap: 8px;
-            padding: 4px 0; /* Reduced padding */
+            padding: 4px 0;
         }
 
-        .progress-display strong {
-            font-size: 1.2em; /* Reduced font size */
+        .progress-display strong { /* Style for the score number */
+            font-size: 1.2em;
             color: #007bff;
-            min-width: 25px; /* Reduced min-width */
+            font-weight: bold; /* Keep score bold */
             text-align: right;
+            padding-right: 10px; /* Added buffer to the right */
         }
 
-        .progress-display span {
-            font-size: 0.85em; /* Reduced font size */
-            color: #6c757d;
+        .progress-display span:not(.progress-bar-label) { /* Style for the text label */
+            font-size: 1.0em;  /* Slightly smaller than score */
+            color: #555;     /* Standard text color */
+            font-weight: normal; /* Not bold */
             white-space: nowrap;
+            text-align: left;
         }
 
-        .next-steps-card, .about-me-card, .support-me-card { margin-top: 20px; }
+        .next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls {
+            margin-top: 20px;
+        }
 
 
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .app-container {
                  max-width: 700px;
-                 padding: 20px; /* Slightly reduced */
+                 padding: 20px;
             }
+            /* .quiz-layout-wrapper no longer needs flex-direction change here */
             .quiz-layout-wrapper {
-                flex-direction: column;
                 gap: 10px;
             }
-            .quiz-layout-wrapper .progress-display.card {
-                width: 100%;
-                flex: auto;
-            }
+            /* .quiz-layout-wrapper .progress-display.card inherits width:100% from base */
+
             .progress-display {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: space-around;
-                align-items: center;
-            }
-            .progress-display div {
                 flex-direction: column;
-                align-items: center;
+            }
+            .progress-bar-container-wrapper {
+                padding: 0 5px;
+            }
+            .progress-display div:not(.progress-bar-container-wrapper):not(.progress-bar-container) {
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
                 padding: 5px;
-                min-width: 70px;
-                text-align: center;
-                gap: 2px; /* Reduced gap between strong and span */
             }
-             .progress-display strong {
-                min-width: auto;
-                text-align: center;
-                font-size: 1.1em; /* Further adjust for mobile */
-                margin-bottom: 0;
+             .progress-display strong { /* Score number */
+                text-align: right;
+                font-size: 1.1em;
             }
-            .progress-display span {
-                font-size: 0.7em; /* Further adjust for mobile */
-                white-space: normal;
+            .progress-display span:not(.progress-bar-label) { /* Text label */
+                font-size: 0.9em;
+                text-align: left;
             }
+
             .header-action-btn {
                 top: 5px;
             }
-             .header-coffee-btn {
+            .header-coffee-btn {
                 font-size: 1rem;
                 padding: 5px 7px;
             }
-            .header-share-btn {
+            .header-share-btn, .header-about-btn {
                 font-size: 0.9rem;
                 padding: 7px 10px;
             }
             header h1 {
-                font-size: 1.3em; /* Adjusted for tablet */
+                font-size: 1.3em;
             }
             .mode-switcher-mute-btn .mute-icon {
                 font-size: 1.7rem;
@@ -466,17 +531,17 @@
                 font-size: 0.8rem;
             }
             .quiz-area .item-display {
-                font-size: 2.5rem; /* Adjusted for tablet */
-                min-height: 60px; /* Adjusted for tablet */
+                font-size: 2.5rem;
+                min-height: 60px;
             }
             .replay-audio-btn {
-                font-size: 1.5rem; /* Adjusted for tablet */
+                font-size: 1.5rem;
             }
             .answer-feedback-icon {
-                font-size: 1.8rem; /* Adjusted for tablet */
+                font-size: 1.8rem;
             }
              .options button {
-                font-size: 0.8rem; /* Adjusted for tablet */
+                font-size: 0.8rem;
                 padding: 8px 5px;
             }
         }
@@ -486,98 +551,103 @@
                 padding: 10px;
             }
             .app-container {
-                padding: 10px; /* Reduced padding */
+                padding: 10px;
             }
             main {
-                gap: 10px; /* Further reduce gap */
+                gap: 10px;
             }
             .card {
-                padding: 10px; /* Further reduce padding */
+                padding: 10px;
             }
             header {
                 padding-bottom: 8px;
                 margin-bottom: 10px;
             }
             header h1 {
-                font-size: 1.1em; /* Reduced for mobile */
-                margin: 0 5px; /* Reduce H1 margin */
+                font-size: 1.1em;
+                margin: 0 5px;
             }
             .header-coffee-btn {
                 font-size: 0.9rem;
                 padding: 4px 6px;
             }
-            .header-share-btn {
+            .header-share-btn, .header-about-btn {
                 font-size: 0.8rem;
                 padding: 5px 8px;
             }
             .header-actions {
-                gap: 5px; /* Reduce gap between header buttons */
+                gap: 5px;
             }
 
             .mode-switcher { padding: 8px; }
             .mode-switcher-controls { margin-bottom: 5px; }
             .mode-switcher-buttons button {
-                padding: 6px 10px; /* Further reduce padding */
-                font-size: 0.8rem; /* Further reduce font size */
+                padding: 6px 10px;
+                font-size: 0.8rem;
             }
             .mode-switcher-mute-btn { padding: 5px 8px; gap: 4px; }
             .mode-switcher-mute-btn .mute-icon { font-size: 1.5rem; }
             .mode-switcher-mute-btn .mute-text { font-size: 0.7rem; }
 
             .item-display-wrapper {
-                padding: 5px; /* Reduced */
-                gap: 5px; /* Reduced */
-                margin-bottom: 8px; /* Reduced */
+                padding: 5px;
+                gap: 5px;
+                margin-bottom: 8px;
             }
             .quiz-area .item-display {
-                font-size: 2rem; /* Reduced for mobile */
-                min-height: 50px; /* Reduced for mobile */
+                font-size: 2rem;
+                min-height: 50px;
                 padding: 5px;
                 line-height: 1.1;
             }
             .replay-audio-btn {
-                font-size: 1.3rem; /* Reduced for mobile */
+                font-size: 1.3rem;
                 padding: 5px;
             }
             .answer-feedback-icon {
-                font-size: 1.5rem; /* Reduced for mobile */
+                font-size: 1.5rem;
             }
 
             .options {
-                gap: 3px; /* Further reduce gap */
-                margin-bottom: 8px; /* Reduced */
+                gap: 3px;
+                margin-bottom: 8px;
             }
             .options button {
-                padding: 8px 3px; /* Reduced padding */
-                font-size: 0.75rem; /* Reduced font size */
+                padding: 8px 3px;
+                font-size: 0.75rem;
             }
             .feedback {
-                font-size: 0.8em; /* Reduced font size */
-                min-height: 18px; /* Reduced */
-                margin-bottom: 8px; /* Reduced */
+                font-size: 0.8em;
+                min-height: 18px;
+                margin-bottom: 8px;
             }
             .control-buttons button {
-                padding: 8px 15px; /* Reduced padding */
-                font-size: 0.8rem; /* Reduced font size */
+                padding: 8px 15px;
+                font-size: 0.8rem;
             }
              .progress-display.card {
-                padding: 8px 5px; /* Reduce padding for progress card */
+                padding: 8px 5px;
             }
-            .progress-display strong {
-                font-size: 1em; /* Reduced for mobile */
+             .progress-bar-label {
+                font-size: 1em; /* Adjusted for smaller screens */
             }
-            .progress-display span {
-                font-size: 0.65em; /* Reduced for mobile */
+            .progress-bar-container {
+                height: 10px;
             }
-            .progress-display div {
+            .progress-display strong { /* Score */
+                font-size: 1em;
+            }
+            .progress-display span:not(.progress-bar-label) { /* Label */
+                font-size: 0.8em;
+            }
+            .progress-display div:not(.progress-bar-container-wrapper):not(.progress-bar-container) {
                 padding: 3px;
-                min-width: 60px;
             }
         }
 
         @media (max-width: 400px) {
             header h1 { font-size: 1em; }
-            .header-share-btn { font-size: 0.7rem; padding: 4px 6px; }
+            .header-share-btn, .header-about-btn { font-size: 0.7rem; padding: 4px 6px; }
             .header-coffee-btn { font-size: 0.8rem; padding: 3px 5px; }
 
             .mode-switcher-buttons button { font-size: 0.7rem; padding: 5px 8px; }
@@ -590,23 +660,31 @@
 
             .options button { font-size: 0.7rem; padding: 7px 2px;}
             .feedback { font-size: 0.75em; }
+            .progress-bar-label {
+                font-size: 0.9em; /* Further adjusted */
+            }
+            .progress-bar-container { height: 8px; }
         }
 
-
-        .next-steps-card, .about-me-card, .support-me-card {
-            /* General styling for these cards, less aggressive than quiz area for mobile */
+        .next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls {
             padding: 15px 20px;
         }
-        .next-steps-card h3, .about-me-card h3, .support-me-card h3 {
+        .next-steps-card h3, .support-me-card h3, .hall-of-fame-card h2 {
             font-size: 1.3em;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 10px;
         }
-         .next-steps-card p, .next-steps-card ul, .about-me-card p, .support-me-card p {
+         .next-steps-card p, .next-steps-card ul, .support-me-card p, .hall-of-fame-card p {
             font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .hall-of-fame-card #hall-of-fame-entries {
+            margin-top: 15px;
         }
 
 
-        /* Share Modal Styles (largely unchanged, but ensure they work with new body padding) */
-        .share-modal {
+        .share-modal { /* General modal style, used by share, about-me and hall-of-fame modals */
             display: none;
             position: fixed;
             z-index: 1000;
@@ -620,17 +698,36 @@
             justify-content: center;
         }
 
-        .share-modal-content {
+        .share-modal-content { /* General modal content style */
             background-color: #fff;
             margin: auto;
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             width: 90%;
-            max-width: 450px;
+            max-width: 500px; /* Slightly wider for new fields */
             position: relative;
+            text-align: left;
+        }
+        .share-modal-content h3, .share-modal-content p, .share-modal-content h2, .share-modal-content ul {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        .share-modal-content #share-modal-title,
+        .share-modal-content #about-me-modal-title,
+        .share-modal-content #hall-of-fame-modal-title {
+             text-align: center;
+             font-size: 1.5em;
+             margin-bottom: 15px;
+             color: #333;
+        }
+         /* Specific centering for share-url-container and social-share-buttons if needed */
+        .share-modal-content .share-url-container,
+        .share-modal-content .social-share-buttons,
+        .share-modal-content > p:has(~ .share-url-container) {
             text-align: center;
         }
+
 
         .share-modal-close-btn {
             position: absolute;
@@ -651,17 +748,38 @@
             text-decoration: none;
         }
 
-        .share-modal h3 {
+        .share-modal-content > h3 {
             margin-top: 0;
             margin-bottom: 15px;
             color: #333;
             font-size: 1.5em;
         }
-        .share-modal p {
+        .share-modal-content > p {
             font-size: 1em;
             color: #555;
             margin-bottom: 10px;
+            line-height: 1.6;
         }
+        /* About me specific content styling within modal */
+        #about-me-modal .share-modal-content h3 {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        #about-me-modal .share-modal-content p {
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        #about-me-modal .share-modal-content p a {
+            color: #007bff;
+            text-decoration: underline;
+        }
+        #about-me-modal .share-modal-content p a:hover {
+            color: #0056b3;
+        }
+
 
         .share-url-container {
             display: flex;
@@ -713,6 +831,68 @@
             color: #000;
         }
 
+        /* Hall of Fame Modal Specifics */
+        #hall-of-fame-modal .share-modal-content p,
+        #hall-of-fame-modal .share-modal-content ul {
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #333;
+        }
+        #hall-of-fame-modal .share-modal-content ul {
+            list-style-type: disc;
+            padding-left: 25px;
+        }
+        #hall-of-fame-modal .share-modal-content ul li {
+            margin-bottom: 5px;
+        }
+
+        #hall-of-fame-modal-title {
+            color: #27ae60; /* Green for celebration */
+            font-weight: bold;
+        }
+        .share-modal-content .form-group {
+            margin-bottom: 12px;
+        }
+        .share-modal-content .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            color: #444;
+            font-size: 0.9em;
+        }
+        .share-modal-content .form-group input[type="text"],
+        .share-modal-content .form-group input[type="email"],
+        .share-modal-content .form-group textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.95em;
+            box-sizing: border-box;
+        }
+        .share-modal-content .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        #submit-testimonial-btn {
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: block;
+            margin: 15px auto 0 auto; /* Added top margin */
+        }
+        #submit-testimonial-btn:hover {
+            background-color: #229954;
+        }
+
 
         footer {
             margin-top: 30px;
@@ -724,39 +904,66 @@
             .share-modal-content {
                 padding: 15px;
                 width: 95%;
+                max-width: 95%;
             }
-            .share-modal h3 { font-size: 1.2em; }
-            .share-modal p { font-size: 0.9em; }
+            .share-modal-content > h3, .share-modal-content > h2 { font-size: 1.2em; }
+            .share-modal-content > p { font-size: 0.9em; }
             .share-url-container input[type="text"], .share-url-container button { font-size: 0.9em; }
             .social-share-button { font-size: 0.85em; padding: 7px 12px; }
             .buy-coffee-btn { padding: 10px 20px; font-size: 1em; }
-            .next-steps-card, .about-me-card, .support-me-card { padding: 10px 15px; }
-            .next-steps-card h3, .about-me-card h3, .support-me-card h3 { font-size: 1.1em; }
-            .next-steps-card p, .next-steps-card ul, .about-me-card p, .support-me-card p { font-size: 0.85em; }
+
+            .next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls { padding: 10px 15px; }
+            .next-steps-card h3, .support-me-card h3, .hall-of-fame-card h2 { font-size: 1.1em; }
+            .next-steps-card p, .next-steps-card ul, .support-me-card p, .hall-of-fame-card p { font-size: 0.85em; }
+
+            #hall-of-fame-modal .share-modal-content p,
+            #hall-of-fame-modal .share-modal-content ul {
+                 font-size: 0.9em;
+            }
+            .share-modal-content .form-group input[type="text"],
+            .share-modal-content .form-group input[type="email"],
+            .share-modal-content .form-group textarea {
+                padding: 8px;
+                font-size: 0.9em;
+            }
         }
 
-
-        @font-face {
-            font-family: 'Noto Sans Malayalam';
-            src: url('https://fonts.gstatic.com/s/notosansmalayalam/v21/symphQtSyFFM_0Pm3LsZNkYVO22AXlFe72PZHPa4JMw.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
+        /* Confetti Animation */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
         }
-        @font-face {
-            font-family: 'Noto Sans';
-            src: url('https://fonts.gstatic.com/s/notosans/v27/o-0IIpQlx3QUlC5A4PNr5TRG.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00; /* Will be randomized */
+            opacity: 0.7;
+            animation: fall 3s linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="confetti-container" class="confetti-container" aria-hidden="true"></div>
     <div class="app-container">
         <header>
             <h1>Learn Malayalam Alphabet & Words FREE - Quiz</h1>
             <div class="header-actions">
+                <button id="header-about-btn" class="header-action-btn header-about-btn" title="About the Developer" aria-label="About the Developer" aria-haspopup="dialog" aria-expanded="false">About</button>
                 <button id="header-share-btn" class="header-action-btn header-share-btn" title="Share this app with friends" aria-label="Share this app with friends" aria-haspopup="dialog" aria-expanded="false">Share</button>
                 <button id="header-coffee-btn" class="header-action-btn header-coffee-btn" title="Support the Developer" aria-label="Support the Developer by buying a coffee">☕</button>
             </div>
@@ -780,7 +987,7 @@
                 <section class="quiz-area card">
                     <div class="item-display-wrapper">
                         <span id="answer-feedback-icon" class="answer-feedback-icon" aria-live="polite"></span>
-                        <div id="item-display" class="item-display" role="img" aria-live="polite"></div>
+                        <div id="item-display" class="item-display noto-sans-malayalam-main-display" role="img" aria-live="polite"></div>
                         <button id="replay-item-audio-btn" class="replay-audio-btn" aria-label="Replay item sound" title="Replay sound">🔈</button>
                     </div>
                     <div id="feedback-area" class="feedback info" aria-live="assertive">Choose the correct option.</div>
@@ -793,21 +1000,27 @@
                 </section>
 
                 <section class="progress-display card">
+                    <div class="progress-bar-container-wrapper">
+                        <span class="progress-bar-label" id="progress-bar-label-text">Surprise Loading...</span>
+                        <div id="quiz-progress-bar-container" class="progress-bar-container" role="progressbar" aria-label="Content loading progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            <div id="quiz-progress-bar" class="progress-bar-inner"></div>
+                        </div>
+                    </div>
                     <div>
+                        <span id="reviewed-count-label">Total Score</span>
                         <strong id="score">0</strong>
-                        <span>Total Score</span>
                     </div>
                     <div>
+                        <span id="reviewed-count-label">Current Streak</span>
                         <strong id="correct-streak-display">0</strong>
-                        <span>Current Streak</span>
                     </div>
                     <div>
-                        <strong id="reviewed-count">0</strong>
                         <span id="reviewed-count-label">Items Reviewed</span>
+                        <strong id="reviewed-count">0</strong>
                     </div>
                     <div>
-                        <strong id="total-items-count">0</strong>
                         <span id="total-items-label">Total Items</span>
+                        <strong id="total-items-count">0</strong>
                     </div>
                 </section>
             </div>
@@ -845,22 +1058,13 @@
                 <p class="encouragement">Every bit of practice counts. <span lang="ml-IN">മുന്നോട്ട് പോകുക!</span> (Munnottu pokuka! - Go forward!) <span class="emoji" role="img" aria-label="Victory hand">✌️</span></p>
             </section>
 
-            <div class="about-me-card card">
-                <h3><span class="emoji" role="img" aria-label="Waving hand">👋</span> Hey There, Language Adventurer!</h3>
-                <p>
-                    This little corner of the internet was lovingly crafted by <strong>Ajay Nair</strong>.
-                    Yep, just one person fueled by a passion for the language and a whole lot of <span class="emoji" role="img" aria-label="Coffee">☕</span> (and maybe a few late nights <span class="emoji" role="img" aria-label="Owl">🦉</span>).
-                </p>
-                <p>
-                    The mission? To make learning the beautiful script and basic words a bit more fun, a tad less daunting, and hopefully, super effective with the magic of spaced repetition!
-                    Think of it as your friendly digital guide to mastering those elegant swirls and curls, and some foundational vocabulary. <span class="emoji" role="img" aria-label="Sparkles">✨</span>
-                </p>
-                <p>
-                    Got feedback, found a mischievous bug <span class="emoji" role="img" aria-label="Bug">🐛</span>, or just want to say "ഹായ്!" (that's "Hi!" in Malayalam)?
-                    Feel free to drop a line at: <a href="mailto:ajaynair59@gmail.com">ajaynair59 [at] gmail [dot] com</a>.
-                </p>
-                <p>Happy learning, or as we say, "<span lang="ml-IN">നന്നായി പഠിക്കൂ!</span>" (Nannaayi padhikku!) <span class="emoji" role="img" aria-label="Smiling face with sunglasses">😎</span></p>
-            </div>
+            <section class="hall-of-fame-card card">
+                <h2>Hall of Fame <span class="emoji" role="img" aria-label="Trophy">🏆</span></h2>
+                <div id="hall-of-fame-entries">
+                    <p>Be the first to conquer a quiz and share your inspiring story here!</p>
+                    <!-- Testimonies will be manually added here in the future or remain as placeholder -->
+                </div>
+            </section>
 
             <section class="support-me-card card">
                 <h3>Enjoying Your Language Adventure? <span class="emoji" role="img" aria-label="Rocket">🚀</span></h3>
@@ -875,6 +1079,11 @@
                     Your support keeps this project brewing strong! <span lang="ml-IN">നന്ദി!</span> (Thank you!) <span class="emoji" role="img" aria-label="Praying hands">🙏</span>
                 </p>
             </section>
+
+            <div class="test-controls card" style="text-align: center; padding: 15px;">
+                <button id="test-hof-btn" class="control-buttons" style="display: inline-block; background-color: #6c757d; padding: 10px 15px; font-size: 0.9em;">Test Hall Of Fame Modal</button>
+            </div>
+
         </main>
         <footer>
             <p>&copy; <span id="current-year"></span> Learn Malayalam by Ajay Nair. All rights reserved.</p>
@@ -901,6 +1110,62 @@
             </div>
         </div>
     </div>
+
+    <div id="about-me-modal" class="share-modal" style="display: none;" role="dialog" aria-labelledby="about-me-modal-title" aria-modal="true" aria-hidden="true">
+        <div class="share-modal-content">
+            <button id="about-me-modal-close-btn" class="share-modal-close-btn" aria-label="Close about dialog">&times;</button>
+            <h3 id="about-me-modal-title" style="text-align: center; font-size: 1.4em; margin-bottom: 15px; color: #2c3e50; font-weight: bold;">About Me</h3>
+            <h3><span class="emoji" role="img" aria-label="Waving hand">👋</span> Hey There, Language Adventurer!</h3>
+            <p>
+                This little corner of the internet was lovingly crafted by <strong>Ajay Nair</strong>.
+                Yep, just one person fueled by a passion for the language and a whole lot of <span class="emoji" role="img" aria-label="Coffee">☕</span> (and maybe a few late nights <span class="emoji" role="img" aria-label="Owl">🦉</span>).
+            </p>
+            <p>
+                The mission? To make learning the beautiful script and basic words a bit more fun, a tad less daunting, and hopefully, super effective with the magic of spaced repetition!
+                Think of it as your friendly digital guide to mastering those elegant swirls and curls, and some foundational vocabulary. <span class="emoji" role="img" aria-label="Sparkles">✨</span>
+            </p>
+            <p>
+                Got feedback, found a mischievous bug <span class="emoji" role="img" aria-label="Bug">🐛</span>, or just want to say "ഹായ്!" (that's "Hi!" in Malayalam)?
+                Feel free to drop a line at: <a href="mailto:ajaynair59@gmail.com">ajaynair59 [at] gmail [dot] com</a>.
+            </p>
+            <p>Happy learning, or as we say, "<span lang="ml-IN">നന്നായി പഠിക്കൂ!</span>" (Nannaayi padhikku!) <span class="emoji" role="img" aria-label="Smiling face with sunglasses">😎</span></p>
+        </div>
+    </div>
+
+    <div id="hall-of-fame-modal" class="share-modal" style="display: none;" role="dialog" aria-labelledby="hall-of-fame-modal-title" aria-modal="true" aria-hidden="true">
+        <div class="share-modal-content">
+            <button id="hall-of-fame-modal-close-btn" class="share-modal-close-btn" aria-label="Close dialog">&times;</button>
+            <h2 id="hall-of-fame-modal-title">🎉 You're a Champion! 🎉</h2>
+            <p>
+                WHOA, Malayalam Maestro! You didn't just learn, you CONQUERED the <strong><span id="hof-completed-mode-text">current</span></strong> challenge! 🌟 Your brain is officially dazzling with new script superpowers!
+            </p>
+            <p>
+                Ready to etch your legend in our Hall of Fame? We're super stoked to hear your adventure!
+            </p>
+            <p><strong>Spill the beans (or the sambar!):</strong></p>
+            <ul>
+                <li>How was your epic quest learning Malayalam letters/words?</li>
+                <li>What sparks joy for you about the Malayalam language?</li>
+                <li>Got any cool tips, random thoughts, or a victory dance to share?</li>
+            </ul>
+            <p>Your story will inspire future language explorers and look absolutely amazing here!</p>
+
+            <div class="form-group">
+                <label for="hall-of-fame-name-input">Your Name (required):</label>
+                <input type="text" id="hall-of-fame-name-input" required placeholder="E.g., Super Learner Ajay">
+            </div>
+            <div class="form-group">
+                <label for="hall-of-fame-email-input">Your Email (optional, for updates or thanks!):</label>
+                <input type="email" id="hall-of-fame-email-input" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label for="hall-of-fame-testimonial-input">Your Awesome Story:</label>
+                <textarea id="hall-of-fame-testimonial-input" rows="4" placeholder="Share your journey, tips, or anything cool!" aria-label="Your testimonial"></textarea>
+            </div>
+            <button id="submit-testimonial-btn">Share My Story!</button>
+        </div>
+    </div>
+
 
     <script type="module" src="/index.tsx"></script>
 

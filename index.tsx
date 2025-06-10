@@ -1,3 +1,17 @@
+
+import { LOCAL_STORAGE_KEYS, SHARE_DETAILS } from './constants.ts';
+import type { ShareDetails } from './constants.ts'; // Import type if needed elsewhere
+import {
+    loadCelebratedModes,
+    saveCelebratedModes,
+    playCelebrationAnimation,
+    openHallOfFameModal,
+    closeHallOfFameModal,
+    submitTestimonial,
+    checkCompletionAndCelebrate,
+    setupHallOfFameEventListeners
+} from './src/hallOfFame.ts';
+
 // Define types previously in lettersData.ts and wordsData.ts
 interface InitialLetter {
     id: string;
@@ -8,7 +22,7 @@ interface InitialLetter {
 }
 
 interface InitialWord {
-    id: string;
+    id:string;
     word: string;
     transliteration: string;
 }
@@ -35,6 +49,11 @@ interface SessionModeStats {
     streak: number;
 }
 
+export interface CelebratedModes { // Export if needed by hallOfFame.ts directly, though it's part of AppType
+    letters: boolean;
+    words: boolean;
+}
+
 const App = {
     quizMode: 'letters' as QuizMode,
     quizItems: [] as QuizItem[],
@@ -44,11 +63,10 @@ const App = {
         letters: { score: 0, streak: 0 } as SessionModeStats,
         words: { score: 0, streak: 0 } as SessionModeStats,
     },
-    localStorageKeyLetters: 'malayalamAppProgress_letters_v1',
-    localStorageKeyWords: 'malayalamAppProgress_words_v1',
-    localStorageKeyMode: 'malayalamAppQuizMode_v1',
-    localStorageKeyMute: 'malayalamAppMuteState_v1',
-
+    celebratedModes: {
+        letters: false,
+        words: false,
+    } as CelebratedModes,
 
     voices: [] as SpeechSynthesisVoice[],
     speechSynthesisReady: false,
@@ -57,13 +75,6 @@ const App = {
     voiceLoadTimeoutId: null as number | null,
     currentAudioElement: null as HTMLAudioElement | null,
     isMuted: false,
-
-
-    shareDetails: {
-        title: 'Learn Malayalam Free: Letters, Alphabet & Words | Interactive Quiz',
-        text: 'Discover the fun, free way to learn the Malayalam alphabet and words with this interactive quiz app! Master the script with audio, spaced repetition, and engaging exercises.',
-        url: 'https://www.learn-malayalam.org/'
-    },
 
     DOM: {
         itemDisplay: document.getElementById('item-display')!,
@@ -80,9 +91,13 @@ const App = {
         totalItemsLabel: document.getElementById('total-items-label')!,
         lettersModeBtn: document.getElementById('letters-mode-btn') as HTMLButtonElement,
         wordsModeBtn: document.getElementById('words-mode-btn') as HTMLButtonElement,
+
+        headerAboutBtn: document.getElementById('header-about-btn') as HTMLButtonElement,
         headerCoffeeBtn: document.getElementById('header-coffee-btn') as HTMLButtonElement,
         headerShareBtn: document.getElementById('header-share-btn') as HTMLButtonElement,
+
         muteToggleBtn: document.getElementById('mute-toggle-btn') as HTMLButtonElement,
+
         shareModal: document.getElementById('share-modal') as HTMLDivElement,
         shareModalCloseBtn: document.getElementById('share-modal-close-btn') as HTMLButtonElement,
         shareUrlInput: document.getElementById('share-url-input') as HTMLInputElement,
@@ -92,12 +107,32 @@ const App = {
         shareWhatsApp: document.getElementById('share-whatsapp') as HTMLAnchorElement,
         shareLinkedIn: document.getElementById('share-linkedin') as HTMLAnchorElement,
         shareEmail: document.getElementById('share-email') as HTMLAnchorElement,
+
+        aboutMeModal: document.getElementById('about-me-modal') as HTMLDivElement,
+        aboutMeModalCloseBtn: document.getElementById('about-me-modal-close-btn') as HTMLButtonElement,
+
+        quizProgressBarContainer: document.getElementById('quiz-progress-bar-container') as HTMLDivElement,
+        quizProgressBar: document.getElementById('quiz-progress-bar') as HTMLDivElement,
+        progressBarLabelText: document.getElementById('progress-bar-label-text') as HTMLSpanElement,
+
+        confettiContainer: document.getElementById('confetti-container') as HTMLDivElement,
+        hallOfFameModal: document.getElementById('hall-of-fame-modal') as HTMLDivElement,
+        hallOfFameModalCloseBtn: document.getElementById('hall-of-fame-modal-close-btn') as HTMLButtonElement,
+        hallOfFameNameInput: document.getElementById('hall-of-fame-name-input') as HTMLInputElement,
+        hallOfFameEmailInput: document.getElementById('hall-of-fame-email-input') as HTMLInputElement,
+        hallOfFameTestimonialInput: document.getElementById('hall-of-fame-testimonial-input') as HTMLTextAreaElement,
+        submitTestimonialBtn: document.getElementById('submit-testimonial-btn') as HTMLButtonElement,
+        testHofBtn: document.getElementById('test-hof-btn') as HTMLButtonElement,
     },
 
     async init() {
         this.DOM.nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
         this.DOM.lettersModeBtn.addEventListener('click', () => this.switchQuizMode('letters'));
         this.DOM.wordsModeBtn.addEventListener('click', () => this.switchQuizMode('words'));
+
+        if(this.DOM.headerAboutBtn) {
+            this.DOM.headerAboutBtn.addEventListener('click', () => this.openAboutMeModal());
+        }
         if(this.DOM.headerCoffeeBtn) {
             this.DOM.headerCoffeeBtn.addEventListener('click', () => this.scrollToSupportSection());
         }
@@ -120,19 +155,34 @@ const App = {
         if(this.DOM.copyUrlBtn) {
             this.DOM.copyUrlBtn.addEventListener('click', () => this.copyShareUrl());
         }
+        if(this.DOM.aboutMeModalCloseBtn) {
+            this.DOM.aboutMeModalCloseBtn.addEventListener('click', () => this.closeAboutMeModal());
+        }
 
-        this.initializeSpeechSynthesis(); // For general TTS, not item pronunciation
+        setupHallOfFameEventListeners(this, this.DOM); // Moved HoF event listeners here
+
+        this.initializeSpeechSynthesis();
         this.loadMuteState();
         this.updateMuteButtonAppearance();
         this.loadQuizMode();
+        this.loadSessionStats();
+        loadCelebratedModes(this); // Use imported function
         this.updateModeButtonStyles();
         await this.loadQuizData();
         this.updateProgressDisplay();
         this.nextQuestion();
 
         window.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && this.DOM.shareModal.style.display === 'flex') {
-                this.closeShareModal();
+            if (event.key === 'Escape') {
+                if (this.DOM.shareModal.style.display === 'flex') {
+                    this.closeShareModal();
+                }
+                if (this.DOM.aboutMeModal.style.display === 'flex') {
+                    this.closeAboutMeModal();
+                }
+                if (this.DOM.hallOfFameModal.style.display === 'flex') {
+                    closeHallOfFameModal(this.DOM); // Use imported function
+                }
             }
         });
     },
@@ -157,9 +207,6 @@ const App = {
                 this.voices = window.speechSynthesis.getVoices();
                 if (this.voices.length > 0) {
                     this.speechSynthesisReady = true;
-                    console.log('Speech synthesis voices loaded successfully (for UI feedback).');
-                } else {
-                    // console.warn('No speech synthesis voices available yet (for UI feedback).'); // Less verbose
                 }
             };
 
@@ -169,12 +216,9 @@ const App = {
             this.voiceLoadTimeoutId = window.setTimeout(() => {
                 this.voiceLoadTimeoutId = null;
                 if (!this.speechSynthesisReady && this.voices.length === 0) {
-                    console.warn('Retrying to load voices after timeout (2s) (for UI feedback).');
                     loadVoices();
                     if (!this.speechSynthesisReady && this.voices.length === 0) {
                         console.error("Speech synthesis voices still not available after timeout (for UI feedback).");
-                    } else if (this.speechSynthesisReady) {
-                        console.log('Speech synthesis voices loaded successfully after timeout (for UI feedback).');
                     }
                 }
             }, 2000);
@@ -186,18 +230,18 @@ const App = {
     },
 
     loadMuteState() {
-        const savedMuteState = localStorage.getItem(this.localStorageKeyMute);
+        const savedMuteState = localStorage.getItem(LOCAL_STORAGE_KEYS.mute);
         if (savedMuteState === 'true') {
             this.isMuted = true;
         } else if (savedMuteState === 'false') {
             this.isMuted = false;
         } else {
-            this.isMuted = false; // Default to unmuted if no valid state found
+            this.isMuted = false;
         }
     },
 
     saveMuteState() {
-        localStorage.setItem(this.localStorageKeyMute, this.isMuted.toString());
+        localStorage.setItem(LOCAL_STORAGE_KEYS.mute, this.isMuted.toString());
     },
 
     toggleMute() {
@@ -239,13 +283,12 @@ const App = {
     async handleShare() {
         if (navigator.share) {
             try {
-                await navigator.share(this.shareDetails);
-                console.log('Content shared successfully via Web Share API');
+                await navigator.share(SHARE_DETAILS);
                 this.updateFeedback('Link shared!', 'success');
             } catch (error: unknown) {
                 console.error('Error sharing via Web Share API:', error);
                 if (error instanceof DOMException && error.name === 'AbortError') {
-                    console.log('Share action aborted by user.');
+                    // User aborted share
                 } else if (error instanceof Error) {
                     this.updateFeedback(`Could not share: ${error.message}. Try copying the link.`, 'error');
                     this.openShareModal();
@@ -260,7 +303,7 @@ const App = {
     },
 
     openShareModal() {
-        this.DOM.shareUrlInput.value = this.shareDetails.url;
+        this.DOM.shareUrlInput.value = SHARE_DETAILS.url;
         this.configureSocialShareLinks();
         this.DOM.shareModal.style.display = 'flex';
         this.DOM.shareModal.setAttribute('aria-hidden', 'false');
@@ -273,6 +316,24 @@ const App = {
         this.DOM.shareModal.setAttribute('aria-hidden', 'true');
         this.DOM.headerShareBtn.setAttribute('aria-expanded', 'false');
         this.DOM.headerShareBtn.focus();
+    },
+
+    openAboutMeModal() {
+        this.DOM.aboutMeModal.style.display = 'flex';
+        this.DOM.aboutMeModal.setAttribute('aria-hidden', 'false');
+        if (this.DOM.headerAboutBtn) {
+            this.DOM.headerAboutBtn.setAttribute('aria-expanded', 'true');
+        }
+        this.DOM.aboutMeModalCloseBtn.focus();
+    },
+
+    closeAboutMeModal() {
+        this.DOM.aboutMeModal.style.display = 'none';
+        this.DOM.aboutMeModal.setAttribute('aria-hidden', 'true');
+        if (this.DOM.headerAboutBtn) {
+            this.DOM.headerAboutBtn.setAttribute('aria-expanded', 'false');
+            this.DOM.headerAboutBtn.focus();
+        }
     },
 
     async copyShareUrl() {
@@ -293,10 +354,10 @@ const App = {
     },
 
     configureSocialShareLinks() {
-        const title = encodeURIComponent(this.shareDetails.title);
-        const text = encodeURIComponent(this.shareDetails.text);
-        const shortTextForTwitter = encodeURIComponent(this.shareDetails.title);
-        const url = encodeURIComponent(this.shareDetails.url);
+        const title = encodeURIComponent(SHARE_DETAILS.title);
+        const text = encodeURIComponent(SHARE_DETAILS.text);
+        const shortTextForTwitter = encodeURIComponent(SHARE_DETAILS.title);
+        const url = encodeURIComponent(SHARE_DETAILS.url);
 
         this.DOM.shareTwitter.href = `https://twitter.com/intent/tweet?text=${shortTextForTwitter}&url=${url}`;
         this.DOM.shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
@@ -306,7 +367,7 @@ const App = {
     },
 
     loadQuizMode() {
-        const savedMode = localStorage.getItem(this.localStorageKeyMode) as QuizMode | null;
+        const savedMode = localStorage.getItem(LOCAL_STORAGE_KEYS.mode) as QuizMode | null;
         if (savedMode && (savedMode === 'letters' || savedMode === 'words')) {
             this.quizMode = savedMode;
         } else {
@@ -315,7 +376,42 @@ const App = {
     },
 
     saveQuizMode() {
-        localStorage.setItem(this.localStorageKeyMode, this.quizMode);
+        localStorage.setItem(LOCAL_STORAGE_KEYS.mode, this.quizMode);
+    },
+
+    loadSessionStats() {
+        const savedStats = localStorage.getItem(LOCAL_STORAGE_KEYS.sessionStats);
+        const defaultStats = {
+            letters: { score: 0, streak: 0 },
+            words: { score: 0, streak: 0 },
+        };
+
+        if (savedStats) {
+            try {
+                const parsedStats = JSON.parse(savedStats);
+                if (parsedStats && parsedStats.letters && parsedStats.words &&
+                    typeof parsedStats.letters.score === 'number' &&
+                    typeof parsedStats.letters.streak === 'number' &&
+                    typeof parsedStats.words.score === 'number' &&
+                    typeof parsedStats.words.streak === 'number') {
+                    this.sessionStats = parsedStats;
+                    return;
+                } else {
+                    console.warn('Invalid session stats format in localStorage. Using defaults.');
+                }
+            } catch (error) {
+                console.error('Error parsing session stats from localStorage:', error);
+            }
+        }
+        this.sessionStats = defaultStats;
+    },
+
+    saveSessionStats() {
+        try {
+            localStorage.setItem(LOCAL_STORAGE_KEYS.sessionStats, JSON.stringify(this.sessionStats));
+        } catch (error) {
+            console.error('Error saving session stats to localStorage:', error);
+        }
     },
 
     async switchQuizMode(newMode: QuizMode) {
@@ -346,8 +442,8 @@ const App = {
     },
 
     async loadQuizData() {
-        const currentLocalStorageKey = this.quizMode === 'letters' ? this.localStorageKeyLetters : this.localStorageKeyWords;
-        const dataPath = this.quizMode === 'letters' ? './lettersData.json' : './wordsData.json';
+        const currentLocalStorageKey = this.quizMode === 'letters' ? LOCAL_STORAGE_KEYS.letters : LOCAL_STORAGE_KEYS.words;
+        const dataPath = this.quizMode === 'letters' ? '/lettersData.json' : '/wordsData.json';
 
         let fetchedInitialData: (InitialLetter[] | InitialWord[]) = [];
         try {
@@ -367,6 +463,7 @@ const App = {
             this.DOM.reviewedCountDisplay.textContent = '0';
             if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'none';
             if (this.DOM.answerFeedbackIcon) this.DOM.answerFeedbackIcon.style.display = 'none';
+            this.updateProgressDisplay();
             return;
         }
 
@@ -433,8 +530,12 @@ const App = {
     },
 
     saveQuizData() {
-        const currentLocalStorageKey = this.quizMode === 'letters' ? this.localStorageKeyLetters : this.localStorageKeyWords;
-        localStorage.setItem(currentLocalStorageKey, JSON.stringify(this.quizItems));
+        const currentLocalStorageKey = this.quizMode === 'letters' ? LOCAL_STORAGE_KEYS.letters : LOCAL_STORAGE_KEYS.words;
+        try {
+            localStorage.setItem(currentLocalStorageKey, JSON.stringify(this.quizItems));
+        } catch (error) {
+            console.error(`Error saving quiz data for ${this.quizMode} to localStorage:`, error);
+        }
     },
 
     selectItemForQuiz(): QuizItem | null {
@@ -478,21 +579,20 @@ const App = {
         if (!this.currentItem) return;
 
         this.DOM.optionsContainer.querySelectorAll('button').forEach(btn => (btn as HTMLButtonElement).disabled = true);
-        this.DOM.nextQuestionBtn.style.display = 'block';
+        this.DOM.nextQuestionBtn.style.display = 'inline-block'; // Changed to inline-block for centering
 
         const isCorrect = selectedTransliteration === this.currentItem.transliteration;
-        // const displayForm = this.currentItem.character ? ((this.currentItem as InitialLetter).displayCharacterOverride || (this.currentItem as InitialLetter).character) : (this.currentItem as InitialWord).word;
 
         const currentModeStats = this.sessionStats[this.quizMode];
 
         if (this.DOM.answerFeedbackIcon) {
             if (isCorrect) {
                 this.DOM.answerFeedbackIcon.textContent = '✔';
-                this.DOM.answerFeedbackIcon.style.color = '#2e73b8'; // Blue
+                this.DOM.answerFeedbackIcon.style.color = '#2e73b8';
                 this.DOM.answerFeedbackIcon.setAttribute('aria-label', 'Correct');
             } else {
                 this.DOM.answerFeedbackIcon.textContent = '✖';
-                this.DOM.answerFeedbackIcon.style.color = '#d9534f'; // Red
+                this.DOM.answerFeedbackIcon.style.color = '#d9534f';
                 this.DOM.answerFeedbackIcon.setAttribute('aria-label', 'Incorrect');
             }
             this.DOM.answerFeedbackIcon.style.display = 'inline';
@@ -504,7 +604,6 @@ const App = {
             currentModeStats.streak++;
             this.currentItem.correctStreak++;
             this.currentItem.totalCorrect++;
-            // this.updateFeedback(`${displayForm} is correct! (${this.currentItem.transliteration})`, 'correct'); // Removed
             this.speakItem(this.currentItem, false, false);
 
             if (this.currentItem.correctStreak === 1) this.currentItem.intervalDays = 1;
@@ -517,7 +616,6 @@ const App = {
             currentModeStats.streak = 0;
             this.currentItem.correctStreak = 0;
             this.currentItem.totalIncorrect++;
-            // this.updateFeedback(`Incorrect. This is ${displayForm} (${this.currentItem.transliteration}).`, 'incorrect'); // Removed
             this.speakItem(this.currentItem, true, false);
 
             if (navigator.vibrate) {
@@ -533,7 +631,9 @@ const App = {
         this.currentItem.reviewed = true;
 
         this.saveQuizData();
+        this.saveSessionStats();
         this.updateProgressDisplay();
+        checkCompletionAndCelebrate(this); // Use imported function
 
         this.DOM.optionsContainer.querySelectorAll('button').forEach(button => {
             const btn = button as HTMLButtonElement;
@@ -564,7 +664,16 @@ const App = {
         } else {
             this.DOM.itemDisplay.textContent = '🎉';
             if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'none';
-            this.updateFeedback(this.quizItems.length > 0 ? 'All items learned for now! Come back later for review or switch modes.' : 'No items loaded. Check data files or connection.', this.quizItems.length > 0 ? 'success' : 'error');
+
+            const allReviewed = this.quizItems.length > 0 && this.quizItems.every(item => item.reviewed);
+            if (allReviewed && this.quizItems.length > 0 && !this.celebratedModes[this.quizMode]) {
+                this.updateFeedback('All items learned! Preparing your celebration...', 'success');
+                checkCompletionAndCelebrate(this);  // Use imported function
+            } else if (allReviewed && this.quizItems.length > 0) {
+                this.updateFeedback('All items reviewed for now! Come back later or switch modes.', 'success');
+            } else {
+                this.updateFeedback(this.quizItems.length > 0 ? 'All items learned for now! Come back later for review or switch modes.' : 'No items loaded. Check data files or connection.', this.quizItems.length > 0 ? 'success' : 'error');
+            }
             this.DOM.optionsContainer.innerHTML = '';
         }
     },
@@ -587,7 +696,6 @@ const App = {
         });
     },
 
-    // General purpose TTS for UI feedback
     speak(text: string, lang: string = 'ml-IN', rate: number = 0.9, pitch: number = 1.1) {
         if (this.isMuted) return;
         if (!this.speechSynthesisSupported || !this.speechSynthesisUtterance) {
@@ -614,7 +722,6 @@ const App = {
         if (!selectedVoice) selectedVoice = this.voices.find(voice => voice.lang.startsWith('ml-'));
 
         if (selectedVoice) utterance.voice = selectedVoice;
-        else console.warn(`Malayalam voice not found for UI feedback. Using browser default for lang '${lang}'.`);
 
         utterance.onerror = (event) => {
             console.error('Speech synthesis error (UI feedback):', event.error, event);
@@ -623,7 +730,6 @@ const App = {
         window.speechSynthesis.speak(utterance);
     },
 
-    // Audio for item pronunciation (MP3)
     async speakItem(item: QuizItem, _emphatic: boolean = false, bypassMute: boolean = false) {
         if (this.isMuted && !bypassMute) return;
         if (!item) return;
@@ -640,7 +746,7 @@ const App = {
 
 
         const audioType = item.character ? 'letters' : 'words';
-        const audioPath = `./audio/${audioType}/${item.id}.mp3`;
+        const audioPath = `/audio/${audioType}/${item.id}.mp3`; // Use absolute path
 
         const audioElement = new Audio();
         this.currentAudioElement = audioElement;
@@ -665,7 +771,6 @@ const App = {
                 resolve();
             };
             audioElement.onerror = (e) => {
-                console.warn(`Custom audio error for item ID ${item.id} at path ${audioPath}:`, audioElement.error, e);
                 cleanup();
                 reject(new Error(`Audio not found or error for ${item.id}`));
             };
@@ -674,7 +779,6 @@ const App = {
 
             loadTimeoutId = window.setTimeout(() => {
                 loadTimeoutId = null;
-                console.warn(`Audio load timeout for item ID ${item.id} at path ${audioPath}`);
                 cleanup();
                 reject(new Error(`Audio load timeout for ${item.id}`));
             }, timeoutDuration);
@@ -692,7 +796,6 @@ const App = {
                 }
             });
         } catch (error) {
-            console.log(`No custom audio will be played for item ID ${item.id}. Error: ${(error as Error).message}`);
             if (this.currentAudioElement === audioElement) {
                 this.currentAudioElement = null;
             }
@@ -708,28 +811,31 @@ const App = {
         const currentModeStats = this.sessionStats[this.quizMode];
         this.DOM.scoreDisplay.textContent = currentModeStats.score.toString();
         this.DOM.correctStreakDisplay.textContent = currentModeStats.streak.toString();
+
+        const totalItems = this.quizItems.length;
         const reviewedItemsCount = this.quizItems.filter(item => item.reviewed).length;
+
         this.DOM.reviewedCountDisplay.textContent = reviewedItemsCount.toString();
-        this.DOM.totalItemsCountDisplay.textContent = this.quizItems.length.toString();
+        this.DOM.totalItemsCountDisplay.textContent = totalItems.toString();
+
+        const currentScore = currentModeStats.score;
+        const percentage = totalItems > 0 ? (currentScore / totalItems) * 100 : 0;
+
+        this.DOM.quizProgressBar.style.width = `${Math.min(100, percentage)}%`;
+        this.DOM.quizProgressBarContainer.setAttribute('aria-valuenow', Math.min(100, percentage).toFixed(0));
+
+        this.DOM.progressBarLabelText.textContent = 'Surprise Loading...';
+        this.DOM.quizProgressBarContainer.setAttribute('aria-label', 'Content loading progress');
+
+
+        this.DOM.reviewedCountLabel.textContent = this.quizMode === 'letters' ? 'Letters Reviewed' : 'Words Reviewed';
+        this.DOM.totalItemsLabel.textContent = this.quizMode === 'letters' ? 'Total Letters' : 'Total Words';
     }
 
 };
 
+export type AppType = typeof App; // Export AppType for use in other modules
+
 document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        if (typeof document !== 'undefined' && document.fonts) {
-            await Promise.all([
-                document.fonts.load('1em "Noto Sans Malayalam"'),
-                document.fonts.load('1em "Noto Sans"')
-            ]);
-            console.log("Fonts loaded successfully.");
-        } else {
-            console.warn('document.fonts API not available. Proceeding without font load confirmation.');
-        }
-    } catch (err) {
-        console.warn('Required fonts could not be loaded or confirmed, initializing app anyway.', err);
-    } finally {
-        await App.init();
-        console.log("App initialized.");
-    }
+    await App.init();
 });
