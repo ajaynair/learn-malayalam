@@ -1,4 +1,5 @@
 
+import './src/style.css'; // Import the external CSS file
 import { SHARE_DETAILS_KEYS, SHARE_URL } from './constants.ts'; // Updated import
 import {
     closeHallOfFameModal,
@@ -188,12 +189,23 @@ const App = {
         try {
             const response = await fetch('/english.json');
             if (!response.ok) {
-                throw new Error(`Failed to load translations: ${response.statusText}`);
+                throw new Error(`Failed to load translations: ${response.statusText} (Status: ${response.status})`);
             }
             this.translations = await response.json();
         } catch (error) {
-            console.error("Error loading translations:", error);
-            // Fallback or error display an be added here
+            console.error("CRITICAL ERROR: Error loading translations from /english.json.", error);
+            // The modified getText will now show placeholder errors on the UI.
+            // Optionally, display a single prominent error message here if desired,
+            // but be mindful it might be overwritten by subsequent UI updates.
+            if (this.DOM.feedbackArea) { // Check if feedbackArea is even available
+                this.DOM.feedbackArea.textContent = `CRITICAL: Text content failed to load. Try refreshing. (${(error as Error).message})`;
+                this.DOM.feedbackArea.className = 'feedback error';
+                this.DOM.feedbackArea.style.fontWeight = 'bold';
+                this.DOM.feedbackArea.style.border = '2px solid red';
+                this.DOM.feedbackArea.style.padding = '10px';
+            } else {
+                alert(`CRITICAL: Text content failed to load. Try refreshing. (${(error as Error).message})`);
+            }
         }
 
         this.populateStaticTexts(); // Populate texts after loading translations
@@ -257,22 +269,29 @@ const App = {
     },
 
     getText(key: string, replacements?: Record<string, string>): string {
+        if (Object.keys(this.translations).length === 0) {
+            // This case indicates translations haven't been loaded or failed to load.
+            const errorKey = key.replace(/\./g, '_').toUpperCase();
+            console.warn(`Translations not loaded. Returning error placeholder for key: ${key}`);
+            return `[ERR_NO_TRANSLATIONS_FOR_${errorKey}]`;
+        }
+
         const keys = key.split('.');
-        let value = this.translations;
+        let value: any = this.translations;
         for (const k of keys) {
             if (value && typeof value === 'object' && k in value) {
                 value = value[k];
             } else {
-                console.warn(`Translation key not found: ${key}`);
-                return key; // Fallback to key
+                console.warn(`Translation key not found: ${key}. Path failed at '${k}'.`);
+                return `[ERR_KEY_NOT_FOUND_${key.replace(/\./g, '_').toUpperCase()}]`; // Fallback to a modified key
             }
         }
+
         if (typeof value !== 'string') {
-            // It's okay if it's not a string if the last key was an object itself (not expected for this use case)
-            // For this app, we expect strings.
             console.warn(`Translation value for key '${key}' is not a string:`, value);
-            return key; // Fallback to key
+            return `[ERR_VALUE_NOT_STRING_${key.replace(/\./g, '_').toUpperCase()}]`; // Fallback for non-string value
         }
+
         let result = value as string;
         if (replacements) {
             for (const placeholder in replacements) {
@@ -288,6 +307,18 @@ const App = {
         if (metaDesc) metaDesc.setAttribute('content', this.getText('meta.description'));
         const metaKeywords = document.querySelector('meta[name="keywords"]');
         if (metaKeywords) metaKeywords.setAttribute('content', this.getText('meta.keywords'));
+
+        // Update Open Graph and Twitter meta tags dynamically
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', document.title);
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc && metaDesc) ogDesc.setAttribute('content', metaDesc.getAttribute('content') || '');
+
+        const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twitterTitle) twitterTitle.setAttribute('content', document.title);
+        const twitterDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twitterDesc && metaDesc) twitterDesc.setAttribute('content', metaDesc.getAttribute('content') || '');
+
 
         if (this.DOM.headerMainTitle) this.DOM.headerMainTitle.innerHTML = this.getText('header.mainTitle');
         if (this.DOM.headerAboutBtn) {
@@ -326,7 +357,10 @@ const App = {
 
         // Share Modal
         if (this.DOM.shareModalTitle) this.DOM.shareModalTitle.textContent = this.getText('shareModal.title');
-        if (this.DOM.shareModalCloseBtn) this.DOM.shareModalCloseBtn.setAttribute('aria-label', this.getText('shareModal.closeButtonAriaLabel'));
+        if (this.DOM.shareModalCloseBtn) {
+            this.DOM.shareModalCloseBtn.textContent = '×';
+            this.DOM.shareModalCloseBtn.setAttribute('aria-label', this.getText('shareModal.closeButtonAriaLabel'));
+        }
         if (this.DOM.shareModalDescription) this.DOM.shareModalDescription.innerHTML = this.getText('shareModal.description');
         if (this.DOM.copyUrlBtn) this.DOM.copyUrlBtn.textContent = this.getText('shareModal.copyUrlButton');
         if (this.DOM.shareModalOrShareText) this.DOM.shareModalOrShareText.innerHTML = this.getText('shareModal.shareOnText');
@@ -339,7 +373,10 @@ const App = {
 
         // About Me Modal
         if (this.DOM.aboutMeModalTitle) this.DOM.aboutMeModalTitle.textContent = this.getText('aboutMeModal.title');
-        if (this.DOM.aboutMeModalCloseBtn) this.DOM.aboutMeModalCloseBtn.setAttribute('aria-label', this.getText('aboutMeModal.closeButtonAriaLabel'));
+        if (this.DOM.aboutMeModalCloseBtn) {
+            this.DOM.aboutMeModalCloseBtn.textContent = '×';
+            this.DOM.aboutMeModalCloseBtn.setAttribute('aria-label', this.getText('aboutMeModal.closeButtonAriaLabel'));
+        }
         if (this.DOM.aboutMeModalGreeting) this.DOM.aboutMeModalGreeting.innerHTML = this.getText('aboutMeModal.greeting');
         if (this.DOM.aboutMeModalPara1) this.DOM.aboutMeModalPara1.innerHTML = this.getText('aboutMeModal.para1');
         if (this.DOM.aboutMeModalPara2) this.DOM.aboutMeModalPara2.innerHTML = this.getText('aboutMeModal.para2');
@@ -347,7 +384,10 @@ const App = {
         if (this.DOM.aboutMeModalPara4) this.DOM.aboutMeModalPara4.innerHTML = this.getText('aboutMeModal.para4');
 
         // Hall of Fame Modal (Static parts, dynamic title set in openHallOfFameModal)
-        if (this.DOM.hallOfFameModalCloseBtn) this.DOM.hallOfFameModalCloseBtn.setAttribute('aria-label', this.getText('hallOfFameModal.closeButtonAriaLabel'));
+        if (this.DOM.hallOfFameModalCloseBtn) {
+            this.DOM.hallOfFameModalCloseBtn.textContent = '×';
+            this.DOM.hallOfFameModalCloseBtn.setAttribute('aria-label', this.getText('hallOfFameModal.closeButtonAriaLabel'));
+        }
         // Dynamic title is set in hallOfFame.ts using app.getText
         if (this.DOM.hofModalInvitationMessage) this.DOM.hofModalInvitationMessage.innerHTML = this.getText('hallOfFameModal.invitationMessage');
         if (this.DOM.hofModalPromptTitle) this.DOM.hofModalPromptTitle.innerHTML = this.getText('hallOfFameModal.promptTitle');
@@ -402,7 +442,10 @@ const App = {
         // Footer
         if(this.DOM.footerCopyright) this.DOM.footerCopyright.innerHTML = this.getText('footer.copyright', { year: new Date().getFullYear().toString() });
 
-        this.updateFeedback('quiz.initialFeedback', 'info'); // Initial feedback
+        // Only set initial feedback if translations were loaded. Otherwise, critical error is shown.
+        if (Object.keys(this.translations).length > 0) {
+            this.updateFeedback('quiz.initialFeedback', 'info');
+        }
     },
 
 
@@ -651,7 +694,11 @@ const App = {
         if (this.currentItem) {
             this.options = this.generateOptions(this.currentItem);
             this.renderQuiz();
-            this.updateFeedback('quiz.initialFeedback', 'info');
+            // Initial feedback is set at the end of populateStaticTexts or if translations failed, an error is there.
+            // If quiz starts after a critical error, we might not want to overwrite it.
+            if (Object.keys(this.translations).length > 0) { // Only update if translations loaded
+                this.updateFeedback('quiz.initialFeedback', 'info');
+            }
             if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'inline-flex';
         } else {
             this.DOM.itemDisplay.textContent = this.getText('quiz.itemDisplayAllLearned');
@@ -691,11 +738,17 @@ const App = {
 
     updateFeedback(keyOrMessage: string, type: 'info' | 'error' | 'success' | 'correct' | 'incorrect', replacements?: Record<string, string>) {
         // Check if it's a key by looking for a dot, or common prefixes
-        const isKey = keyOrMessage.includes('.') || keyOrMessage.startsWith('feedbackMessages.') || keyOrMessage.startsWith('quiz.') || keyOrMessage.startsWith('shareModal.');
+        const isKey = keyOrMessage.includes('.') || keyOrMessage.startsWith('feedbackMessages.') || keyOrMessage.startsWith('quiz.') || keyOrMessage.startsWith('shareModal.') || keyOrMessage.startsWith('hallOfFameModal.');
         const message = isKey ? this.getText(keyOrMessage, replacements) : keyOrMessage; // Fallback to raw message if not clearly a key
 
         this.DOM.feedbackArea.textContent = message;
         this.DOM.feedbackArea.className = `feedback ${type}`;
+        // Ensure feedback area isn't styled as critical error if it's normal feedback
+        if (!message.startsWith("CRITICAL:")) {
+            this.DOM.feedbackArea.style.fontWeight = 'bold'; // default feedback bold
+            this.DOM.feedbackArea.style.border = 'none';
+            this.DOM.feedbackArea.style.padding = '0';
+        }
     },
 
 
