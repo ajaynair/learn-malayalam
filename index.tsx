@@ -58,6 +58,42 @@ export interface CelebratedModes {
     words: boolean;
 }
 
+interface ThemeColors {
+    innerBg: string;
+    outerAndTextBg: string;
+    textColor: string;
+}
+
+interface Theme {
+    name: string; // Internal name, e.g., 'default', 'dark'
+    displayNameKey: string; // Key for english.json, e.g., 'themeSwitcher.defaultButton'
+    colors: ThemeColors;
+}
+
+const THEMES: Theme[] = [
+    {
+        name: 'default',
+        displayNameKey: 'themeSwitcher.defaultButton',
+        colors: { innerBg: '#ffffff', outerAndTextBg: '#eceff6', textColor: '#4260a2' }
+    },
+    {
+        name: 'dark',
+        displayNameKey: 'themeSwitcher.darkButton',
+        colors: { innerBg: '#1e1e1e', outerAndTextBg: '#121212', textColor: '#e0e0e0' }
+    },
+    {
+        name: 'forest',
+        displayNameKey: 'themeSwitcher.forestButton',
+        colors: { innerBg: '#f0f4f0', outerAndTextBg: '#e6efe6', textColor: '#2f5d2f' }
+    },
+    {
+        name: 'sunset',
+        displayNameKey: 'themeSwitcher.sunsetButton',
+        colors: { innerBg: '#fff0e6', outerAndTextBg: '#ffe0cc', textColor: '#c05000' }
+    }
+];
+
+
 const App = {
     quizMode: 'letters' as QuizMode,
     quizItems: [] as QuizItem[],
@@ -80,6 +116,9 @@ const App = {
     currentAudioElement: null as HTMLAudioElement | null,
     isMuted: false,
     translations: {} as Record<string, any>, // To store loaded translations
+
+    themes: THEMES,
+    currentTheme: THEMES[0].name, // Default to the first theme's name
 
     DOM: {
         itemDisplay: document.getElementById('item-display')!,
@@ -187,6 +226,12 @@ const App = {
         resetConfirmationModalCloseBtn: document.getElementById('reset-confirmation-modal-close-btn') as HTMLButtonElement,
         resetConfirmBtn: document.getElementById('reset-confirm-btn') as HTMLButtonElement,
         resetCancelBtn: document.getElementById('reset-cancel-btn') as HTMLButtonElement,
+
+        // Theme Switcher Elements (FAB and Panel)
+        appearanceFabBtn: document.getElementById('appearance-fab-btn') as HTMLButtonElement,
+        themeOptionsPanel: document.getElementById('theme-options-panel') as HTMLDivElement,
+        themeButtonsContainer: document.getElementById('theme-buttons-container') as HTMLDivElement,
+        themeOptionsPanelTitle: document.getElementById('theme-options-panel-title') as HTMLHeadingElement,
     },
 
     async init() {
@@ -207,9 +252,33 @@ const App = {
             } else {
                 alert(`CRITICAL: Text content failed to load. Try refreshing. (${(error as Error).message})`);
             }
+            // Even if translations fail, try to load and apply theme
+            this.loadThemeFromStorage();
+            this.applyTheme(this.currentTheme); // Apply loaded or default theme colors
+            this.renderThemeButtons(); // Attempt to render theme buttons even if text is missing
+            this.updateThemeButtonStyles();
+
+            // Initialize theme FAB and panel even if translations fail
+            if (this.DOM.appearanceFabBtn && this.DOM.themeOptionsPanel) {
+                this.DOM.appearanceFabBtn.addEventListener('click', () => this.toggleThemeOptionsVisibility());
+                this.DOM.themeOptionsPanel.style.display = 'none'; // Hide by default
+                this.DOM.appearanceFabBtn.setAttribute('aria-expanded', 'false');
+            }
+            return; // Exit init early if translations failed critically
         }
 
         this.populateStaticTexts();
+        this.loadThemeFromStorage();
+        this.applyTheme(this.currentTheme);
+        this.renderThemeButtons(); // Render after translations are loaded for button text
+        this.updateThemeButtonStyles();
+
+        if (this.DOM.appearanceFabBtn && this.DOM.themeOptionsPanel) {
+            this.DOM.appearanceFabBtn.addEventListener('click', () => this.toggleThemeOptionsVisibility());
+            this.DOM.themeOptionsPanel.style.display = 'none'; // Ensure hidden if JS runs
+            this.DOM.appearanceFabBtn.setAttribute('aria-expanded', 'false');
+        }
+
 
         this.DOM.nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
         this.DOM.lettersModeBtn.addEventListener('click', () => this.switchQuizMode('letters'));
@@ -283,12 +352,24 @@ const App = {
                 if (this.DOM.resetConfirmationModal.style.display === 'flex') {
                     this.closeResetConfirmationModal();
                 }
+                if (this.DOM.themeOptionsPanel.style.display !== 'none') {
+                    this.toggleThemeOptionsVisibility(); // Close theme panel on Escape
+                }
+            }
+        });
+
+        // Close theme panel when clicking outside
+        document.addEventListener('click', (event) => {
+            if (this.DOM.themeOptionsPanel.style.display !== 'none' &&
+                !this.DOM.themeOptionsPanel.contains(event.target as Node) &&
+                !this.DOM.appearanceFabBtn.contains(event.target as Node)) {
+                this.toggleThemeOptionsVisibility();
             }
         });
     },
 
     getText(key: string, replacements?: Record<string, string>): string {
-        if (Object.keys(this.translations).length === 0) {
+        if (Object.keys(this.translations).length === 0 && !key.startsWith('themeSwitcher.')) { // Allow theme switcher keys if no translations
             const errorKey = key.replace(/\./g, '_').toUpperCase();
             console.warn(`Translations not loaded. Returning error placeholder for key: ${key}`);
             return `[ERR_NO_TRANSLATIONS_FOR_${errorKey}]`;
@@ -300,6 +381,11 @@ const App = {
             if (value && typeof value === 'object' && k in value) {
                 value = value[k];
             } else {
+                if (key.startsWith('themeSwitcher.')) { // Fallback for theme switcher if translations not ready
+                    if (key.endsWith('Button')) return key.split('.')[1].replace('Button','').charAt(0).toUpperCase() + key.split('.')[1].replace('Button','').slice(1);
+                    if (key === 'themeSwitcher.fabAriaLabel') return "Change theme";
+                    if (key === 'themeSwitcher.panelTitle') return "Select Theme";
+                }
                 console.warn(`Translation key not found: ${key}. Path failed at '${k}'.`);
                 return `[ERR_KEY_NOT_FOUND_${key.replace(/\./g, '_').toUpperCase()}]`;
             }
@@ -354,6 +440,15 @@ const App = {
 
         if (this.DOM.lettersModeBtn) this.DOM.lettersModeBtn.textContent = this.getText('modeSwitcher.lettersButton');
         if (this.DOM.wordsModeBtn) this.DOM.wordsModeBtn.textContent = this.getText('modeSwitcher.wordsButton');
+
+        // Theme Switcher FAB and Panel Texts
+        if (this.DOM.appearanceFabBtn) {
+            this.DOM.appearanceFabBtn.setAttribute('aria-label', this.getText('themeSwitcher.fabAriaLabel'));
+        }
+        if (this.DOM.themeOptionsPanelTitle) {
+            this.DOM.themeOptionsPanelTitle.textContent = this.getText('themeSwitcher.panelTitle');
+        }
+        // Theme button texts are populated in renderThemeButtons
 
         if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.setAttribute('aria-label', this.getText('quiz.replayAudioButtonAriaLabel'));
         if (this.DOM.nextQuestionBtn) this.DOM.nextQuestionBtn.textContent = this.getText('quiz.nextQuestionButton');
@@ -697,11 +792,12 @@ const App = {
         if (this.DOM.answerFeedbackIcon) {
             if (isCorrect) {
                 this.DOM.answerFeedbackIcon.textContent = '✔';
-                this.DOM.answerFeedbackIcon.style.color = '#2e73b8';
+                // Success color will come from theme's --text-color or a dedicated success variable
+                this.DOM.answerFeedbackIcon.style.color = 'var(--text-color)'; // Or a specific success green
                 this.DOM.answerFeedbackIcon.setAttribute('aria-label', this.getText('quiz.feedbackIconCorrectAriaLabel'));
             } else {
                 this.DOM.answerFeedbackIcon.textContent = '✖';
-                this.DOM.answerFeedbackIcon.style.color = '#d9534f';
+                this.DOM.answerFeedbackIcon.style.color = 'var(--danger-color1)'; // Keep specific error color
                 this.DOM.answerFeedbackIcon.setAttribute('aria-label', this.getText('quiz.feedbackIconIncorrectAriaLabel'));
             }
             this.DOM.answerFeedbackIcon.style.display = 'inline';
@@ -839,6 +935,94 @@ const App = {
 
         this.DOM.progressBarLabelText.textContent = this.getText('progressDisplay.surpriseLoadingText');
         this.DOM.quizProgressBarContainer.setAttribute('aria-label', this.getText('progressDisplay.progressBarAriaLabel'));
+    },
+
+    // --- Theme Switcher Logic ---
+    toggleThemeOptionsVisibility() {
+        const isHidden = this.DOM.themeOptionsPanel.style.display === 'none';
+        if (isHidden) {
+            this.DOM.themeOptionsPanel.style.display = 'block'; // Or 'flex' if you use flex for internal layout
+            // Force a reflow for the transition to take effect
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            this.DOM.appearanceFabBtn.setAttribute('aria-expanded', 'true');
+        } else {
+            this.DOM.themeOptionsPanel.style.display = 'none';
+            this.DOM.appearanceFabBtn.setAttribute('aria-expanded', 'false');
+        }
+    },
+
+    renderThemeButtons() {
+        if (!this.DOM.themeButtonsContainer) {
+            console.error("Theme buttons container not found in DOM for rendering.");
+            return;
+        }
+        this.DOM.themeButtonsContainer.innerHTML = ''; // Clear existing buttons
+        this.themes.forEach(theme => {
+            const button = document.createElement('button');
+            button.id = `theme-btn-${theme.name}`;
+            button.textContent = this.getText(theme.displayNameKey);
+            button.setAttribute('aria-label', this.getText(theme.displayNameKey.replace('Button', 'ButtonAriaLabel')));
+            button.setAttribute('aria-pressed', 'false');
+            button.addEventListener('click', () => this.handleThemeChange(theme.name));
+            this.DOM.themeButtonsContainer.appendChild(button);
+        });
+    },
+
+    handleThemeChange(themeName: string) {
+        this.applyTheme(themeName);
+        this.saveThemeToStorage();
+        this.updateThemeButtonStyles();
+        this.toggleThemeOptionsVisibility(); // Close panel after selection
+    },
+
+    applyTheme(themeName: string) {
+        const selectedTheme = this.themes.find(t => t.name === themeName) || this.themes[0];
+
+        document.documentElement.style.setProperty('--inner-bg', selectedTheme.colors.innerBg);
+        document.documentElement.style.setProperty('--outer-and-text-bg', selectedTheme.colors.outerAndTextBg);
+        document.documentElement.style.setProperty('--text-color', selectedTheme.colors.textColor);
+
+        // Update FAB background color to match the theme's text color for contrast/visibility
+        if (this.DOM.appearanceFabBtn) {
+            this.DOM.appearanceFabBtn.style.backgroundColor = selectedTheme.colors.textColor;
+            this.DOM.appearanceFabBtn.style.color = selectedTheme.colors.innerBg; // Ensure icon is visible
+        }
+
+        if (themeName === 'dark') {
+            document.body.style.backgroundColor = selectedTheme.colors.outerAndTextBg;
+            document.documentElement.style.colorScheme = 'dark';
+        } else {
+            document.body.style.backgroundColor = selectedTheme.colors.outerAndTextBg;
+            document.documentElement.style.colorScheme = 'light';
+        }
+
+        this.currentTheme = selectedTheme.name;
+    },
+
+    loadThemeFromStorage() {
+        const storedThemeName = localStorage.getItem(LOCAL_STORAGE_KEYS.theme);
+        if (storedThemeName && this.themes.some(t => t.name === storedThemeName)) {
+            this.currentTheme = storedThemeName;
+        } else {
+            this.currentTheme = this.themes[0].name; // Default to first theme
+        }
+    },
+
+    saveThemeToStorage() {
+        localStorage.setItem(LOCAL_STORAGE_KEYS.theme, this.currentTheme);
+    },
+
+    updateThemeButtonStyles() {
+        if (!this.DOM.themeButtonsContainer) return;
+        this.DOM.themeButtonsContainer.querySelectorAll('button').forEach(button => {
+            if (button.id === `theme-btn-${this.currentTheme}`) {
+                button.classList.add('active-theme');
+                button.setAttribute('aria-pressed', 'true');
+            } else {
+                button.classList.remove('active-theme');
+                button.setAttribute('aria-pressed', 'false');
+            }
+        });
     }
 };
 

@@ -11,6 +11,7 @@ export const LOCAL_STORAGE_KEYS = {
     mute: 'malayalamAppMuteState_v1',
     sessionStats: 'malayalamAppSessionStats_v1',
     celebratedModes: 'malayalamAppCelebratedModes_v1',
+    theme: 'malayalamAppTheme_v1', // Added theme key
 };
 
 // Keys for looking up text in english.json

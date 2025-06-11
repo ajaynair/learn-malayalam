@@ -5,29 +5,32 @@
     /*Constant Colors*/
     --coffee: #FFBF00;
     --coffee-hover: #e6ac00;
-    --coffee-border: #333;
+    --coffee-border-and-text: #333;
+
+    --white: #ffffff;
 
     --danger-color1: #e74c3c;
     --danger-color2: #c0392b;
 
-    /*Theme Colors*/
-    --white: #ffffff;
-    --theme-bg: #f4eef7;
-    --third-color: #a24286;
-    --secondary-color: #5F0A87;
-    --err-color: #423336;
-    --primary-text: #2F004F;
+    --err-color: #e3d2d6; /* Should be a more contrasting error text color, e.g., #D8000C */
+    /* --err-bg-color: #FFD2D2; /* For error message backgrounds */
+
+
+    /*Theme Colors - These will be updated by JS based on theme selection */
+    --inner-bg: #ffffff;
+    --outer-and-text-bg: #eceff6;
+    --text-color: #4260a2;
 }
 
 html {
-    color-scheme: light;
-    background-color: var(--theme-bg); /* Very light lavender base for page scroll */
+    color-scheme: light; /* This might be dynamically changed for dark themes if needed */
+    background-color: var(--outer-and-text-bg);
 }
 
 body {
     font-family: 'Noto Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--theme-bg); /* Very light lavender for overall page */
-    color: var(--primary-text); /* Darkest Purple for primary text */
+    background-color: var(--outer-and-text-bg);
+    color: var(--text-color);
     margin: 0;
     padding: 20px;
     display: flex;
@@ -41,12 +44,13 @@ body {
 .app-container {
     width: 100%;
     max-width: 900px;
-    background-color: var(--white); /* White for main app container card */
+    background-color: var(--inner-bg);
     border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(47, 0, 79, 0.1); /* Shadow with darkest purple tint */
+    box-shadow: 0 8px 16px rgba(47, 0, 79, 0.1);
     padding: 25px;
     box-sizing: border-box;
     position: relative;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 header {
@@ -55,18 +59,18 @@ header {
     justify-content: space-between;
     text-align: center;
     margin-bottom: 20px;
-    border-bottom: 1px solid var(--secondary-color); /* Light Pinkish Mauve for separator */
+    border-bottom: 1px solid var(--text-color);
     padding-bottom: 10px;
 }
 
 header h1 {
-    color: var(--secondary-color); /* Light Pinkish Mauve for title text */
+    color: var(--text-color);
     margin: 0 10px;
     font-weight: bold;
     font-size: 1.5em;
     flex-grow: 1;
     text-align: center;
-    background-color: var(--white); /* Deep Purple background for header title area */
+    background-color: var(--inner-bg);
     padding: 5px 10px;
     border-radius: 6px;
 }
@@ -81,7 +85,7 @@ header h1 {
     padding: 6px 8px;
     font-size: 1.2rem;
     line-height: 1;
-    color: var(--primary-text); /* Darkest Purple text */
+    color: var(--text-color);
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -90,22 +94,22 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--white); /* Light Pinkish Mauve background */
+    background-color: var(--inner-bg);
 }
 .header-action-btn:hover {
     transform: translateY(-1px);
-    background-color: var(--white); /* Dusty Rose/Mauve on hover */
+    background-color: var(--outer-and-text-bg);
 }
 .header-action-btn:active {
     transform: translateY(0px);
 }
 
 .header-coffee-btn {
-    background-color: var(--coffee); /* Preserved */
-    color: var(--coffee-border);
+    background-color: var(--coffee);
+    color: var(--coffee-border-and-text);
 }
 .header-coffee-btn:hover {
-    background-color: var(--coffee-hover); /* Preserved */
+    background-color: var(--coffee-hover);
 }
 
 .header-share-btn, .header-about-btn {
@@ -113,12 +117,12 @@ header h1 {
     padding: 7px 12px;
     font-weight: 600;
     line-height: normal;
-    color: var(--primary-text); /* Darkest Purple text */
-    background-color: var(--white); /* Dusty Rose/Mauve background */
+    color: var(--text-color);
+    background-color: var(--outer-and-text-bg);
 }
 .header-share-btn:hover, .header-about-btn:hover {
-    background-color: var(--third-color); /* Mauve/Purple on hover */
-    color: var(--white); /* Light pinkish text on hover */
+    background-color: var(--text-color);
+    color: var(--inner-bg);
 }
 
 main {
@@ -128,17 +132,18 @@ main {
 }
 
 .card {
-    background-color: var(--white);
+    background-color: var(--inner-bg);
     border-radius: 8px;
     padding: 15px;
-    box-shadow: 0 4px 8px rgba(47, 0, 79, 0.07); /* Shadow with darkest purple tint */
-    border: 1px solid var(--white); /* Light border for cards */
-    box-sizing: border-box; /* ADDED THIS LINE */
+    box-shadow: 0 4px 8px rgba(47, 0, 79, 0.07);
+    border: 1px solid var(--outer-and-text-bg);
+    box-sizing: border-box;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .mode-switcher {
     padding: 10px;
-    background-color: var(--theme-bg); /* Very light pink background */
+    background-color: var(--outer-and-text-bg);
 }
 .mode-switcher-controls {
     display: flex;
@@ -152,7 +157,7 @@ main {
     gap: 10px;
 }
 
-.reset-btn { /* Preserved colors */
+.reset-btn {
     padding: 7px 12px;
     font-size: 0.8rem;
     font-weight: 600;
@@ -178,7 +183,7 @@ main {
     border: none;
     padding: 8px 10px;
     line-height: 1;
-    color: var(--secondary-color); /* Deep Purple icon/text */
+    color: var(--text-color);
     border-radius: 8px;
     cursor: pointer;
     transition: color 0.2s, transform 0.1s, background-color 0.2s;
@@ -188,7 +193,7 @@ main {
 }
 .mode-switcher-mute-btn:hover {
     transform: scale(1.05);
-    background-color: rgba(95, 10, 135, 0.05); /* Lightest purple tint on hover */
+    background-color: rgba(95, 10, 135, 0.05); /* Lightest purple tint on hover - consider using var(--text-color) with alpha */
 }
 .mode-switcher-mute-btn .mute-icon {
     font-size: 1.8rem;
@@ -199,32 +204,123 @@ main {
 }
 .mode-switcher-mute-btn.muted .mute-icon,
 .mode-switcher-mute-btn.muted .mute-text {
-    color: var(--danger-color1); /* Preserved red for muted state */
+    color: var(--danger-color1);
 }
 
 .mode-switcher-buttons {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
 }
+
 .mode-switcher-buttons button {
     padding: 8px 12px;
     font-size: 0.9rem;
-    border: 1px solid var(--third-color); /* Mauve/Purple border */
-    background-color: var(--white); /* Light Pinkish Mauve background */
-    color: var(--secondary-color); /* Deep Purple text */
+    border: 1px solid var(--text-color);
+    background-color: var(--inner-bg);
+    color: var(--text-color);
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 .mode-switcher-buttons button:hover {
-    background-color: var(--white); /* Dusty Rose/Mauve on hover */
+    background-color: var(--outer-and-text-bg);
 }
 .mode-switcher-buttons button.active-mode {
-    background-color: var(--secondary-color); /* Deep Purple background */
-    color: var(--white); /* Light Pinkish Mauve text */
+    background-color: var(--text-color);
+    color: var(--inner-bg);
     font-weight: bold;
-    border-color: var(--primary-text); /* Darkest purple border for active */
+    border-color: var(--text-color);
 }
+
+/* New Theme FAB and Panel Styles */
+.appearance-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    background-color: var(--text-color);
+    color: var(--inner-bg);
+    border: none;
+    border-radius: 50%;
+    font-size: 24px; /* Adjust for icon size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.appearance-fab:hover {
+    transform: scale(1.1);
+}
+
+.theme-options-panel {
+    position: fixed;
+    bottom: 85px; /* Position above the FAB */
+    right: 20px;
+    background-color: var(--inner-bg);
+    border: 1px solid var(--outer-and-text-bg);
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform-origin: bottom right;
+    display: none; /* Initially hidden, JS will toggle */
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+}
+
+.theme-options-panel[style*="display: block;"], /* More robust for JS toggle */
+.theme-options-panel[style*="display: flex;"] { /* If JS uses flex */
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+
+.theme-buttons-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* Allow buttons to wrap if needed */
+    justify-content: center;
+}
+
+.theme-buttons-container button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border: 1px solid var(--text-color);
+    background-color: var(--inner-bg);
+    color: var(--text-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+.theme-buttons-container button:hover {
+    background-color: var(--outer-and-text-bg);
+}
+.theme-buttons-container button.active-theme {
+    background-color: var(--text-color);
+    color: var(--inner-bg);
+    font-weight: bold;
+    border-color: var(--text-color);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 
 .quiz-layout-wrapper {
     display: flex;
@@ -247,10 +343,10 @@ main {
     justify-content: center;
     gap: 8px;
     margin-bottom: 10px;
-    background-color: var(--theme-bg); /* Very light pink background for item display */
+    background-color: var(--outer-and-text-bg);
     border-radius: 8px;
     padding: 8px;
-    border: 1px solid var(--white); /* Light pink border */
+    border: 1px solid var(--inner-bg);
 }
 
 .answer-feedback-icon {
@@ -259,19 +355,19 @@ main {
     line-height: 1;
     display: none;
 }
-/* Semantic colors preserved for feedback icon in JS */
+
 
 .noto-sans-malayalam-main-display {
     font-family: "Noto Sans Malayalam", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 400; /* Keeping default weight, specific characters may have their own */
+    font-weight: 400;
     font-style: normal;
     font-variation-settings: "wdth" 100;
 }
 
 .quiz-area .item-display {
     font-size: 3rem;
-    color: var(--secondary-color); /* Deep Purple for item text */
+    color: var(--text-color);
     text-align: center;
     padding: 5px;
     min-height: 70px;
@@ -286,12 +382,12 @@ main {
 .replay-audio-btn {
     background-color: transparent;
     border: none;
-    color: var(--third-color); /* Mauve/Purple for replay icon */
+    color: var(--text-color);
     font-size: 1.6rem;
     padding: 6px;
     border-radius: 50%;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+    transition: background-color 0.2s, transform 0.1s, color 0.2s;
     display: none;
     align-items: center;
     justify-content: center;
@@ -299,7 +395,7 @@ main {
     flex-shrink: 0;
 }
 .replay-audio-btn:hover {
-    background-color: rgba(164, 80, 139, 0.1); /* Mauve/Purple tint on hover */
+    background-color: rgba(164, 80, 139, 0.1); /* Consider var(--text-color) with alpha */
     transform: scale(1.1);
 }
 .replay-audio-btn:active {
@@ -319,12 +415,12 @@ main {
     flex-basis: 0;
     padding: 10px 5px;
     font-size: 0.85rem;
-    background-color: var(--white); /* Dusty Rose/Mauve for option buttons */
-    color: var(--primary-text); /* Darkest Purple text */
-    border: 1px solid var(--third-color); /* Mauve/Purple border */
+    background-color: var(--outer-and-text-bg);
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s, border-color 0.2s;
+    transition: background-color 0.2s, transform 0.1s, border-color 0.2s, color 0.2s;
     text-align: center;
     font-weight: 500;
     box-shadow: 0 2px 3px rgba(47, 0, 79, 0.08);
@@ -334,22 +430,22 @@ main {
 }
 
 .options button:hover {
-    background-color: var(--white); /* Light Pinkish Mauve on hover */
-    border-color: var(--third-color); /* Mauve/Purple border */
+    background-color: var(--inner-bg);
+    border-color: var(--text-color);
     transform: translateY(-1px);
 }
 .options button:active {
     transform: scale(0.98) translateY(0px);
 }
-.options button.correct { /* Preserved semantic color */
-    background-color: var(--third-color) !important;
-    color: white !important;
-    border-color: var(--third-color) !important;
+.options button.correct {
+    background-color: var(--text-color) !important; /* Consider a dedicated success color variable */
+    color: var(--inner-bg) !important;
+    border-color: var(--text-color) !important;
 }
-.options button.incorrect { /* Preserved semantic color */
-    background-color: var(--err-color) !important;
+.options button.incorrect {
+    background-color: var(--danger-color1) !important;
     color: white !important;
-    border-color: var(--err-color) !important;
+    border-color: var(--danger-color1) !important;
 }
 .options button:disabled {
     opacity: 0.7;
@@ -363,37 +459,38 @@ main {
     text-align: center;
     font-size: 0.9em;
     font-weight: bold;
+    transition: color 0.3s;
 }
-/* Semantic colors preserved for feedback text */
-.feedback.correct { color: var(--third-color); }
-.feedback.incorrect { color: var(--err-color); }
-.feedback.info { color: var(--secondary-color); } /* Deep purple for info */
-.feedback.error { color: var(--err-color); }
-.feedback.success { color: var(--third-color); }
+
+.feedback.correct { color: var(--text-color); } /* Consider a dedicated success color */
+.feedback.incorrect { color: var(--danger-color1); }
+.feedback.info { color: var(--text-color); }
+.feedback.error { color: var(--danger-color1); }
+.feedback.success { color: var(--text-color); } /* Consider a dedicated success color */
 
 .control-buttons {
     text-align: center;
     margin-top: 5px;
 }
 
-.control-buttons button, #next-question-btn { /* Combined for Next Question button */
+.control-buttons button, #next-question-btn {
     padding: 10px 18px;
     font-size: 0.9rem;
     font-weight: bold;
-    background-color: var(--third-color); /* Mauve/Purple for next question */
-    color: var(--white); /* Light Pinkish Mauve text */
+    background-color: var(--text-color);
+    color: var(--inner-bg);
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s;
-    display: none; /* Initially hidden, JS will show */
+    transition: background-color 0.2s, color 0.2s;
+    display: none;
 }
 #next-question-btn {
-    display: none; /* JS controls this */
+    display: none;
 }
 
 .control-buttons button:hover, #next-question-btn:hover {
-    background-color: var(--secondary-color); /* Deep Purple on hover */
+    background-color: var(--text-color); /* Darken slightly or use a hover variable */
 }
 
 .progress-display {
@@ -401,16 +498,18 @@ main {
     flex-direction: column;
     gap: 5px;
     padding: 10px 0;
-    background-color: var(--theme-bg); /* Very light pink */
+    background-color: var(--outer-and-text-bg);
 }
 
 .progress-bar-container-wrapper {
     margin-bottom: 10px;
+    padding-left:20px;
+    padding-right:20px;
 }
 .progress-bar-label {
     display: block;
     font-size: 1.1em;
-    color: var(--secondary-color); /* Deep Purple for label text */
+    color: var(--text-color);
     margin-bottom: 4px;
     text-align: left;
     font-weight: 600;
@@ -425,20 +524,21 @@ main {
 
 .progress-bar-container {
     width: 100%;
-    background-color: var(--white); /* Light Pinkish Mauve for bar background */
+    background-color: var(--inner-bg);
     border-radius: 6px;
     height: 12px;
     overflow: hidden;
+    transition: background-color 0.3s;
 }
 .progress-bar-inner {
     height: 100%;
     width: 0%;
-    background-color: var(--secondary-color); /* Deep Purple for progress fill */
+    background-color: var(--text-color);
     border-radius: 6px;
-    transition: width 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out, background-color 0.3s;
     background-image: linear-gradient(
             45deg,
-            rgba(234, 191, 203, 0.3) 25%, /* Lighter tint of EABFCB */
+            rgba(234, 191, 203, 0.3) 25%, /* Lighter tint of EABFCB - This should adapt or be a variable */
             transparent 25%,
             transparent 50%,
             rgba(234, 191, 203, 0.3) 50%,
@@ -465,7 +565,7 @@ main {
 
 .progress-display strong {
     font-size: 1.2em;
-    color: var(--secondary-color); /* Deep Purple for score numbers */
+    color: var(--text-color);
     font-weight: bold;
     text-align: right;
     padding-right: 10px;
@@ -473,7 +573,7 @@ main {
 
 .progress-display span:not(.progress-bar-label) {
     font-size: 1.0em;
-    color: var(--third-color); /* Mauve/Purple for score labels */
+    color: var(--text-color);
     font-weight: normal;
     white-space: nowrap;
     text-align: left;
@@ -481,10 +581,10 @@ main {
 
 .next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls {
     margin-top: 20px;
-    border-color: var(--white); /* Dusty Rose border for these cards */
+    border-color: var(--outer-and-text-bg);
 }
 .test-controls {
-    background-color: var(--theme-bg); /* Very light pink for test button card */
+    background-color: var(--outer-and-text-bg);
 }
 
 
@@ -517,15 +617,15 @@ main {
         text-align: left;
     }
     .header-action-btn { top: 5px; }
-    /* Header coffee button color preserved */
+
     .header-share-btn, .header-about-btn { font-size: 0.9rem; padding: 7px 10px; }
-    header h1 { font-size: 1.3em; } /* Text color in H1 already set */
+    header h1 { font-size: 1.3em; }
     .mode-switcher-mute-btn .mute-icon { font-size: 1.7rem; }
     .mode-switcher-mute-btn .mute-text { font-size: 0.8rem; }
-    .quiz-area .item-display { font-size: 2.5rem; min-height: 60px; } /* Text color already set */
-    .replay-audio-btn { font-size: 1.5rem; } /* Icon color already set */
+    .quiz-area .item-display { font-size: 2.5rem; min-height: 60px; }
+    .replay-audio-btn { font-size: 1.5rem; }
     .answer-feedback-icon { font-size: 1.8rem; }
-    .options button { font-size: 0.8rem; padding: 8px 5px; } /* Colors already set */
+    .options button { font-size: 0.8rem; padding: 8px 5px; }
 }
 
 @media (max-width: 600px) {
@@ -535,12 +635,12 @@ main {
     .card { padding: 10px; }
     header { padding-bottom: 8px; margin-bottom: 10px; }
     header h1 { font-size: 1.1em; margin: 0 5px; }
-    /* Header coffee button color preserved */
+
     .header-share-btn, .header-about-btn { font-size: 0.8rem; padding: 5px 8px; }
     .header-actions { gap: 5px; }
     .mode-switcher { padding: 8px; }
     .mode-switcher-controls { margin-bottom: 5px; }
-    .mode-switcher-buttons button { padding: 6px 10px; font-size: 0.8rem; }
+    .mode-switcher-buttons button, .theme-buttons-container button { padding: 6px 10px; font-size: 0.8rem; }
     .mode-switcher-mute-btn { padding: 5px 8px; gap: 4px; }
     .mode-switcher-mute-btn .mute-icon { font-size: 1.5rem; }
     .mode-switcher-mute-btn .mute-text { font-size: 0.7rem; }
@@ -558,13 +658,26 @@ main {
     .progress-display strong { font-size: 1em; }
     .progress-display span:not(.progress-bar-label) { font-size: 0.8em; }
     .progress-display div:not(.progress-bar-container-wrapper):not(.progress-bar-container) { padding: 3px; }
+
+    .appearance-fab {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+        bottom: 15px;
+        right: 15px;
+    }
+    .theme-options-panel {
+        bottom: 70px; /* Adjust based on new FAB size */
+        right: 15px;
+        padding: 10px;
+    }
 }
 
 @media (max-width: 400px) {
     header h1 { font-size: 1em; }
     .header-share-btn, .header-about-btn { font-size: 0.7rem; padding: 4px 6px; }
-    /* Header coffee button color preserved */
-    .mode-switcher-buttons button { font-size: 0.7rem; padding: 5px 8px; }
+
+    .mode-switcher-buttons button, .theme-buttons-container button { font-size: 0.7rem; padding: 5px 8px; }
     .mode-switcher-mute-btn .mute-icon { font-size: 1.4rem; }
     .mode-switcher-mute-btn .mute-text { font-size: 0.65rem; }
     .quiz-area .item-display { font-size: 1.8rem; min-height: 45px; }
@@ -578,33 +691,33 @@ main {
 
 .next-steps-card, .support-me-card, .hall-of-fame-card {
     padding: 15px 20px;
-    background-color: var(--theme-bg); /* Very light pink background */
+    background-color: var(--outer-and-text-bg);
 }
-#test-hof-btn { /* Test hall of fame button styling */
-    background-color: var(--third-color) !important; /* Mauve/Purple */
-    color: var(--white) !important; /* Light Pinkish Mauve text */
+#test-hof-btn {
+    background-color: var(--text-color) !important;
+    color: var(--inner-bg) !important;
 }
 #test-hof-btn:hover {
-    background-color: var(--secondary-color) !important; /* Deep Purple on hover */
+    background-color: var(--text-color) !important; /* Darken if possible */
 }
 
 
 .next-steps-card h3, .support-me-card h3, .hall-of-fame-card h2 {
     font-size: 1.3em;
-    color: var(--secondary-color); /* Deep Purple for card titles */
+    color: var(--text-color);
     margin-top: 0;
     margin-bottom: 10px;
 }
 .next-steps-card p, .next-steps-card ul, .support-me-card p, .hall-of-fame-card p {
     font-size: 0.95em;
     line-height: 1.6;
-    color: var(--primary-text); /* Darkest purple for body text in cards */
+    color: var(--text-color);
 }
 .hall-of-fame-card #hall-of-fame-entries { margin-top: 15px; }
 
 .hof-entry {
-    background-color: var(--white); /* Light Pinkish Mauve background for entries */
-    border-left: 4px solid var(--secondary-color); /* Deep Purple border */
+    background-color: var(--inner-bg);
+    border-left: 4px solid var(--text-color);
     padding: 10px 15px;
     margin-bottom: 15px;
     border-radius: 0 4px 4px 0;
@@ -612,12 +725,12 @@ main {
 .hof-entry h4 {
     margin-top: 0;
     margin-bottom: 5px;
-    color: var(--primary-text); /* Darkest Purple for name */
+    color: var(--text-color);
     font-size: 1.1em;
 }
 .hof-entry p {
     font-style: italic;
-    color: var(--secondary-color); /* Deep Purple for quote */
+    color: var(--text-color);
     line-height: 1.5;
     margin-bottom: 0;
 }
@@ -631,13 +744,13 @@ main {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(47, 0, 79, 0.6); /* Darkest Purple overlay, slightly more opaque */
+    background-color: rgba(47, 0, 79, 0.6); /* This could be var(--text-color) with alpha */
     align-items: center;
     justify-content: center;
 }
 
 .share-modal-content {
-    background-color: var(--theme-bg); /* Very light pink background for modals */
+    background-color: var(--outer-and-text-bg);
     margin: auto;
     padding: 25px;
     border-radius: 10px;
@@ -646,12 +759,14 @@ main {
     max-width: 500px;
     position: relative;
     text-align: left;
-    border: 1px solid var(--white); /* Dusty Rose border */
+    border: 1px solid var(--inner-bg);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
-.share-modal-content h3, .share-modal-content p, .share-modal-content h2, .share-modal-content ul {
+.share-modal-content h3, .share-modal-content p, .share-modal-content h2, .share-modal-content ul,
+.share-modal-content .form-group label {
     text-align: left;
     margin-bottom: 10px;
-    color: var(--primary-text); /* Darkest Purple text */
+    color: var(--text-color);
 }
 .share-modal-content #share-modal-title,
 .share-modal-content #about-me-modal-title,
@@ -660,7 +775,7 @@ main {
     text-align: center;
     font-size: 1.5em;
     margin-bottom: 15px;
-    color: var(--secondary-color); /* Deep Purple for modal titles */
+    color: var(--text-color);
 }
 .share-modal-content .share-url-container,
 .share-modal-content .social-share-buttons,
@@ -675,7 +790,7 @@ main {
     right: 15px;
     font-size: 1.8rem;
     font-weight: bold;
-    color: var(--third-color); /* Mauve/Purple */
+    color: var(--text-color);
     background: none;
     border: none;
     cursor: pointer;
@@ -684,13 +799,13 @@ main {
 }
 .share-modal-close-btn:hover,
 .share-modal-close-btn:focus {
-    color: var(--secondary-color); /* Deep Purple on hover */
+    color: var(--text-color); /* Darken slightly */
     text-decoration: none;
 }
 
 #about-me-modal .share-modal-content h3:not(#about-me-modal-title) {
     font-size: 1.3em;
-    color: var(--secondary-color); /* Deep Purple */
+    color: var(--text-color);
     margin-top: 10px;
     margin-bottom: 10px;
 }
@@ -698,14 +813,14 @@ main {
     font-size: 0.95em;
     line-height: 1.6;
     margin-bottom: 10px;
-    color: var(--primary-text); /* Darkest Purple */
+    color: var(--text-color);
 }
 #about-me-modal .share-modal-content p a {
-    color: var(--third-color); /* Mauve/Purple for links */
+    color: var(--text-color);
     text-decoration: underline;
 }
 #about-me-modal .share-modal-content p a:hover {
-    color: var(--secondary-color); /* Deep Purple on hover */
+    color: var(--text-color); /* Darken slightly */
 }
 
 .share-url-container {
@@ -716,24 +831,24 @@ main {
 .share-url-container input[type="text"] {
     flex-grow: 1;
     padding: 8px 10px;
-    border: 1px solid var(--white); /* Dusty Rose border */
+    border: 1px solid var(--inner-bg);
     border-radius: 5px;
     font-size: 0.95em;
-    background-color: var(--white); /* White background */
-    color: var(--primary-text); /* Darkest Purple text */
+    background-color: var(--inner-bg);
+    color: var(--text-color);
 }
 .share-url-container button {
     padding: 8px 15px;
     font-size: 0.95em;
-    background-color: var(--third-color); /* Mauve/Purple */
-    color: var(--white); /* Light Pinkish Mauve text */
+    background-color: var(--text-color);
+    color: var(--inner-bg);
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 .share-url-container button:hover {
-    background-color: var(--secondary-color); /* Deep Purple on hover */
+    background-color: var(--text-color); /* Darken slightly */
 }
 
 .social-share-buttons {
@@ -746,24 +861,24 @@ main {
 .social-share-button {
     display: inline-block;
     padding: 8px 15px;
-    background-color: var(--white); /* Light Pinkish Mauve background */
-    color: var(--primary-text); /* Darkest Purple text */
+    background-color: var(--inner-bg);
+    color: var(--text-color);
     text-decoration: none;
     border-radius: 20px;
     font-size: 0.9em;
-    transition: background-color 0.2s, color 0.2s;
-    border: 1px solid var(--white); /* Dusty Rose border */
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    border: 1px solid var(--outer-and-text-bg);
 }
 .social-share-button:hover {
-    background-color: var(--white); /* Dusty Rose on hover */
-    color: var(--primary-text);
+    background-color: var(--outer-and-text-bg);
+    color: var(--text-color);
 }
 
 #hall-of-fame-modal .share-modal-content p,
 #hall-of-fame-modal .share-modal-content ul {
     font-size: 0.95em;
     line-height: 1.5;
-    color: var(--primary-text); /* Darkest Purple */
+    color: var(--text-color);
 }
 #hall-of-fame-modal .share-modal-content ul {
     list-style-type: disc;
@@ -774,29 +889,24 @@ main {
 }
 
 #hall-of-fame-modal-title {
-    color: var(--third-color); /* Mauve/Purple for HoF modal title */
+    color: var(--text-color);
     font-weight: bold;
 }
 .share-modal-content .form-group { margin-bottom: 12px; }
-.share-modal-content .form-group label {
-    display: block;
-    margin-bottom: 4px;
-    font-weight: 600;
-    color: var(--secondary-color); /* Deep Purple for form labels */
-    font-size: 0.9em;
-}
+
 .share-modal-content .form-group input[type="text"],
 .share-modal-content .form-group input[type="email"],
 .share-modal-content .form-group textarea {
     width: 100%;
     padding: 8px 10px;
-    border: 1px solid var(--white); /* Dusty Rose border */
+    border: 1px solid var(--inner-bg);
     border-radius: 5px;
     font-family: inherit;
     font-size: 0.95em;
     box-sizing: border-box;
-    background-color: var(--white); /* White background */
-    color: var(--primary-text); /* Darkest Purple text */
+    background-color: var(--inner-bg);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 .share-modal-content .form-group textarea {
     resize: vertical;
@@ -804,37 +914,37 @@ main {
 }
 
 #submit-testimonial-btn {
-    background-color: var(--third-color); /* Mauve/Purple */
-    color: var(--white); /* Light Pinkish Mauve text */
+    background-color: var(--text-color);
+    color: var(--inner-bg);
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     font-size: 1em;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, color 0.2s;
     display: block;
     margin: 15px auto 0 auto;
 }
 #submit-testimonial-btn:hover {
-    background-color: var(--secondary-color); /* Deep Purple on hover */
+    background-color: var(--text-color); /* Darken slightly */
 }
 
-/* Reset confirmation button colors preserved by original rules */
+
 #reset-confirm-btn { background-color: var(--danger-color1); color: white;}
-#reset-cancel-btn { background-color: var(--third-color); color: var(--white); } /* Adjusted to new palette */
+#reset-cancel-btn { background-color: var(--text-color); color: var(--inner-bg); }
 
 #reset-confirm-btn:hover {
-    background-color: var(--danger-color2); /* Darker red */
+    background-color: var(--danger-color2);
 }
 #reset-cancel-btn:hover {
-    background-color: var(--secondary-color); /* Darker purple from palette */
+    background-color: var(--text-color); /* Darken slightly */
 }
 
 footer {
     margin-top: 30px;
     text-align: center;
-    color: var(--third-color); /* Mauve/Purple for footer text */
+    color: var(--text-color);
     font-size: 0.9em;
 }
 @media (max-width: 600px) {
@@ -842,7 +952,7 @@ footer {
     .share-modal-content p { font-size: 0.9em; }
     .share-url-container input[type="text"], .share-url-container button { font-size: 0.9em; }
     .social-share-button { font-size: 0.85em; padding: 7px 12px; }
-    /* Buy coffee button color preserved by its class */
+
 
     .next-steps-card, .support-me-card, .hall-of-fame-card { padding: 10px 15px; }
     .next-steps-card h3, .support-me-card h3, .hall-of-fame-card h2 { font-size: 1.1em; }
@@ -870,14 +980,15 @@ footer {
     position: absolute;
     width: 10px;
     height: 10px;
-    /* Confetti colors will use the new palette, dynamically set by JS is fine, or hardcode some here */
-    background-color: var(--white); /* Example from palette */
+
+    background-color: var(--inner-bg);
     opacity: 0.9;
     animation: fall 3s linear forwards;
 }
-.confetti:nth-child(2n) { background-color: var(--white); }
-.confetti:nth-child(3n) { background-color: var(--third-color); }
-.confetti:nth-child(4n) { background-color: var(--secondary-color); }
+/* These confetti colors might need more dynamic adjustment or more theme-aware variables */
+.confetti:nth-child(2n) { background-color: var(--outer-and-text-bg); }
+.confetti:nth-child(3n) { background-color: var(--text-color); }
+.confetti:nth-child(4n) { background-color: var(--coffee); }
 
 
 @keyframes fall {
@@ -889,14 +1000,14 @@ footer {
 
 .bookmark-tip {
     cursor: help;
-    text-decoration: underline dotted var(--secondary-color); /* Deep Purple */
-    color: var(--third-color); /* Mauve/Purple */
+    text-decoration: underline dotted var(--text-color);
+    color: var(--text-color);
 }
 .emoji {
-    font-style: normal; /* Ensure emojis don't inherit italic from parent if any */
+    font-style: normal;
 }
 
-/* Ensure Buy Me A Coffee button specific styles are preserved/enhanced */
+
 .buy-coffee-btn {
     display: inline-block;
     padding: 12px 25px;
@@ -905,12 +1016,12 @@ footer {
     text-decoration: none;
     border-radius: 8px;
     transition: background-color 0.2s, transform 0.1s;
-    background-color: var(--coffee); /* Preserved */
-    color: var(--coffee-border); /* Preserved, or adjust to fit palette if needed for contrast */
-    box-shadow: 0 2px 5px var(--coffee-border);
+    background-color: var(--coffee);
+    color: var(--coffee-border-and-text);
+    box-shadow: 0 2px 5px var(--coffee-border-and-text);
 }
 .buy-coffee-btn:hover {
-    background-color: var(--coffee-hover); /* Preserved */
+    background-color: var(--coffee-hover);
     transform: translateY(-2px);
 }
 .buy-coffee-btn:active {

@@ -23,6 +23,18 @@
       "unmuteAriaLabel": "Unmute audio"
     }
   },
+  "themeSwitcher": {
+    "fabAriaLabel": "Change theme",
+    "panelTitle": "Select Theme",
+    "defaultButton": "Default",
+    "defaultButtonAriaLabel": "Switch to Default Theme",
+    "darkButton": "Dark",
+    "darkButtonAriaLabel": "Switch to Dark Theme",
+    "forestButton": "Forest",
+    "forestButtonAriaLabel": "Switch to Forest Green Theme",
+    "sunsetButton": "Sunset",
+    "sunsetButtonAriaLabel": "Switch to Sunset Orange Theme"
+  },
   "quiz": {
     "itemDisplayAriaLabel": "Quiz item: {displayForm}",
     "replayAudioButtonAriaLabel": "Replay item sound",
