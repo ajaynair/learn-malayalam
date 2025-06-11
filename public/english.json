@@ -64,7 +64,10 @@
   },
   "hallOfFameSection": {
     "title": "Hall of Fame <span class=\"emoji\" role=\"img\" aria-label=\"Trophy\">🏆</span>",
-    "placeholder": "Be the first to conquer a quiz and share your inspiring story here!"
+    "aravindanName": "Aravindan S.",
+    "aravindanQuote": "I truly enjoyed this page! I can finally say I'm able to read Malayalam!",
+    "amanaName": "Amana K.",
+    "amanaQuote": "This app is so cool and surprisingly addictive. Learning has never been this fun!"
   },
   "supportMe": {
     "title": "Enjoying Your Language Adventure? <span class=\"emoji\" role=\"img\" aria-label=\"Rocket\">🚀</span>",
@@ -74,6 +77,17 @@
   },
   "testControls": {
     "testHofButton": "Test Hall Of Fame Modal"
+  },
+  "settingsCard": {
+    "resetButton": "Reset All Progress",
+    "resetButtonAriaLabel": "Reset all learning progress, scores, and statistics"
+  },
+  "resetConfirmationModal": {
+    "title": "Confirm Reset",
+    "message": "Are you sure you want to reset all your learning progress, scores, and streaks? This action cannot be undone.",
+    "confirmButton": "Yes, Reset",
+    "cancelButton": "Cancel",
+    "closeButtonAriaLabel": "Close reset confirmation dialog"
   },
   "footer": {
     "copyright": "&copy; {year} Learn Malayalam by Ajay Nair. All rights reserved."
@@ -130,7 +144,8 @@
     "switchedMode": "Switched to {mode} quiz. Choose the correct option.",
     "linkShared": "Link shared!",
     "shareError": "Could not share: {errorMessage}. Try copying the link.",
-    "shareErrorUnknown": "Could not share due to an unknown error. Try copying the link."
+    "shareErrorUnknown": "Could not share due to an unknown error. Try copying the link.",
+    "progressResetSuccess": "All progress has been reset!"
   },
   "shareDetails": {
     "title": "Learn Malayalam Free: Letters, Alphabet & Words | Interactive Quiz",

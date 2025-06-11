@@ -3,13 +3,13 @@
 
 html {
     color-scheme: light;
-    background-color: #f0f4f8;
+    background-color: #f4eef7; /* Very light lavender base for page scroll */
 }
 
 body {
     font-family: 'Noto Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f4f8;
-    color: #333;
+    background-color: #f4eef7; /* Very light lavender for overall page */
+    color: #2F004F; /* Darkest Purple for primary text */
     margin: 0;
     padding: 20px;
     display: flex;
@@ -23,9 +23,9 @@ body {
 .app-container {
     width: 100%;
     max-width: 900px;
-    background-color: #fff;
+    background-color: #ffffff; /* White for main app container card */
     border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(47, 0, 79, 0.1); /* Shadow with darkest purple tint */
     padding: 25px;
     box-sizing: border-box;
     position: relative;
@@ -37,17 +37,20 @@ header {
     justify-content: space-between;
     text-align: center;
     margin-bottom: 20px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #EABFCB; /* Light Pinkish Mauve for separator */
     padding-bottom: 10px;
 }
 
 header h1 {
-    color: #2c3e50;
+    color: #EABFCB; /* Light Pinkish Mauve for title text */
     margin: 0 10px;
     font-weight: bold;
     font-size: 1.5em;
     flex-grow: 1;
     text-align: center;
+    background-color: #5F0A87; /* Deep Purple background for header title area */
+    padding: 5px 10px;
+    border-radius: 6px;
 }
 
 .header-actions {
@@ -60,30 +63,31 @@ header h1 {
     padding: 6px 8px;
     font-size: 1.2rem;
     line-height: 1;
-    color: #333;
+    color: #2F004F; /* Darkest Purple text */
     border: none;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s, color 0.2s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(47, 0, 79, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f0f0f0;
+    background-color: #EABFCB; /* Light Pinkish Mauve background */
 }
 .header-action-btn:hover {
     transform: translateY(-1px);
-    background-color: #e0e0e0;
+    background-color: #C191A1; /* Dusty Rose/Mauve on hover */
 }
 .header-action-btn:active {
     transform: translateY(0px);
 }
 
 .header-coffee-btn {
-    background-color: #FFBF00;
+    background-color: #FFBF00; /* Preserved */
+    color: #333;
 }
 .header-coffee-btn:hover {
-    background-color: #e6ac00;
+    background-color: #e6ac00; /* Preserved */
 }
 
 .header-share-btn, .header-about-btn {
@@ -91,13 +95,12 @@ header h1 {
     padding: 7px 12px;
     font-weight: 600;
     line-height: normal;
-    color: white;
-}
-.header-share-btn, .header-about-btn {
-    background-color: #a0ced9;
+    color: #2F004F; /* Darkest Purple text */
+    background-color: #C191A1; /* Dusty Rose/Mauve background */
 }
 .header-share-btn:hover, .header-about-btn:hover {
-    background-color: #8ab6c1;
+    background-color: #A4508B; /* Mauve/Purple on hover */
+    color: #EABFCB; /* Light pinkish text on hover */
 }
 
 main {
@@ -110,11 +113,13 @@ main {
     background-color: #ffffff;
     border-radius: 8px;
     padding: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 8px rgba(47, 0, 79, 0.07); /* Shadow with darkest purple tint */
+    border: 1px solid #EABFCB; /* Light border for cards */
 }
 
 .mode-switcher {
     padding: 10px;
+    background-color: #fdf6fa; /* Very light pink background */
 }
 .mode-switcher-controls {
     display: flex;
@@ -122,12 +127,39 @@ main {
     align-items: center;
 }
 
+.mode-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.reset-btn { /* Preserved colors */
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+    background-color: #e74c3c;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    line-height: normal;
+}
+.reset-btn:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+.reset-btn:active {
+    transform: translateY(0px);
+}
+
+
 .mode-switcher-mute-btn {
     background-color: transparent;
     border: none;
     padding: 8px 10px;
     line-height: 1;
-    color: #333;
+    color: #5F0A87; /* Deep Purple icon/text */
     border-radius: 8px;
     cursor: pointer;
     transition: color 0.2s, transform 0.1s, background-color 0.2s;
@@ -137,7 +169,7 @@ main {
 }
 .mode-switcher-mute-btn:hover {
     transform: scale(1.05);
-    background-color: rgba(0,0,0,0.05);
+    background-color: rgba(95, 10, 135, 0.05); /* Lightest purple tint on hover */
 }
 .mode-switcher-mute-btn .mute-icon {
     font-size: 1.8rem;
@@ -148,7 +180,7 @@ main {
 }
 .mode-switcher-mute-btn.muted .mute-icon,
 .mode-switcher-mute-btn.muted .mute-text {
-    color: #e74c3c;
+    color: #e74c3c; /* Preserved red for muted state */
 }
 
 .mode-switcher-buttons {
@@ -158,20 +190,21 @@ main {
 .mode-switcher-buttons button {
     padding: 8px 12px;
     font-size: 0.9rem;
-    border: 1px solid #3498db;
-    background-color: #f0f8ff;
-    color: #3498db;
+    border: 1px solid #A4508B; /* Mauve/Purple border */
+    background-color: #EABFCB; /* Light Pinkish Mauve background */
+    color: #5F0A87; /* Deep Purple text */
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
 }
 .mode-switcher-buttons button:hover {
-    background-color: #d6eaf8;
+    background-color: #C191A1; /* Dusty Rose/Mauve on hover */
 }
 .mode-switcher-buttons button.active-mode {
-    background-color: #3498db;
-    color: white;
+    background-color: #5F0A87; /* Deep Purple background */
+    color: #EABFCB; /* Light Pinkish Mauve text */
     font-weight: bold;
+    border-color: #2F004F; /* Darkest purple border for active */
 }
 
 .quiz-layout-wrapper {
@@ -195,9 +228,10 @@ main {
     justify-content: center;
     gap: 8px;
     margin-bottom: 10px;
-    background-color: #eaf5ff;
+    background-color: #fdf6fa; /* Very light pink background for item display */
     border-radius: 8px;
     padding: 8px;
+    border: 1px solid #EABFCB; /* Light pink border */
 }
 
 .answer-feedback-icon {
@@ -206,18 +240,19 @@ main {
     line-height: 1;
     display: none;
 }
+/* Semantic colors preserved for feedback icon in JS */
 
 .noto-sans-malayalam-main-display {
     font-family: "Noto Sans Malayalam", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 400;
+    font-weight: 400; /* Keeping default weight, specific characters may have their own */
     font-style: normal;
     font-variation-settings: "wdth" 100;
 }
 
 .quiz-area .item-display {
     font-size: 3rem;
-    color: #3498db;
+    color: #5F0A87; /* Deep Purple for item text */
     text-align: center;
     padding: 5px;
     min-height: 70px;
@@ -232,7 +267,7 @@ main {
 .replay-audio-btn {
     background-color: transparent;
     border: none;
-    color: #3498db;
+    color: #A4508B; /* Mauve/Purple for replay icon */
     font-size: 1.6rem;
     padding: 6px;
     border-radius: 50%;
@@ -245,7 +280,7 @@ main {
     flex-shrink: 0;
 }
 .replay-audio-btn:hover {
-    background-color: rgba(52, 152, 219, 0.1);
+    background-color: rgba(164, 80, 139, 0.1); /* Mauve/Purple tint on hover */
     transform: scale(1.1);
 }
 .replay-audio-btn:active {
@@ -265,34 +300,34 @@ main {
     flex-basis: 0;
     padding: 10px 5px;
     font-size: 0.85rem;
-    background-color: #79c7c2;
-    color: white;
-    border: 1px solid #6aa9a3;
+    background-color: #C191A1; /* Dusty Rose/Mauve for option buttons */
+    color: #2F004F; /* Darkest Purple text */
+    border: 1px solid #A4508B; /* Mauve/Purple border */
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s, border-color 0.2s;
     text-align: center;
     font-weight: 500;
-    box-shadow: 0 2px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 3px rgba(47, 0, 79, 0.08);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .options button:hover {
-    background-color: #88d4cf;
-    border-color: #77b7b2;
+    background-color: #EABFCB; /* Light Pinkish Mauve on hover */
+    border-color: #A4508B; /* Mauve/Purple border */
     transform: translateY(-1px);
 }
 .options button:active {
     transform: scale(0.98) translateY(0px);
 }
-.options button.correct {
+.options button.correct { /* Preserved semantic color */
     background-color: #2ecc71 !important;
     color: white !important;
     border-color: #27ae60 !important;
 }
-.options button.incorrect {
+.options button.incorrect { /* Preserved semantic color */
     background-color: #e74c3c !important;
     color: white !important;
     border-color: #c0392b !important;
@@ -310,9 +345,10 @@ main {
     font-size: 0.9em;
     font-weight: bold;
 }
+/* Semantic colors preserved for feedback text */
 .feedback.correct { color: #27ae60; }
 .feedback.incorrect { color: #c0392b; }
-.feedback.info { color: #3498db; }
+.feedback.info { color: #5F0A87; } /* Deep purple for info */
 .feedback.error { color: #e74c3c; }
 .feedback.success { color: #27ae60; }
 
@@ -321,21 +357,24 @@ main {
     margin-top: 5px;
 }
 
-.control-buttons button {
+.control-buttons button, #next-question-btn { /* Combined for Next Question button */
     padding: 10px 18px;
     font-size: 0.9rem;
     font-weight: bold;
-    background-color: #3498db;
-    color: white;
+    background-color: #A4508B; /* Mauve/Purple for next question */
+    color: #EABFCB; /* Light Pinkish Mauve text */
     border: none;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.2s;
-    display: none;
+    display: none; /* Initially hidden, JS will show */
+}
+#next-question-btn {
+    display: none; /* JS controls this */
 }
 
-.control-buttons button:hover {
-    background-color: #2980b9;
+.control-buttons button:hover, #next-question-btn:hover {
+    background-color: #5F0A87; /* Deep Purple on hover */
 }
 
 .progress-display {
@@ -343,6 +382,7 @@ main {
     flex-direction: column;
     gap: 5px;
     padding: 10px 0;
+    background-color: #fdf6fa; /* Very light pink */
 }
 
 .progress-bar-container-wrapper {
@@ -351,7 +391,7 @@ main {
 .progress-bar-label {
     display: block;
     font-size: 1.1em;
-    color: #2980b9;
+    color: #5F0A87; /* Deep Purple for label text */
     margin-bottom: 4px;
     text-align: left;
     font-weight: 600;
@@ -366,7 +406,7 @@ main {
 
 .progress-bar-container {
     width: 100%;
-    background-color: #e0e0e0;
+    background-color: #EABFCB; /* Light Pinkish Mauve for bar background */
     border-radius: 6px;
     height: 12px;
     overflow: hidden;
@@ -374,16 +414,16 @@ main {
 .progress-bar-inner {
     height: 100%;
     width: 0%;
-    background-color: #3498db;
+    background-color: #5F0A87; /* Deep Purple for progress fill */
     border-radius: 6px;
     transition: width 0.3s ease-in-out;
     background-image: linear-gradient(
             45deg,
-            rgba(255, 255, 255, 0.2) 25%,
+            rgba(234, 191, 203, 0.3) 25%, /* Lighter tint of EABFCB */
             transparent 25%,
             transparent 50%,
-            rgba(255, 255, 255, 0.2) 50%,
-            rgba(255, 255, 255, 0.2) 75%,
+            rgba(234, 191, 203, 0.3) 50%,
+            rgba(234, 191, 203, 0.3) 75%,
             transparent 75%,
             transparent
     );
@@ -406,7 +446,7 @@ main {
 
 .progress-display strong {
     font-size: 1.2em;
-    color: #007bff;
+    color: #5F0A87; /* Deep Purple for score numbers */
     font-weight: bold;
     text-align: right;
     padding-right: 10px;
@@ -414,7 +454,7 @@ main {
 
 .progress-display span:not(.progress-bar-label) {
     font-size: 1.0em;
-    color: #555;
+    color: #A4508B; /* Mauve/Purple for score labels */
     font-weight: normal;
     white-space: nowrap;
     text-align: left;
@@ -422,7 +462,12 @@ main {
 
 .next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls {
     margin-top: 20px;
+    border-color: #C191A1; /* Dusty Rose border for these cards */
 }
+.test-controls {
+    background-color: #fdf6fa; /* Very light pink for test button card */
+}
+
 
 @media (max-width: 768px) {
     .app-container {
@@ -453,15 +498,15 @@ main {
         text-align: left;
     }
     .header-action-btn { top: 5px; }
-    .header-coffee-btn { font-size: 1rem; padding: 5px 7px; }
+    /* Header coffee button color preserved */
     .header-share-btn, .header-about-btn { font-size: 0.9rem; padding: 7px 10px; }
-    header h1 { font-size: 1.3em; }
+    header h1 { font-size: 1.3em; } /* Text color in H1 already set */
     .mode-switcher-mute-btn .mute-icon { font-size: 1.7rem; }
     .mode-switcher-mute-btn .mute-text { font-size: 0.8rem; }
-    .quiz-area .item-display { font-size: 2.5rem; min-height: 60px; }
-    .replay-audio-btn { font-size: 1.5rem; }
+    .quiz-area .item-display { font-size: 2.5rem; min-height: 60px; } /* Text color already set */
+    .replay-audio-btn { font-size: 1.5rem; } /* Icon color already set */
     .answer-feedback-icon { font-size: 1.8rem; }
-    .options button { font-size: 0.8rem; padding: 8px 5px; }
+    .options button { font-size: 0.8rem; padding: 8px 5px; } /* Colors already set */
 }
 
 @media (max-width: 600px) {
@@ -471,7 +516,7 @@ main {
     .card { padding: 10px; }
     header { padding-bottom: 8px; margin-bottom: 10px; }
     header h1 { font-size: 1.1em; margin: 0 5px; }
-    .header-coffee-btn { font-size: 0.9rem; padding: 4px 6px; }
+    /* Header coffee button color preserved */
     .header-share-btn, .header-about-btn { font-size: 0.8rem; padding: 5px 8px; }
     .header-actions { gap: 5px; }
     .mode-switcher { padding: 8px; }
@@ -487,7 +532,7 @@ main {
     .options { gap: 3px; margin-bottom: 8px; }
     .options button { padding: 8px 3px; font-size: 0.75rem; }
     .feedback { font-size: 0.8em; min-height: 18px; margin-bottom: 8px; }
-    .control-buttons button { padding: 8px 15px; font-size: 0.8rem; }
+    .control-buttons button, #next-question-btn { padding: 8px 15px; font-size: 0.8rem; }
     .progress-display.card { padding: 8px 5px; }
     .progress-bar-label { font-size: 1em; }
     .progress-bar-container { height: 10px; }
@@ -499,7 +544,7 @@ main {
 @media (max-width: 400px) {
     header h1 { font-size: 1em; }
     .header-share-btn, .header-about-btn { font-size: 0.7rem; padding: 4px 6px; }
-    .header-coffee-btn { font-size: 0.8rem; padding: 3px 5px; }
+    /* Header coffee button color preserved */
     .mode-switcher-buttons button { font-size: 0.7rem; padding: 5px 8px; }
     .mode-switcher-mute-btn .mute-icon { font-size: 1.4rem; }
     .mode-switcher-mute-btn .mute-text { font-size: 0.65rem; }
@@ -512,20 +557,51 @@ main {
     .progress-bar-container { height: 8px; }
 }
 
-.next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls {
+.next-steps-card, .support-me-card, .hall-of-fame-card {
     padding: 15px 20px;
+    background-color: #fdf6fa; /* Very light pink background */
 }
+#test-hof-btn { /* Test hall of fame button styling */
+    background-color: #A4508B !important; /* Mauve/Purple */
+    color: #EABFCB !important; /* Light Pinkish Mauve text */
+}
+#test-hof-btn:hover {
+    background-color: #5F0A87 !important; /* Deep Purple on hover */
+}
+
+
 .next-steps-card h3, .support-me-card h3, .hall-of-fame-card h2 {
     font-size: 1.3em;
-    color: #2c3e50;
+    color: #5F0A87; /* Deep Purple for card titles */
     margin-top: 0;
     margin-bottom: 10px;
 }
 .next-steps-card p, .next-steps-card ul, .support-me-card p, .hall-of-fame-card p {
     font-size: 0.95em;
     line-height: 1.6;
+    color: #2F004F; /* Darkest purple for body text in cards */
 }
 .hall-of-fame-card #hall-of-fame-entries { margin-top: 15px; }
+
+.hof-entry {
+    background-color: #EABFCB; /* Light Pinkish Mauve background for entries */
+    border-left: 4px solid #5F0A87; /* Deep Purple border */
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 0 4px 4px 0;
+}
+.hof-entry h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    color: #2F004F; /* Darkest Purple for name */
+    font-size: 1.1em;
+}
+.hof-entry p {
+    font-style: italic;
+    color: #5F0A87; /* Deep Purple for quote */
+    line-height: 1.5;
+    margin-bottom: 0;
+}
 
 .share-modal {
     display: none;
@@ -536,37 +612,41 @@ main {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(47, 0, 79, 0.6); /* Darkest Purple overlay, slightly more opaque */
     align-items: center;
     justify-content: center;
 }
 
 .share-modal-content {
-    background-color: #fff;
+    background-color: #fdf6fa; /* Very light pink background for modals */
     margin: auto;
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(47, 0, 79, 0.3);
     width: 90%;
     max-width: 500px;
     position: relative;
     text-align: left;
+    border: 1px solid #C191A1; /* Dusty Rose border */
 }
 .share-modal-content h3, .share-modal-content p, .share-modal-content h2, .share-modal-content ul {
     text-align: left;
     margin-bottom: 10px;
+    color: #2F004F; /* Darkest Purple text */
 }
 .share-modal-content #share-modal-title,
 .share-modal-content #about-me-modal-title,
-.share-modal-content #hall-of-fame-modal-title {
+.share-modal-content #hall-of-fame-modal-title,
+.share-modal-content #reset-confirmation-modal-title {
     text-align: center;
     font-size: 1.5em;
     margin-bottom: 15px;
-    color: #333;
+    color: #5F0A87; /* Deep Purple for modal titles */
 }
 .share-modal-content .share-url-container,
 .share-modal-content .social-share-buttons,
-.share-modal-content > p:has(~ .share-url-container) {
+.share-modal-content > p:has(~ .share-url-container),
+.share-modal-content .modal-action-buttons {
     text-align: center;
 }
 
@@ -576,7 +656,7 @@ main {
     right: 15px;
     font-size: 1.8rem;
     font-weight: bold;
-    color: #888;
+    color: #A4508B; /* Mauve/Purple */
     background: none;
     border: none;
     cursor: pointer;
@@ -585,16 +665,13 @@ main {
 }
 .share-modal-close-btn:hover,
 .share-modal-close-btn:focus {
-    color: #333;
+    color: #5F0A87; /* Deep Purple on hover */
     text-decoration: none;
 }
 
-/* Using specific IDs for modal titles for JS targeting */
-/* #share-modal-title, #about-me-modal-title, #hall-of-fame-modal-title */
-
-#about-me-modal .share-modal-content h3:not(#about-me-modal-title) { /* Target specific h3s if needed */
+#about-me-modal .share-modal-content h3:not(#about-me-modal-title) {
     font-size: 1.3em;
-    color: #2c3e50;
+    color: #5F0A87; /* Deep Purple */
     margin-top: 10px;
     margin-bottom: 10px;
 }
@@ -602,13 +679,14 @@ main {
     font-size: 0.95em;
     line-height: 1.6;
     margin-bottom: 10px;
+    color: #2F004F; /* Darkest Purple */
 }
 #about-me-modal .share-modal-content p a {
-    color: #007bff;
+    color: #A4508B; /* Mauve/Purple for links */
     text-decoration: underline;
 }
 #about-me-modal .share-modal-content p a:hover {
-    color: #0056b3;
+    color: #5F0A87; /* Deep Purple on hover */
 }
 
 .share-url-container {
@@ -619,23 +697,24 @@ main {
 .share-url-container input[type="text"] {
     flex-grow: 1;
     padding: 8px 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #C191A1; /* Dusty Rose border */
     border-radius: 5px;
     font-size: 0.95em;
-    background-color: #f9f9f9;
+    background-color: #ffffff; /* White background */
+    color: #2F004F; /* Darkest Purple text */
 }
 .share-url-container button {
     padding: 8px 15px;
     font-size: 0.95em;
-    background-color: #3498db;
-    color: white;
+    background-color: #A4508B; /* Mauve/Purple */
+    color: #EABFCB; /* Light Pinkish Mauve text */
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 .share-url-container button:hover {
-    background-color: #2980b9;
+    background-color: #5F0A87; /* Deep Purple on hover */
 }
 
 .social-share-buttons {
@@ -648,24 +727,24 @@ main {
 .social-share-button {
     display: inline-block;
     padding: 8px 15px;
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: #EABFCB; /* Light Pinkish Mauve background */
+    color: #2F004F; /* Darkest Purple text */
     text-decoration: none;
     border-radius: 20px;
     font-size: 0.9em;
     transition: background-color 0.2s, color 0.2s;
-    border: 1px solid #ddd;
+    border: 1px solid #C191A1; /* Dusty Rose border */
 }
 .social-share-button:hover {
-    background-color: #e0e0e0;
-    color: #000;
+    background-color: #C191A1; /* Dusty Rose on hover */
+    color: #2F004F;
 }
 
 #hall-of-fame-modal .share-modal-content p,
 #hall-of-fame-modal .share-modal-content ul {
     font-size: 0.95em;
     line-height: 1.5;
-    color: #333;
+    color: #2F004F; /* Darkest Purple */
 }
 #hall-of-fame-modal .share-modal-content ul {
     list-style-type: disc;
@@ -676,7 +755,7 @@ main {
 }
 
 #hall-of-fame-modal-title {
-    color: #27ae60;
+    color: #A4508B; /* Mauve/Purple for HoF modal title */
     font-weight: bold;
 }
 .share-modal-content .form-group { margin-bottom: 12px; }
@@ -684,7 +763,7 @@ main {
     display: block;
     margin-bottom: 4px;
     font-weight: 600;
-    color: #444;
+    color: #5F0A87; /* Deep Purple for form labels */
     font-size: 0.9em;
 }
 .share-modal-content .form-group input[type="text"],
@@ -692,11 +771,13 @@ main {
 .share-modal-content .form-group textarea {
     width: 100%;
     padding: 8px 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #C191A1; /* Dusty Rose border */
     border-radius: 5px;
     font-family: inherit;
     font-size: 0.95em;
     box-sizing: border-box;
+    background-color: #ffffff; /* White background */
+    color: #2F004F; /* Darkest Purple text */
 }
 .share-modal-content .form-group textarea {
     resize: vertical;
@@ -704,8 +785,8 @@ main {
 }
 
 #submit-testimonial-btn {
-    background-color: #27ae60;
-    color: white;
+    background-color: #A4508B; /* Mauve/Purple */
+    color: #EABFCB; /* Light Pinkish Mauve text */
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -717,24 +798,34 @@ main {
     margin: 15px auto 0 auto;
 }
 #submit-testimonial-btn:hover {
-    background-color: #229954;
+    background-color: #5F0A87; /* Deep Purple on hover */
+}
+
+/* Reset confirmation button colors preserved by original rules */
+#reset-confirm-btn { background-color: #e74c3c; color: white;}
+#reset-cancel-btn { background-color: #A4508B; color: #EABFCB; } /* Adjusted to new palette */
+
+#reset-confirm-btn:hover {
+    background-color: #c0392b; /* Darker red */
+}
+#reset-cancel-btn:hover {
+    background-color: #5F0A87; /* Darker purple from palette */
 }
 
 footer {
     margin-top: 30px;
     text-align: center;
-    color: #777;
+    color: #A4508B; /* Mauve/Purple for footer text */
     font-size: 0.9em;
 }
 @media (max-width: 600px) {
     .share-modal-content { padding: 15px; width: 95%; max-width: 95%; }
-    /* .share-modal-content > h3, .share-modal-content > h2 -  Now using specific IDs */
     .share-modal-content p { font-size: 0.9em; }
     .share-url-container input[type="text"], .share-url-container button { font-size: 0.9em; }
     .social-share-button { font-size: 0.85em; padding: 7px 12px; }
-    .buy-coffee-btn { padding: 10px 20px; font-size: 1em; }
+    /* Buy coffee button color preserved by its class */
 
-    .next-steps-card, .support-me-card, .hall-of-fame-card, .test-controls { padding: 10px 15px; }
+    .next-steps-card, .support-me-card, .hall-of-fame-card { padding: 10px 15px; }
     .next-steps-card h3, .support-me-card h3, .hall-of-fame-card h2 { font-size: 1.1em; }
     .next-steps-card p, .next-steps-card ul, .support-me-card p, .hall-of-fame-card p { font-size: 0.85em; }
 
@@ -760,10 +851,15 @@ footer {
     position: absolute;
     width: 10px;
     height: 10px;
-    background-color: #f00;
-    opacity: 0.7;
+    /* Confetti colors will use the new palette, dynamically set by JS is fine, or hardcode some here */
+    background-color: #EABFCB; /* Example from palette */
+    opacity: 0.9;
     animation: fall 3s linear forwards;
 }
+.confetti:nth-child(2n) { background-color: #C191A1; }
+.confetti:nth-child(3n) { background-color: #A4508B; }
+.confetti:nth-child(4n) { background-color: #5F0A87; }
+
 
 @keyframes fall {
     to {
@@ -774,5 +870,30 @@ footer {
 
 .bookmark-tip {
     cursor: help;
-    text-decoration: underline dotted;
+    text-decoration: underline dotted #5F0A87; /* Deep Purple */
+    color: #A4508B; /* Mauve/Purple */
+}
+.emoji {
+    font-style: normal; /* Ensure emojis don't inherit italic from parent if any */
+}
+
+/* Ensure Buy Me A Coffee button specific styles are preserved/enhanced */
+.buy-coffee-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.2s, transform 0.1s;
+    background-color: #FFBF00; /* Preserved */
+    color: #333; /* Preserved, or adjust to fit palette if needed for contrast */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+.buy-coffee-btn:hover {
+    background-color: #e6ac00; /* Preserved */
+    transform: translateY(-2px);
+}
+.buy-coffee-btn:active {
+    transform: translateY(0px);
 }

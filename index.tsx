@@ -1,6 +1,6 @@
 
 import './src/style.css'; // Import the external CSS file
-import { SHARE_DETAILS_KEYS, SHARE_URL } from './constants.ts'; // Updated import
+import { SHARE_DETAILS_KEYS, SHARE_URL, LOCAL_STORAGE_KEYS } from './constants.ts'; // Updated import
 import {
     closeHallOfFameModal,
     checkCompletionAndCelebrate,
@@ -13,7 +13,8 @@ import {
     saveQuizModeToStorage,
     loadSessionStatsFromStorage,
     saveSessionStatsToStorage,
-    loadCelebratedModesFromStorage
+    loadCelebratedModesFromStorage,
+    saveCelebratedModesToStorage // Added for use in reset
 } from './src/quizDataHandler.ts';
 import { initializeMuteControls } from './src/mute.ts';
 import { initializeSpeechSynthesisHandler, speakItemHandler } from './src/audio.ts';
@@ -91,12 +92,10 @@ const App = {
         correctStreakDisplay: document.getElementById('correct-streak-display')!,
         reviewedCountDisplay: document.getElementById('reviewed-count')!,
         totalItemsCountDisplay: document.getElementById('total-items-count')!,
-        // Static labels in HTML, but their text will be set
-        totalScoreLabel: document.querySelector('#score-display-wrapper span') as HTMLSpanElement, // Assuming a wrapper to find label
+        totalScoreLabel: document.querySelector('#score-display-wrapper span') as HTMLSpanElement,
         currentStreakLabel: document.querySelector('#streak-display-wrapper span') as HTMLSpanElement,
         reviewedCountLabelStatic: document.querySelector('#reviewed-count-wrapper span') as HTMLSpanElement,
         totalItemsLabelStatic: document.querySelector('#total-items-wrapper span') as HTMLSpanElement,
-
 
         lettersModeBtn: document.getElementById('letters-mode-btn') as HTMLButtonElement,
         wordsModeBtn: document.getElementById('words-mode-btn') as HTMLButtonElement,
@@ -121,16 +120,14 @@ const App = {
         shareModalDescription: document.querySelector('#share-modal .share-modal-content > p:nth-of-type(1)') as HTMLParagraphElement,
         shareModalOrShareText: document.querySelector('#share-modal .share-modal-content > p:nth-of-type(2)') as HTMLParagraphElement,
 
-
         aboutMeModal: document.getElementById('about-me-modal') as HTMLDivElement,
         aboutMeModalCloseBtn: document.getElementById('about-me-modal-close-btn') as HTMLButtonElement,
         aboutMeModalTitle: document.getElementById('about-me-modal-title') as HTMLHeadingElement,
-        aboutMeModalGreeting: document.querySelector('#about-me-modal .share-modal-content h3:nth-of-type(2)') as HTMLHeadingElement, // Assuming this is the greeting
+        aboutMeModalGreeting: document.querySelector('#about-me-modal .share-modal-content h3:nth-of-type(2)') as HTMLHeadingElement,
         aboutMeModalPara1: document.querySelector('#about-me-modal .share-modal-content p:nth-of-type(1)') as HTMLParagraphElement,
         aboutMeModalPara2: document.querySelector('#about-me-modal .share-modal-content p:nth-of-type(2)') as HTMLParagraphElement,
         aboutMeModalPara3: document.querySelector('#about-me-modal .share-modal-content p:nth-of-type(3)') as HTMLParagraphElement,
         aboutMeModalPara4: document.querySelector('#about-me-modal .share-modal-content p:nth-of-type(4)') as HTMLParagraphElement,
-
 
         quizProgressBarContainer: document.getElementById('quiz-progress-bar-container') as HTMLDivElement,
         quizProgressBar: document.getElementById('quiz-progress-bar') as HTMLDivElement,
@@ -144,7 +141,6 @@ const App = {
         hallOfFameTestimonialInput: document.getElementById('hall-of-fame-testimonial-input') as HTMLTextAreaElement,
         submitTestimonialBtn: document.getElementById('submit-testimonial-btn') as HTMLButtonElement,
         testHofBtn: document.getElementById('test-hof-btn') as HTMLButtonElement,
-        // Hall of Fame Modal static texts
         hofModalCongratsMessage: document.querySelector('#hall-of-fame-modal .share-modal-content > p:nth-of-type(1)') as HTMLParagraphElement,
         hofModalInvitationMessage: document.querySelector('#hall-of-fame-modal .share-modal-content > p:nth-of-type(2)') as HTMLParagraphElement,
         hofModalPromptTitle: document.querySelector('#hall-of-fame-modal .share-modal-content > p:nth-of-type(3)') as HTMLParagraphElement,
@@ -156,13 +152,12 @@ const App = {
         hofEmailLabel: document.querySelector('label[for="hall-of-fame-email-input"]') as HTMLLabelElement,
         hofTestimonialLabel: document.querySelector('label[for="hall-of-fame-testimonial-input"]') as HTMLLabelElement,
 
-        // Next Steps Card
         nextStepsTitle: document.querySelector('.next-steps-card h3') as HTMLHeadingElement,
         nextStepsIntro: document.querySelector('.next-steps-card > p:nth-of-type(1)') as HTMLParagraphElement,
         nextStepsWhyWorksTitle: document.querySelector('.next-steps-card h4:nth-of-type(1)') as HTMLHeadingElement,
         nextStepsWhyWorksPara1: document.querySelector('.next-steps-card > p:nth-of-type(2)') as HTMLParagraphElement,
         nextStepsWhyWorksPara2: document.querySelector('.next-steps-card > p:nth-of-type(3)') as HTMLParagraphElement,
-        nextStepsWhyWorksPara3: document.querySelector('.next-steps-card > p:nth-of-type(4)') as HTMLParagraphElement, // Contains bookmark
+        nextStepsWhyWorksPara3: document.querySelector('.next-steps-card > p:nth-of-type(4)') as HTMLParagraphElement,
         nextStepsHowToTitle: document.querySelector('.next-steps-card h4:nth-of-type(2)') as HTMLHeadingElement,
         nextStepsListItemDaily: document.querySelector('.next-steps-card ul li:nth-of-type(1)') as HTMLLIElement,
         nextStepsListItemListen: document.querySelector('.next-steps-card ul li:nth-of-type(2)') as HTMLLIElement,
@@ -171,18 +166,27 @@ const App = {
         nextStepsListItemSwitch: document.querySelector('.next-steps-card ul li:nth-of-type(5)') as HTMLLIElement,
         nextStepsEncouragement: document.querySelector('.next-steps-card p.encouragement') as HTMLParagraphElement,
 
-        // Hall of Fame Section (static)
         hofSectionTitle: document.querySelector('.hall-of-fame-card h2') as HTMLHeadingElement,
-        hofSectionPlaceholder: document.querySelector('#hall-of-fame-entries p') as HTMLParagraphElement,
+        hofEntryAravindanName: document.getElementById('hofEntryAravindanName') as HTMLHeadingElement,
+        hofEntryAravindanQuote: document.getElementById('hofEntryAravindanQuote') as HTMLParagraphElement,
+        hofEntryAmanaName: document.getElementById('hofEntryAmanaName') as HTMLHeadingElement,
+        hofEntryAmanaQuote: document.getElementById('hofEntryAmanaQuote') as HTMLParagraphElement,
 
-        // Support Me Card
         supportMeTitle: document.querySelector('.support-me-card h3') as HTMLHeadingElement,
         supportMeDescription: document.querySelector('.support-me-card > p:nth-of-type(1)') as HTMLParagraphElement,
         supportMeButton: document.querySelector('.support-me-card .buy-coffee-btn') as HTMLAnchorElement,
         supportMeThanksNote: document.querySelector('.support-me-card p.thanks-note') as HTMLParagraphElement,
 
-        // Footer
         footerCopyright: document.querySelector('footer p') as HTMLParagraphElement,
+
+        // Reset Progress Elements
+        resetProgressBtn: document.getElementById('reset-progress-btn') as HTMLButtonElement,
+        resetConfirmationModal: document.getElementById('reset-confirmation-modal') as HTMLDivElement,
+        resetConfirmationModalTitle: document.getElementById('reset-confirmation-modal-title') as HTMLHeadingElement,
+        resetConfirmationModalMessage: document.getElementById('reset-confirmation-modal-message') as HTMLParagraphElement,
+        resetConfirmationModalCloseBtn: document.getElementById('reset-confirmation-modal-close-btn') as HTMLButtonElement,
+        resetConfirmBtn: document.getElementById('reset-confirm-btn') as HTMLButtonElement,
+        resetCancelBtn: document.getElementById('reset-cancel-btn') as HTMLButtonElement,
     },
 
     async init() {
@@ -194,10 +198,7 @@ const App = {
             this.translations = await response.json();
         } catch (error) {
             console.error("CRITICAL ERROR: Error loading translations from /english.json.", error);
-            // The modified getText will now show placeholder errors on the UI.
-            // Optionally, display a single prominent error message here if desired,
-            // but be mindful it might be overwritten by subsequent UI updates.
-            if (this.DOM.feedbackArea) { // Check if feedbackArea is even available
+            if (this.DOM.feedbackArea) {
                 this.DOM.feedbackArea.textContent = `CRITICAL: Text content failed to load. Try refreshing. (${(error as Error).message})`;
                 this.DOM.feedbackArea.className = 'feedback error';
                 this.DOM.feedbackArea.style.fontWeight = 'bold';
@@ -208,7 +209,7 @@ const App = {
             }
         }
 
-        this.populateStaticTexts(); // Populate texts after loading translations
+        this.populateStaticTexts();
 
         this.DOM.nextQuestionBtn.addEventListener('click', () => this.nextQuestion());
         this.DOM.lettersModeBtn.addEventListener('click', () => this.switchQuizMode('letters'));
@@ -243,6 +244,21 @@ const App = {
 
         setupHallOfFameEventListeners(this, this.DOM);
 
+        // Reset Progress Event Listeners
+        if (this.DOM.resetProgressBtn) {
+            this.DOM.resetProgressBtn.addEventListener('click', () => this.openResetConfirmationModal());
+        }
+        if (this.DOM.resetConfirmBtn) {
+            this.DOM.resetConfirmBtn.addEventListener('click', () => this.handleResetProgressConfirmed());
+        }
+        if (this.DOM.resetCancelBtn) {
+            this.DOM.resetCancelBtn.addEventListener('click', () => this.closeResetConfirmationModal());
+        }
+        if (this.DOM.resetConfirmationModalCloseBtn) {
+            this.DOM.resetConfirmationModalCloseBtn.addEventListener('click', () => this.closeResetConfirmationModal());
+        }
+
+
         initializeSpeechSynthesisHandler(this);
         initializeMuteControls(this, this.DOM);
         loadQuizModeFromStorage(this);
@@ -250,7 +266,7 @@ const App = {
         loadCelebratedModesFromStorage(this);
         this.updateModeButtonStyles();
         await loadQuizData(this);
-        this.updateProgressDisplay(); // Also updates progress bar labels
+        this.updateProgressDisplay();
         this.nextQuestion();
 
         window.addEventListener('keydown', (event) => {
@@ -262,7 +278,10 @@ const App = {
                     this.closeAboutMeModal();
                 }
                 if (this.DOM.hallOfFameModal.style.display === 'flex') {
-                    closeHallOfFameModal(this.DOM, this); // Pass app for getText
+                    closeHallOfFameModal(this.DOM, this);
+                }
+                if (this.DOM.resetConfirmationModal.style.display === 'flex') {
+                    this.closeResetConfirmationModal();
                 }
             }
         });
@@ -270,7 +289,6 @@ const App = {
 
     getText(key: string, replacements?: Record<string, string>): string {
         if (Object.keys(this.translations).length === 0) {
-            // This case indicates translations haven't been loaded or failed to load.
             const errorKey = key.replace(/\./g, '_').toUpperCase();
             console.warn(`Translations not loaded. Returning error placeholder for key: ${key}`);
             return `[ERR_NO_TRANSLATIONS_FOR_${errorKey}]`;
@@ -283,13 +301,13 @@ const App = {
                 value = value[k];
             } else {
                 console.warn(`Translation key not found: ${key}. Path failed at '${k}'.`);
-                return `[ERR_KEY_NOT_FOUND_${key.replace(/\./g, '_').toUpperCase()}]`; // Fallback to a modified key
+                return `[ERR_KEY_NOT_FOUND_${key.replace(/\./g, '_').toUpperCase()}]`;
             }
         }
 
         if (typeof value !== 'string') {
             console.warn(`Translation value for key '${key}' is not a string:`, value);
-            return `[ERR_VALUE_NOT_STRING_${key.replace(/\./g, '_').toUpperCase()}]`; // Fallback for non-string value
+            return `[ERR_VALUE_NOT_STRING_${key.replace(/\./g, '_').toUpperCase()}]`;
         }
 
         let result = value as string;
@@ -308,7 +326,6 @@ const App = {
         const metaKeywords = document.querySelector('meta[name="keywords"]');
         if (metaKeywords) metaKeywords.setAttribute('content', this.getText('meta.keywords'));
 
-        // Update Open Graph and Twitter meta tags dynamically
         const ogTitle = document.querySelector('meta[property="og:title"]');
         if (ogTitle) ogTitle.setAttribute('content', document.title);
         const ogDesc = document.querySelector('meta[property="og:description"]');
@@ -318,7 +335,6 @@ const App = {
         if (twitterTitle) twitterTitle.setAttribute('content', document.title);
         const twitterDesc = document.querySelector('meta[name="twitter:description"]');
         if (twitterDesc && metaDesc) twitterDesc.setAttribute('content', metaDesc.getAttribute('content') || '');
-
 
         if (this.DOM.headerMainTitle) this.DOM.headerMainTitle.innerHTML = this.getText('header.mainTitle');
         if (this.DOM.headerAboutBtn) {
@@ -336,15 +352,12 @@ const App = {
             this.DOM.headerCoffeeBtn.title = this.getText('header.coffeeButtonAriaLabel');
         }
 
-
         if (this.DOM.lettersModeBtn) this.DOM.lettersModeBtn.textContent = this.getText('modeSwitcher.lettersButton');
         if (this.DOM.wordsModeBtn) this.DOM.wordsModeBtn.textContent = this.getText('modeSwitcher.wordsButton');
-        // Mute button text is handled by updateMuteButtonIconAndText in mute.ts
 
         if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.setAttribute('aria-label', this.getText('quiz.replayAudioButtonAriaLabel'));
         if (this.DOM.nextQuestionBtn) this.DOM.nextQuestionBtn.textContent = this.getText('quiz.nextQuestionButton');
 
-        // Progress Display Labels
         const totalScoreWrapper = this.DOM.scoreDisplay.parentElement;
         if (totalScoreWrapper) (totalScoreWrapper.querySelector('span:first-child') as HTMLElement).textContent = this.getText('progressDisplay.totalScoreLabel');
         const streakWrapper = this.DOM.correctStreakDisplay.parentElement;
@@ -354,8 +367,6 @@ const App = {
         const totalItemsWrapper = this.DOM.totalItemsCountDisplay.parentElement;
         if (totalItemsWrapper) (totalItemsWrapper.querySelector('span:first-child') as HTMLElement).textContent = this.getText('progressDisplay.totalItemsLabel');
 
-
-        // Share Modal
         if (this.DOM.shareModalTitle) this.DOM.shareModalTitle.textContent = this.getText('shareModal.title');
         if (this.DOM.shareModalCloseBtn) {
             this.DOM.shareModalCloseBtn.textContent = '×';
@@ -371,7 +382,6 @@ const App = {
         if (this.DOM.shareEmail) this.DOM.shareEmail.textContent = this.getText('shareModal.emailButton');
         if (this.DOM.shareUrlInput) this.DOM.shareUrlInput.setAttribute('aria-label', this.getText('shareModal.shareUrlInputAriaLabel'));
 
-        // About Me Modal
         if (this.DOM.aboutMeModalTitle) this.DOM.aboutMeModalTitle.textContent = this.getText('aboutMeModal.title');
         if (this.DOM.aboutMeModalCloseBtn) {
             this.DOM.aboutMeModalCloseBtn.textContent = '×';
@@ -383,12 +393,10 @@ const App = {
         if (this.DOM.aboutMeModalPara3) this.DOM.aboutMeModalPara3.innerHTML = this.getText('aboutMeModal.para3');
         if (this.DOM.aboutMeModalPara4) this.DOM.aboutMeModalPara4.innerHTML = this.getText('aboutMeModal.para4');
 
-        // Hall of Fame Modal (Static parts, dynamic title set in openHallOfFameModal)
         if (this.DOM.hallOfFameModalCloseBtn) {
             this.DOM.hallOfFameModalCloseBtn.textContent = '×';
             this.DOM.hallOfFameModalCloseBtn.setAttribute('aria-label', this.getText('hallOfFameModal.closeButtonAriaLabel'));
         }
-        // Dynamic title is set in hallOfFame.ts using app.getText
         if (this.DOM.hofModalInvitationMessage) this.DOM.hofModalInvitationMessage.innerHTML = this.getText('hallOfFameModal.invitationMessage');
         if (this.DOM.hofModalPromptTitle) this.DOM.hofModalPromptTitle.innerHTML = this.getText('hallOfFameModal.promptTitle');
         if (this.DOM.hofModalPromptItem1) this.DOM.hofModalPromptItem1.innerHTML = this.getText('hallOfFameModal.promptItem1');
@@ -406,13 +414,12 @@ const App = {
         }
         if (this.DOM.submitTestimonialBtn) this.DOM.submitTestimonialBtn.textContent = this.getText('hallOfFameModal.form.submitButton');
 
-        // Next Steps Card
         if(this.DOM.nextStepsTitle) this.DOM.nextStepsTitle.innerHTML = this.getText('nextSteps.title');
         if(this.DOM.nextStepsIntro) this.DOM.nextStepsIntro.innerHTML = this.getText('nextSteps.intro');
         if(this.DOM.nextStepsWhyWorksTitle) this.DOM.nextStepsWhyWorksTitle.innerHTML = this.getText('nextSteps.whyWorksTitle');
         if(this.DOM.nextStepsWhyWorksPara1) this.DOM.nextStepsWhyWorksPara1.innerHTML = this.getText('nextSteps.whyWorksPara1');
         if(this.DOM.nextStepsWhyWorksPara2) this.DOM.nextStepsWhyWorksPara2.innerHTML = this.getText('nextSteps.whyWorksPara2');
-        // For the bookmark span:
+
         const whyWorksPara3Text = this.getText('nextSteps.whyWorksPara3Start') +
             ` <span class="bookmark-tip" role="tooltip" title="${this.getText('nextSteps.whyWorksPara3BookmarkTip')}">${this.getText('nextSteps.whyWorksPara3Bookmark')}</span> ` +
             this.getText('nextSteps.whyWorksPara3End');
@@ -426,23 +433,35 @@ const App = {
         if(this.DOM.nextStepsListItemSwitch) this.DOM.nextStepsListItemSwitch.innerHTML = this.getText('nextSteps.listItemSwitchSolidify');
         if(this.DOM.nextStepsEncouragement) this.DOM.nextStepsEncouragement.innerHTML = this.getText('nextSteps.encouragement');
 
-        // Hall of Fame Section (Static)
         if(this.DOM.hofSectionTitle) this.DOM.hofSectionTitle.innerHTML = this.getText('hallOfFameSection.title');
-        if(this.DOM.hofSectionPlaceholder) this.DOM.hofSectionPlaceholder.innerHTML = this.getText('hallOfFameSection.placeholder');
+        if(this.DOM.hofEntryAravindanName) this.DOM.hofEntryAravindanName.innerHTML = this.getText('hallOfFameSection.aravindanName');
+        if(this.DOM.hofEntryAravindanQuote) this.DOM.hofEntryAravindanQuote.innerHTML = this.getText('hallOfFameSection.aravindanQuote');
+        if(this.DOM.hofEntryAmanaName) this.DOM.hofEntryAmanaName.innerHTML = this.getText('hallOfFameSection.amanaName');
+        if(this.DOM.hofEntryAmanaQuote) this.DOM.hofEntryAmanaQuote.innerHTML = this.getText('hallOfFameSection.amanaQuote');
 
-        // Support Me Card
         if(this.DOM.supportMeTitle) this.DOM.supportMeTitle.innerHTML = this.getText('supportMe.title');
         if(this.DOM.supportMeDescription) this.DOM.supportMeDescription.innerHTML = this.getText('supportMe.description');
         if(this.DOM.supportMeButton) this.DOM.supportMeButton.innerHTML = this.getText('supportMe.buttonText');
         if(this.DOM.supportMeThanksNote) this.DOM.supportMeThanksNote.innerHTML = this.getText('supportMe.thanksNote');
 
-        // Test Controls
         if(this.DOM.testHofBtn) this.DOM.testHofBtn.textContent = this.getText('testControls.testHofButton');
 
-        // Footer
+        // Settings Card & Reset Modal (Reset button text is set here)
+        if (this.DOM.resetProgressBtn) {
+            this.DOM.resetProgressBtn.textContent = this.getText('settingsCard.resetButton');
+            this.DOM.resetProgressBtn.setAttribute('aria-label', this.getText('settingsCard.resetButtonAriaLabel'));
+        }
+        if (this.DOM.resetConfirmationModalTitle) this.DOM.resetConfirmationModalTitle.textContent = this.getText('resetConfirmationModal.title');
+        if (this.DOM.resetConfirmationModalMessage) this.DOM.resetConfirmationModalMessage.textContent = this.getText('resetConfirmationModal.message');
+        if (this.DOM.resetConfirmBtn) this.DOM.resetConfirmBtn.textContent = this.getText('resetConfirmationModal.confirmButton');
+        if (this.DOM.resetCancelBtn) this.DOM.resetCancelBtn.textContent = this.getText('resetConfirmationModal.cancelButton');
+        if (this.DOM.resetConfirmationModalCloseBtn) {
+            this.DOM.resetConfirmationModalCloseBtn.textContent = '×';
+            this.DOM.resetConfirmationModalCloseBtn.setAttribute('aria-label', this.getText('resetConfirmationModal.closeButtonAriaLabel'));
+        }
+
         if(this.DOM.footerCopyright) this.DOM.footerCopyright.innerHTML = this.getText('footer.copyright', { year: new Date().getFullYear().toString() });
 
-        // Only set initial feedback if translations were loaded. Otherwise, critical error is shown.
         if (Object.keys(this.translations).length > 0) {
             this.updateFeedback('quiz.initialFeedback', 'info');
         }
@@ -515,13 +534,60 @@ const App = {
         }
     },
 
+    openResetConfirmationModal() {
+        this.DOM.resetConfirmationModal.style.display = 'flex';
+        this.DOM.resetConfirmationModal.setAttribute('aria-hidden', 'false');
+        this.DOM.resetProgressBtn.setAttribute('aria-expanded', 'true');
+        this.DOM.resetConfirmBtn.focus();
+    },
+
+    closeResetConfirmationModal() {
+        this.DOM.resetConfirmationModal.style.display = 'none';
+        this.DOM.resetConfirmationModal.setAttribute('aria-hidden', 'true');
+        this.DOM.resetProgressBtn.setAttribute('aria-expanded', 'false');
+        this.DOM.resetProgressBtn.focus();
+    },
+
+    async handleResetProgressConfirmed() {
+        console.log("Resetting progress...");
+
+        // Clear item progress for both modes
+        localStorage.removeItem(LOCAL_STORAGE_KEYS.letters);
+        localStorage.removeItem(LOCAL_STORAGE_KEYS.words);
+
+        // Reset and save session stats
+        this.sessionStats = {
+            letters: { score: 0, streak: 0 },
+            words: { score: 0, streak: 0 },
+        };
+        saveSessionStatsToStorage(this);
+
+        // Reset and save celebrated modes
+        this.celebratedModes = {
+            letters: false,
+            words: false,
+        };
+        saveCelebratedModesToStorage(this);
+
+        // Mode remains the same, no need to reset LOCAL_STORAGE_KEYS.mode
+        // Mute state remains the same, no need to reset LOCAL_STORAGE_KEYS.mute
+
+        await loadQuizData(this); // Reload fresh quiz data
+        this.updateProgressDisplay();
+        this.nextQuestion();
+
+        this.updateFeedback('feedbackMessages.progressResetSuccess', 'success');
+        this.closeResetConfirmationModal();
+    },
+
+
     async copyShareUrl() {
         try {
             await navigator.clipboard.writeText(this.DOM.shareUrlInput.value);
             this.DOM.copyUrlBtn.textContent = this.getText('shareModal.copiedFeedback');
             this.DOM.copyUrlBtn.disabled = true;
             setTimeout(() => {
-                this.DOM.copyUrlBtn.textContent = this.getText('shareModal.copyUrlButton'); // Reset to original translated text
+                this.DOM.copyUrlBtn.textContent = this.getText('shareModal.copyUrlButton');
                 this.DOM.copyUrlBtn.disabled = false;
             }, 2000);
         } catch (err) {
@@ -533,7 +599,7 @@ const App = {
     configureSocialShareLinks() {
         const title = encodeURIComponent(this.getText(SHARE_DETAILS_KEYS.titleKey));
         const text = encodeURIComponent(this.getText(SHARE_DETAILS_KEYS.textKey));
-        const shortTextForTwitter = encodeURIComponent(this.getText(SHARE_DETAILS_KEYS.titleKey)); // Often shorter for Twitter
+        const shortTextForTwitter = encodeURIComponent(this.getText(SHARE_DETAILS_KEYS.titleKey));
         const url = encodeURIComponent(SHARE_URL);
 
         this.DOM.shareTwitter.href = `https://twitter.com/intent/tweet?text=${shortTextForTwitter}&url=${url}`;
@@ -626,6 +692,7 @@ const App = {
 
         const isCorrect = selectedTransliteration === this.currentItem.transliteration;
         const currentModeStats = this.sessionStats[this.quizMode];
+        const totalItems = this.quizItems.length;
 
         if (this.DOM.answerFeedbackIcon) {
             if (isCorrect) {
@@ -642,7 +709,10 @@ const App = {
 
         if (isCorrect) {
             currentModeStats.score++;
+            currentModeStats.score = Math.min(currentModeStats.score, totalItems); // Cap score
             currentModeStats.streak++;
+            currentModeStats.streak = Math.min(currentModeStats.streak, totalItems); // Cap streak
+
             this.currentItem.correctStreak++;
             this.currentItem.totalCorrect++;
             speakItemHandler(this, this.currentItem, false, false);
@@ -694,9 +764,7 @@ const App = {
         if (this.currentItem) {
             this.options = this.generateOptions(this.currentItem);
             this.renderQuiz();
-            // Initial feedback is set at the end of populateStaticTexts or if translations failed, an error is there.
-            // If quiz starts after a critical error, we might not want to overwrite it.
-            if (Object.keys(this.translations).length > 0) { // Only update if translations loaded
+            if (Object.keys(this.translations).length > 0) {
                 this.updateFeedback('quiz.initialFeedback', 'info');
             }
             if (this.DOM.replayItemAudioBtn) this.DOM.replayItemAudioBtn.style.display = 'inline-flex';
@@ -737,15 +805,13 @@ const App = {
     },
 
     updateFeedback(keyOrMessage: string, type: 'info' | 'error' | 'success' | 'correct' | 'incorrect', replacements?: Record<string, string>) {
-        // Check if it's a key by looking for a dot, or common prefixes
         const isKey = keyOrMessage.includes('.') || keyOrMessage.startsWith('feedbackMessages.') || keyOrMessage.startsWith('quiz.') || keyOrMessage.startsWith('shareModal.') || keyOrMessage.startsWith('hallOfFameModal.');
-        const message = isKey ? this.getText(keyOrMessage, replacements) : keyOrMessage; // Fallback to raw message if not clearly a key
+        const message = isKey ? this.getText(keyOrMessage, replacements) : keyOrMessage;
 
         this.DOM.feedbackArea.textContent = message;
         this.DOM.feedbackArea.className = `feedback ${type}`;
-        // Ensure feedback area isn't styled as critical error if it's normal feedback
         if (!message.startsWith("CRITICAL:")) {
-            this.DOM.feedbackArea.style.fontWeight = 'bold'; // default feedback bold
+            this.DOM.feedbackArea.style.fontWeight = 'bold';
             this.DOM.feedbackArea.style.border = 'none';
             this.DOM.feedbackArea.style.padding = '0';
         }
@@ -754,17 +820,19 @@ const App = {
 
     updateProgressDisplay() {
         const currentModeStats = this.sessionStats[this.quizMode];
-        this.DOM.scoreDisplay.textContent = currentModeStats.score.toString();
-        this.DOM.correctStreakDisplay.textContent = currentModeStats.streak.toString();
-
         const totalItems = this.quizItems.length;
-        const reviewedItemsCount = this.quizItems.filter(item => item.reviewed).length;
 
-        this.DOM.reviewedCountDisplay.textContent = reviewedItemsCount.toString();
+        const cappedScore = Math.min(currentModeStats.score, totalItems);
+        const cappedStreak = Math.min(currentModeStats.streak, totalItems);
+        const reviewedItemsCount = this.quizItems.filter(item => item.reviewed).length;
+        const cappedReviewedItemsCount = Math.min(reviewedItemsCount, totalItems);
+
+        this.DOM.scoreDisplay.textContent = cappedScore.toString();
+        this.DOM.correctStreakDisplay.textContent = cappedStreak.toString();
+        this.DOM.reviewedCountDisplay.textContent = cappedReviewedItemsCount.toString();
         this.DOM.totalItemsCountDisplay.textContent = totalItems.toString();
 
-        const currentScore = currentModeStats.score;
-        const percentage = totalItems > 0 ? (currentScore / totalItems) * 100 : 0;
+        const percentage = totalItems > 0 ? (cappedScore / totalItems) * 100 : 0;
 
         this.DOM.quizProgressBar.style.width = `${Math.min(100, percentage)}%`;
         this.DOM.quizProgressBarContainer.setAttribute('aria-valuenow', Math.min(100, percentage).toFixed(0));

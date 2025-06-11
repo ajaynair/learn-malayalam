@@ -65,10 +65,13 @@
                         <button id="letters-mode-btn" aria-pressed="true"></button> <!-- Text by JS -->
                         <button id="words-mode-btn" aria-pressed="false"></button> <!-- Text by JS -->
                     </div>
-                    <button id="mute-toggle-btn" class="mode-switcher-mute-btn" aria-pressed="false">
-                        <span class="mute-icon">🔊</span>
-                        <span class="mute-text"></span> <!-- Text by JS (mute.ts) -->
-                    </button>
+                    <div class="mode-actions-right">
+                        <button id="mute-toggle-btn" class="mode-switcher-mute-btn" aria-pressed="false">
+                            <span class="mute-icon">🔊</span>
+                            <span class="mute-text"></span> <!-- Text by JS (mute.ts) -->
+                        </button>
+                        <button id="reset-progress-btn" class="reset-btn"></button> <!-- Text by JS -->
+                    </div>
                 </div>
             </section>
 
@@ -133,7 +136,14 @@
             <section class="hall-of-fame-card card">
                 <h2></h2> <!-- Populated by JS -->
                 <div id="hall-of-fame-entries">
-                    <p></p> <!-- Populated by JS -->
+                    <div class="hof-entry">
+                        <h4 id="hofEntryAravindanName"></h4>
+                        <p id="hofEntryAravindanQuote"></p>
+                    </div>
+                    <div class="hof-entry">
+                        <h4 id="hofEntryAmanaName"></h4>
+                        <p id="hofEntryAmanaQuote"></p>
+                    </div>
                 </div>
             </section>
 
@@ -151,7 +161,6 @@
         </main>
         <footer>
             <p></p> <!-- Populated by JS -->
-            <!-- The script to set year can be part of populateStaticTexts if footer.copyright includes {year} -->
         </footer>
     </div>
 
@@ -200,7 +209,7 @@
                 <li></li> <!-- Text by JS (hallOfFame.ts) -->
             </ul>
             <p></p> <!-- Text by JS (hallOfFame.ts) -->
-            
+
             <div class="form-group">
                 <label for="hall-of-fame-name-input"></label> <!-- Text by JS -->
                 <input type="text" id="hall-of-fame-name-input" required> <!-- Placeholder by JS -->
@@ -217,6 +226,19 @@
         </div>
     </div>
 
+    <div id="reset-confirmation-modal" class="share-modal" style="display: none;" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="reset-confirmation-modal-title">
+        <div class="share-modal-content">
+            <button id="reset-confirmation-modal-close-btn" class="share-modal-close-btn"></button> <!-- ARIA by JS -->
+            <h3 id="reset-confirmation-modal-title"></h3> <!-- Text by JS -->
+            <p id="reset-confirmation-modal-message"></p> <!-- Text by JS -->
+            <div class="modal-action-buttons" style="text-align: center; margin-top: 20px;">
+                <button id="reset-confirm-btn" class="control-buttons" style="display: inline-block; margin-right: 10px; background-color: #e74c3c;"></button> <!-- Text by JS -->
+                <button id="reset-cancel-btn" class="control-buttons" style="display: inline-block; background-color: #6c757d;"></button> <!-- Text by JS -->
+            </div>
+        </div>
+    </div>
+
+
     <script type="module" src="/index.tsx"></script>
 
     <script type="application/ld+json">
@@ -225,7 +247,7 @@
       "@type": "WebSite",
       "name": "Learn Malayalam Letters and Words",
       "url": "https://www.learn-malayalam.org/",
-      "description": "", 
+      "description": "",
       "creator": {
         "@type": "Person",
         "name": "Ajay Nair"
@@ -235,7 +257,7 @@
         "target": "https://www.learn-malayalam.org/"
       },
       "inLanguage": "en-US",
-      "keywords": "" 
+      "keywords": ""
     }
     </script>
     <script type="application/ld+json">
@@ -251,12 +273,12 @@
       },
       "aggregateRating": {
         "@type": "AggregateRating",
-        "ratingValue": "4.8", 
-        "ratingCount": "150", 
+        "ratingValue": "4.8",
+        "ratingCount": "150",
         "bestRating": "5",
         "worstRating": "1"
       },
-      "description": "", 
+      "description": "",
       "inLanguage": "en",
       "learningResourceType": ["quiz", "language learning tool", "vocabulary builder", "free educational tool"],
       "author": {
