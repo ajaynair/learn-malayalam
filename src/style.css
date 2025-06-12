@@ -141,6 +141,16 @@ main {
     transition: background-color 0.3s, border-color 0.3s;
 }
 
+/* Specific enhancements for the quiz area card to make it more prominent */
+.quiz-area.card {
+    padding: 25px;
+    border: 2px solid var(--text-color);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.18), 0 10px 10px rgba(0,0,0,0.12); /* Enhanced 3D shadow */
+    position: relative;
+    z-index: 10;
+}
+
+
 .mode-switcher {
     padding: 10px;
     background-color: var(--outer-and-text-bg);
@@ -626,6 +636,7 @@ main {
     .replay-audio-btn { font-size: 1.5rem; }
     .answer-feedback-icon { font-size: 1.8rem; }
     .options button { font-size: 0.8rem; padding: 8px 5px; }
+    .quiz-area.card { padding: 20px; }
 }
 
 @media (max-width: 600px) {
@@ -633,6 +644,7 @@ main {
     .app-container { padding: 10px; }
     main { gap: 10px; }
     .card { padding: 10px; }
+    .quiz-area.card { padding: 15px; } /* Adjusted padding for smaller screens */
     header { padding-bottom: 8px; margin-bottom: 10px; }
     header h1 { font-size: 1.1em; margin: 0 5px; }
 
@@ -687,6 +699,7 @@ main {
     .feedback { font-size: 0.75em; }
     .progress-bar-label { font-size: 0.9em; }
     .progress-bar-container { height: 8px; }
+    .quiz-area.card { padding: 12px; } /* Further adjust padding for very small screens */
 }
 
 .next-steps-card, .support-me-card, .hall-of-fame-card {
